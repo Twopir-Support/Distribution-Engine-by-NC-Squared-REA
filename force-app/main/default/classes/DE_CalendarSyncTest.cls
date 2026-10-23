@@ -4,16 +4,11 @@ private class DE_CalendarSyncTest {
     static void outOfOfficeEventCreatesOutOfOffice() {
         DE_TestFactory.settings();
         User u = DE_TestFactory.users(1)[0];
-        Datetime startAt = System.now().addDays(1);
+        // Whole seconds: Datetime fields do not store milliseconds.
+        Datetime startAt = Datetime.newInstance(System.today().addDays(1), Time.newInstance(10, 0, 0, 0));
 
         Test.startTest();
-        insert new Event(
-            OwnerId = u.Id,
-            Subject = 'Conference',
-            ShowAs = 'OutOfOffice',
-            StartDateTime = startAt,
-            EndDateTime = startAt.addHours(3)
-        );
+        insert new Event(OwnerId = u.Id, Subject = 'Conference', ShowAs = 'OutOfOffice', StartDateTime = startAt, EndDateTime = startAt.addHours(3));
         Test.stopTest();
 
         DE_Out_Of_Office__c ooo = [SELECT User__c, Start__c, End__c, Reason__c, Source__c, All_Day__c FROM DE_Out_Of_Office__c];
@@ -29,7 +24,7 @@ private class DE_CalendarSyncTest {
     static void shortBusyOrIncompleteEventsAreIgnored() {
         DE_TestFactory.settings();
         User u = DE_TestFactory.users(1)[0];
-        Datetime startAt = System.now().addDays(1);
+        Datetime startAt = Datetime.newInstance(System.today().addDays(1), Time.newInstance(10, 0, 0, 0));
 
         Test.startTest();
         DE_CalendarSync.createOutOfOffice(

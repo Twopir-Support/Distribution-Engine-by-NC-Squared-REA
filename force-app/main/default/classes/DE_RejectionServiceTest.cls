@@ -121,12 +121,7 @@ private class DE_RejectionServiceTest {
         Assert.areEqual(assignee, ownerOf(s.leads[1].Id), 'Second lead assigned to the only member');
 
         Test.startTest();
-        List<DE_RejectionService.RejectResult> results = DE_RejectionService.reject(
-            new List<Id>{ s.leads[0].Id, s.leads[1].Id },
-            'Workload',
-            assignee,
-            false
-        );
+        List<DE_RejectionService.RejectResult> results = DE_RejectionService.reject(new List<Id>{ s.leads[0].Id, s.leads[1].Id }, 'Workload', assignee, false);
         Test.stopTest();
 
         Assert.isTrue(results[0].success, 'First rejection is within the limit: ' + results[0].message);
@@ -184,12 +179,7 @@ private class DE_RejectionServiceTest {
         update moved;
 
         Test.startTest();
-        List<DE_RejectionService.RejectResult> results = DE_RejectionService.reject(
-            new List<Id>{ notDistributed.Id, moved.Id },
-            'Duplicate',
-            assignee,
-            false
-        );
+        List<DE_RejectionService.RejectResult> results = DE_RejectionService.reject(new List<Id>{ notDistributed.Id, moved.Id }, 'Duplicate', assignee, false);
         s.f.distributor.Rejection_Enabled__c = false;
         update s.f.distributor;
         List<DE_RejectionService.RejectResult> disabled = DE_RejectionService.reject(new List<Id>{ s.leads[0].Id }, 'Duplicate', assignee, false);

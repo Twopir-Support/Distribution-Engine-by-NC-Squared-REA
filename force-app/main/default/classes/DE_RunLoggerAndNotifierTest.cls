@@ -28,6 +28,7 @@ private class DE_RunLoggerAndNotifierTest {
 
     @IsTest
     static void sendNeverThrows() {
+        DE_TestFactory.settings();
         User u = DE_TestFactory.users(1)[0];
         Lead l = new Lead(LastName = 'Notify', Company = 'Acme');
         insert l;

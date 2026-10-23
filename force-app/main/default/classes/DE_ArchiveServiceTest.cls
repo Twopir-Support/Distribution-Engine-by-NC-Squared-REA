@@ -31,7 +31,11 @@ private class DE_ArchiveServiceTest {
 
         Assert.areEqual(0, tooRecent, 'New records are not archived');
         Assert.areEqual(2, archived, 'Two never-distributed leads archived');
-        for (Lead l : [SELECT Id, OwnerId, DE_Is_Archived__c, DE_Source_Queue__c, DE_Last_Archive_Date__c FROM Lead WHERE Id IN :new List<Id>{ leads[0].Id, leads[1].Id }]) {
+        for (Lead l : [
+            SELECT Id, OwnerId, DE_Is_Archived__c, DE_Source_Queue__c, DE_Last_Archive_Date__c
+            FROM Lead
+            WHERE Id IN :new List<Id>{ leads[0].Id, leads[1].Id }
+        ]) {
             Assert.areEqual(s.archive.Id, l.OwnerId, 'Moved to the archive queue');
             Assert.isTrue(l.DE_Is_Archived__c, 'Archived flag set');
             Assert.areEqual(String.valueOf(s.f.queue.Id), l.DE_Source_Queue__c, 'Source queue remembered');

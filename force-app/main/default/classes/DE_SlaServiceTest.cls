@@ -133,7 +133,8 @@ private class DE_SlaServiceTest {
     static void laterCheckpointIsScheduledAfterFirstMiss() {
         Setup s = setup(new List<Integer>{ 30, 120 }, false);
         distribute(s);
-        DE_Assignment_Log__c start = backdate(s.lead.Id, 60);
+        backdate(s.lead.Id, 60);
+        DE_Assignment_Log__c start = currentLog(s.lead.Id);
 
         Test.startTest();
         DE_SlaService.monitor(200, System.now());

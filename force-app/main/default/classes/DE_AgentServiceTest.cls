@@ -157,7 +157,21 @@ private class DE_AgentServiceTest {
         DE_Shift__c shift = new DE_Shift__c(
             Name = 'Early',
             Timezone__c = 'Europe/London',
-            Schedule__c = '{"MON":' + block + ',"TUE":' + block + ',"WED":' + block + ',"THU":' + block + ',"FRI":' + block + ',"SAT":' + block + ',"SUN":' + block + '}'
+            Schedule__c = '{"MON":' +
+                block +
+                ',"TUE":' +
+                block +
+                ',"WED":' +
+                block +
+                ',"THU":' +
+                block +
+                ',"FRI":' +
+                block +
+                ',"SAT":' +
+                block +
+                ',"SUN":' +
+                block +
+                '}'
         );
         insert shift;
         DE_Team__c team = DE_TestFactory.insertTeam('Night', 'Lead');

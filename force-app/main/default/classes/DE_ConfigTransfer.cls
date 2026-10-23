@@ -231,6 +231,7 @@ public without sharing class DE_ConfigTransfer {
             throw new DE_Permissions.AccessException('The file was not exported from Distribution Engine by NC Squared.');
         }
         Map<String, Integer> counts = new Map<String, Integer>();
+        unresolved = 0;
         for (User u : [SELECT Id, Username FROM User WHERE IsActive = TRUE LIMIT 20000]) {
             resolve.put('user:' + u.Username.toLowerCase(), u.Id);
         }
@@ -296,7 +297,7 @@ public without sharing class DE_ConfigTransfer {
                 SObject mem = build('DE_Team_Member__c', (Map<String, Object>) mo, new Map<String, Object>{ 'Team__c' => t.Id });
                 Id who = mem.get('User__c') != null ? (Id) mem.get('User__c') : DE_Ids.toId((String) mem.get('Queue_Id__c'));
                 if (who == null) {
-                    unresolved++;
+                    // The unresolved user or queue reference was already counted by convert().
                     continue;
                 }
                 mem.put('Unique_Key__c', t.Id + '|' + who);
