@@ -38,7 +38,7 @@ def exists(target):
             'reportfolder': f'reports/{rest}.reportFolder-meta.xml', 'dashboardfolder': f'dashboards/{rest}.dashboardFolder-meta.xml',
             'app': f'applications/{rest}.app-meta.xml', 'cache': f'cachePartitions/{rest}.cachePartition-meta.xml',
             'flexipage': f'flexipages/{rest}.flexipage-meta.xml', 'prompt': f'prompts/{rest}.prompt-meta.xml',
-            'emailfolder': f'email/{rest}.emailFolder-meta.xml', 'email': f'email/{rest}.email-meta.xml',
+            'emailfolder': f'email/{rest}.emailFolder-meta.xml', 'cmp': f'components/{rest}.component', 'email': f'email/{rest}.email-meta.xml',
         }
         if kind in paths:
             return os.path.exists(os.path.join(SRC, paths[kind]))
@@ -184,6 +184,8 @@ def map_row(r):
         out['area'] = 'Triggers'
         out['dep'] = obj_target(p) or ''
         special(TRIGGERS.get(n, 'na:Unknown trigger.'))
+        if n == 'DEDistributionLogTrigger':
+            out['notes'] = 'Post-insert work on logs (notifications) is done by DE_AssignmentWriter and the record-triggered email flows; no separate trigger is needed.'
     elif t == 'Visualforce Page':
         out['area'] = 'UI (Visualforce → LWC)'
         if not special(VF_PAGES.get(n, [])):

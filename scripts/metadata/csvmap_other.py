@@ -131,8 +131,8 @@ VF_PAGES = {
 }
 
 VF_COMPONENTS = {
-    'EmailNotification': ['email:DE_Templates/DE_Notification'], 'EmailNotificationLink': ['email:DE_Templates/DE_Notification'],
-    'EmailNotificationFooter': ['email:DE_Templates/DE_Notification'], 'EmailNotificationLogo': 'na:Vendor logo in emails.',
+    'EmailNotification': ['cmp:DE_EmailNotification'], 'EmailNotificationLink': ['cmp:DE_EmailNotificationLink'],
+    'EmailNotificationFooter': ['cmp:DE_EmailNotificationFooter'], 'EmailNotificationLogo': 'na:Vendor logo in emails.',
     'HistoryTable': ['lwc:deRecordHistoryComponent'], 'InlineLogs': ['lwc:deRecordHistoryComponent'], 'InlineLogs2': ['lwc:deRecordHistoryComponent'],
     'LogsContext': ['lwc:deLogs'], 'PageContext': ['lwc:deUtils'], 'PageHead': ['lwc:deUtils'], 'Team_TeamBase': ['lwc:deTeamWorkspace'],
     'APVHead': ['lwc:deTeamWorkspace'], 'CommonHeader': ['lwc:deUtils'], 'CommonHelp': ['lwc:deUtils'], 'CommonInlineHelp': ['lwc:deUtils'],
@@ -165,7 +165,7 @@ FLOWS = {
 
 TRIGGERS = {
     'DEAccountTrigger': ['trigger:DE_AccountTrigger'], 'DECaseTrigger': ['trigger:DE_CaseTrigger'], 'DEContactTrigger': ['trigger:DE_ContactTrigger'],
-    'DETaskTrigger': ['trigger:DE_TaskTrigger'], 'DEDistributionLogTrigger': ['trigger:DE_AssignmentLogTrigger'], 'DEEventTrigger': ['trigger:DE_EventTrigger'],
+    'DETaskTrigger': ['trigger:DE_TaskTrigger'], 'DEDistributionLogTrigger': ['cls:DE_AssignmentWriter', 'flow:DE_Email_Notification_on_new_log', 'flow:DE_Email_Notification_on_log_update'], 'DEEventTrigger': ['trigger:DE_EventTrigger'],
     'DELeadTrigger': ['trigger:DE_LeadTrigger'], 'DEOpportunityTrigger': ['trigger:DE_OpportunityTrigger'],
 }
 
