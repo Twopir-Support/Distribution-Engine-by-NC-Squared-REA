@@ -154,7 +154,9 @@ private class DE_ConsoleControllerTest {
         List<Lead> leads = DE_TestFactory.insertLeads(3, f.queue.Id);
         List<DE_Record_Detail__c> holds = new List<DE_Record_Detail__c>();
         for (Lead l : leads) {
-            holds.add(new DE_Record_Detail__c(Record_Id__c = l.Id, Object_API_Name__c = 'Lead', On_Hold_Until__c = System.now().addHours(1), Failed_Attempts__c = 0));
+            holds.add(
+                new DE_Record_Detail__c(Record_Id__c = l.Id, Object_API_Name__c = 'Lead', On_Hold_Until__c = System.now().addHours(1), Failed_Attempts__c = 0)
+            );
         }
         insert holds;
         DE_TestFactory.grantAll();
@@ -175,7 +177,13 @@ private class DE_ConsoleControllerTest {
         DE_TestFactory.Fixture f = DE_TestFactory.leadFixture(1, 'Round Robin');
         Lead l = DE_TestFactory.insertLeads(1, f.queue.Id)[0];
         insert new DE_Record_Detail__c(Record_Id__c = l.Id, Object_API_Name__c = 'Lead', On_Hold_Until__c = System.now().addHours(1), Failed_Attempts__c = 3);
-        insert new DE_Assignment_Log__c(Record_Id__c = l.Id, Object_API_Name__c = 'Lead', Status__c = 'On Hold', Type__c = 'Standard', Assigned_At__c = System.now());
+        insert new DE_Assignment_Log__c(
+            Record_Id__c = l.Id,
+            Object_API_Name__c = 'Lead',
+            Status__c = 'On Hold',
+            Type__c = 'Standard',
+            Assigned_At__c = System.now()
+        );
         DE_TestFactory.grantAll();
 
         Assert.areEqual(1, DE_ConsoleController.retryAll(), 'One record released.');
@@ -226,7 +234,13 @@ private class DE_ConsoleControllerTest {
     @IsTest
     static void managesObjectSyncActions() {
         DE_TestFactory.grantAll();
-        DE_Object_Sync__c action = new DE_Object_Sync__c(Name = 'Contacts follow account', Parent_Object__c = 'Account', Child_Object__c = 'Contact', Lookup_Field__c = 'AccountId', Active__c = true);
+        DE_Object_Sync__c action = new DE_Object_Sync__c(
+            Name = 'Contacts follow account',
+            Parent_Object__c = 'Account',
+            Child_Object__c = 'Contact',
+            Lookup_Field__c = 'AccountId',
+            Active__c = true
+        );
         Id actionId = DE_ConsoleController.saveSyncAction(
             action,
             new List<DE_Condition__c>{ new DE_Condition__c(Field_API_Name__c = 'Email', Operator__c = 'is not blank') }

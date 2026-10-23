@@ -522,7 +522,7 @@ public with sharing class DE_ConsoleController {
                 AccessLevel.USER_MODE
             )
         ) {
-            a.overTime.add(new SeriesPoint(String.valueOf(ar.get('d')), (String) ar.get('k'), (Decimal) ar.get('c')));
+            a.overTime.add(new SeriesPoint(String.valueOf(ar.get('d')), (String) ar.get('k'), Decimal.valueOf(String.valueOf(ar.get('c')))));
         }
         for (
             AggregateResult ar : (List<AggregateResult>) Database.queryWithBinds(
@@ -533,7 +533,7 @@ public with sharing class DE_ConsoleController {
                 AccessLevel.USER_MODE
             )
         ) {
-            a.hourly.add(new SeriesPoint(String.valueOf(ar.get('h')), 'Assignments', (Decimal) ar.get('c')));
+            a.hourly.add(new SeriesPoint(String.valueOf(ar.get('h')), 'Assignments', Decimal.valueOf(String.valueOf(ar.get('c')))));
         }
         for (
             AggregateResult ar : (List<AggregateResult>) Database.queryWithBinds(
@@ -557,7 +557,9 @@ public with sharing class DE_ConsoleController {
             WITH USER_MODE
             GROUP BY User__r.Name, Online__c
         ]) {
-            a.userActivity.add(new SeriesPoint((String) ar.get('u'), ar.get('o') == true ? 'Toggled on' : 'Toggled off', (Decimal) ar.get('c')));
+            a.userActivity.add(
+                new SeriesPoint((String) ar.get('u'), ar.get('o') == true ? 'Toggled on' : 'Toggled off', Decimal.valueOf(String.valueOf(ar.get('c'))))
+            );
         }
         return a;
     }

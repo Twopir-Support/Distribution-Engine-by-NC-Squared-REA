@@ -47,10 +47,7 @@ private class DE_ClassifierControllerTest {
     static void rejectsInvalidTerritory() {
         DE_TestFactory.grantAll();
         try {
-            DE_ClassifierController.saveTerritory(
-                new DE_Territory__c(Name = '', Object_API_Name__c = 'Lead', Stamp_Field__c = 'NumberOfEmployees'),
-                null
-            );
+            DE_ClassifierController.saveTerritory(new DE_Territory__c(Name = '', Object_API_Name__c = 'Lead', Stamp_Field__c = 'NumberOfEmployees'), null);
             Assert.fail('Invalid territory.');
         } catch (AuraHandledException e) {
             Assert.isTrue(e.getMessage().contains('Enter a territory name.'), e.getMessage());
@@ -95,7 +92,14 @@ private class DE_ClassifierControllerTest {
         DE_TestFactory.grantAll();
         LeadStatus converted = [SELECT ApiName FROM LeadStatus WHERE IsConverted = TRUE LIMIT 1];
         Id first = DE_ClassifierController.saveConversionRule(
-            new DE_Conversion_Rule__c(Name = 'Default', Order__c = 1, Is_Default__c = true, Action__c = 'Auto Convert', Match__c = 'Any', Converted_Status__c = converted.ApiName),
+            new DE_Conversion_Rule__c(
+                Name = 'Default',
+                Order__c = 1,
+                Is_Default__c = true,
+                Action__c = 'Auto Convert',
+                Match__c = 'Any',
+                Converted_Status__c = converted.ApiName
+            ),
             null
         );
         Id second = DE_ClassifierController.saveConversionRule(

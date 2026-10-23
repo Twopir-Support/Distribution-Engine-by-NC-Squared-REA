@@ -6,7 +6,12 @@ private class DE_AvailabilityControllerTest {
     static void userManagesOwnOutOfOffice() {
         DE_TestFactory.grant(new Set<String>{ 'DE_User' });
         Datetime startAt = System.now().addDays(1);
-        DE_Out_Of_Office__c ooo = new DE_Out_Of_Office__c(User__c = UserInfo.getUserId(), Start__c = startAt, End__c = startAt.addHours(4), Reason__c = 'Dentist');
+        DE_Out_Of_Office__c ooo = new DE_Out_Of_Office__c(
+            User__c = UserInfo.getUserId(),
+            Start__c = startAt,
+            End__c = startAt.addHours(4),
+            Reason__c = 'Dentist'
+        );
 
         Id oooId = DE_AvailabilityController.saveOutOfOffice(ooo);
 
@@ -23,7 +28,9 @@ private class DE_AvailabilityControllerTest {
         DE_TestFactory.grant(new Set<String>{ 'DE_User' });
         Datetime startAt = System.now().addDays(1);
         try {
-            DE_AvailabilityController.saveOutOfOffice(new DE_Out_Of_Office__c(User__c = UserInfo.getUserId(), Start__c = startAt, End__c = startAt.addHours(-1)));
+            DE_AvailabilityController.saveOutOfOffice(
+                new DE_Out_Of_Office__c(User__c = UserInfo.getUserId(), Start__c = startAt, End__c = startAt.addHours(-1))
+            );
             Assert.fail('End before start is invalid.');
         } catch (AuraHandledException e) {
             Assert.isTrue(e.getMessage().contains('End must be after Start.'), e.getMessage());

@@ -57,7 +57,9 @@ private class DE_AdminControllerTest {
         DE_TestFactory.settings();
         DE_TestFactory.grantAll();
         DE_Team__c t = new DE_Team__c(Name = 'Web Leads', Object_API_Name__c = 'lead', Active__c = true);
-        List<DE_Condition__c> filters = new List<DE_Condition__c>{ new DE_Condition__c(Field_API_Name__c = 'LeadSource', Operator__c = 'equals', Value__c = 'Web') };
+        List<DE_Condition__c> filters = new List<DE_Condition__c>{
+            new DE_Condition__c(Field_API_Name__c = 'LeadSource', Operator__c = 'equals', Value__c = 'Web')
+        };
 
         Test.startTest();
         Id teamId = DE_AdminController.saveTeam(t, filters, null);

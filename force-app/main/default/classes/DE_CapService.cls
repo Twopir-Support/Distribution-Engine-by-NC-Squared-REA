@@ -171,7 +171,7 @@ public without sharing class DE_CapService {
         }
         soql += ' GROUP BY Assignee_Id__c';
         for (AggregateResult ar : (List<AggregateResult>) Database.queryWithBinds(soql, binds, AccessLevel.SYSTEM_MODE)) {
-            out.put(Id.valueOf((String) ar.get('a')), (Decimal) ar.get('c'));
+            out.put(Id.valueOf((String) ar.get('a')), Decimal.valueOf(String.valueOf(ar.get('c'))));
         }
         return out;
     }

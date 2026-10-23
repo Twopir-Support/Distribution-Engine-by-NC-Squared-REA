@@ -85,7 +85,15 @@ private class DE_RecordDetailControllerTest {
     @IsTest
     static void manualAssignment() {
         DE_TestFactory.Fixture f = DE_TestFactory.leadFixture(2, 'Round Robin');
-        DE_Distributor__c manual = new DE_Distributor__c(Team__c = f.team.Id, Name = 'Manual', Active__c = true, Type__c = 'Manual', Method__c = 'Round Robin', Order__c = 20, Send_Notification__c = false);
+        DE_Distributor__c manual = new DE_Distributor__c(
+            Team__c = f.team.Id,
+            Name = 'Manual',
+            Active__c = true,
+            Type__c = 'Manual',
+            Method__c = 'Round Robin',
+            Order__c = 20,
+            Send_Notification__c = false
+        );
         insert manual;
         Lead l = DE_TestFactory.insertLeads(1, f.queue.Id)[0];
         DE_TestFactory.grantAll();
