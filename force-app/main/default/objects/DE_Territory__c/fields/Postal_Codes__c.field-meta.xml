@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Postal_Codes__c</fullName>
+    <inlineHelpText>Semicolon-separated postal codes, prefixes ending in * or ranges low..high.</inlineHelpText>
+    <label>Postal Codes</label>
+    <length>32768</length>
+    <visibleLines>4</visibleLines>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+</CustomField>

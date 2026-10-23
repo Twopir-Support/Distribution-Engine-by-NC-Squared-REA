@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Hold_Minutes__c</fullName>
+    <label>Hold Duration (Minutes)</label>
+    <precision>5</precision>
+    <scale>0</scale>
+    <defaultValue>60</defaultValue>
+    <type>Number</type>
+</CustomField>

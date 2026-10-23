@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Respect_Hours_For_Triggers__c</fullName>
+    <defaultValue>false</defaultValue>
+    <label>Respect Distribution Hours for Triggers</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

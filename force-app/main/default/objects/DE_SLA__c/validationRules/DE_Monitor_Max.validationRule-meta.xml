@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Monitor_Max</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ISPICKVAL(Alert_Type__c, "Continuous Field Monitoring"), Minutes_After_Assignment__c &gt; 20160)</errorConditionFormula>
+    <errorDisplayField>Minutes_After_Assignment__c</errorDisplayField>
+    <errorMessage>Continuous monitoring is limited to two weeks (20160 minutes).</errorMessage>
+</ValidationRule>

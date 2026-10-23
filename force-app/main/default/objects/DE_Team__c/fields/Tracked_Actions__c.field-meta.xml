@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tracked_Actions__c</fullName>
+    <inlineHelpText>Semicolon-separated values of the action field that count as actioned.</inlineHelpText>
+    <label>Actions to Track</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

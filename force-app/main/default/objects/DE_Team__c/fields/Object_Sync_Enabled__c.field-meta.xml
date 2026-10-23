@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Object_Sync_Enabled__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>Run active Object Sync actions for this object after assignment.</inlineHelpText>
+    <label>Object Sync</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

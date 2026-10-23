@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Exclude_Members_Field__c</fullName>
+    <inlineHelpText>Text or user lookup field on the record holding comma-separated User Ids that must not receive it.</inlineHelpText>
+    <label>Exclude Members Field</label>
+    <length>120</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+</CustomField>

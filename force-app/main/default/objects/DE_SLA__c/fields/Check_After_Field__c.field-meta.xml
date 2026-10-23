@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Check_After_Field__c</fullName>
+    <inlineHelpText>Custom Date/Time: date/time field holding when to check.</inlineHelpText>
+    <label>SLA Check After Field</label>
+    <length>120</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+</CustomField>

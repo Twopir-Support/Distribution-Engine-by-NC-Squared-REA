@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Timezone__c</fullName>
+    <inlineHelpText>IANA timezone, e.g. Europe/London or America/New_York.</inlineHelpText>
+    <label>Timezone</label>
+    <length>60</length>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+</CustomField>

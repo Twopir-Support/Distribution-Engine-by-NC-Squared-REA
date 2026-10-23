@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Apply_Active_Status_To_SLAs__c</fullName>
+    <defaultValue>true</defaultValue>
+    <label>Apply Active Status to SLAs</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Method__c</fullName>
+    <label>Method</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Round Robin</fullName>
+                <default>true</default>
+                <label>Round Robin</label>
+            </value>
+            <value>
+                <fullName>Load Balancing</fullName>
+                <default>false</default>
+                <label>Load Balancing</label>
+            </value>
+            <value>
+                <fullName>Lookup Owner</fullName>
+                <default>false</default>
+                <label>Lookup Owner</label>
+            </value>
+            <value>
+                <fullName>Related Owner</fullName>
+                <default>false</default>
+                <label>Related Owner</label>
+            </value>
+            <value>
+                <fullName>Dynamic Owner</fullName>
+                <default>false</default>
+                <label>Dynamic Owner</label>
+            </value>
+            <value>
+                <fullName>Current Owner</fullName>
+                <default>false</default>
+                <label>Current Owner</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

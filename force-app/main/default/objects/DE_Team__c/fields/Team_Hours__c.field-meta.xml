@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Team_Hours__c</fullName>
+    <inlineHelpText>Distribution hours for the team. Members without their own shift inherit these hours.</inlineHelpText>
+    <label>Team Hours</label>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <referenceTo>DE_Shift__c</referenceTo>
+    <relationshipLabel>Teams Using This Shift</relationshipLabel>
+    <relationshipName>Teams</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

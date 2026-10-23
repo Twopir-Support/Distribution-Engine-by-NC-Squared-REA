@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Checkpoint__c</fullName>
+    <inlineHelpText>1, 2 or 3 in chronological order.</inlineHelpText>
+    <label>Checkpoint</label>
+    <precision>1</precision>
+    <scale>0</scale>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+</CustomField>

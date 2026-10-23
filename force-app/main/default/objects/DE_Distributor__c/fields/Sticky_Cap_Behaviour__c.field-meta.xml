@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sticky_Cap_Behaviour__c</fullName>
+    <label>Sticky Cap Behaviour</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Ignore Caps</fullName>
+                <default>true</default>
+                <label>Ignore Caps</label>
+            </value>
+            <value>
+                <fullName>Respect Caps - Assign to Next Member</fullName>
+                <default>false</default>
+                <label>Respect Caps - Assign to Next Member</label>
+            </value>
+            <value>
+                <fullName>Respect Caps - Don't Assign</fullName>
+                <default>false</default>
+                <label>Respect Caps - Don't Assign</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

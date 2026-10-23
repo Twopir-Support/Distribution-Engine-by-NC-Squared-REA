@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Member_User_Or_Queue</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(AND(ISBLANK(User__c), ISBLANK(Queue_Id__c)), AND(NOT(ISBLANK(User__c)), NOT(ISBLANK(Queue_Id__c))))</errorConditionFormula>
+    <errorMessage>A team member must be exactly one user or one queue.</errorMessage>
+</ValidationRule>

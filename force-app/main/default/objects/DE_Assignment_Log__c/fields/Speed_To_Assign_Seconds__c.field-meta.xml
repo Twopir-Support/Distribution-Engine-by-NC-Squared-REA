@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Speed_To_Assign_Seconds__c</fullName>
+    <label>Speed to Assign (Seconds)</label>
+    <precision>12</precision>
+    <scale>0</scale>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+</CustomField>

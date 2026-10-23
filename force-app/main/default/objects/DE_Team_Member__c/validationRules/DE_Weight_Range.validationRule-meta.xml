@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Weight_Range</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(Weight__c &lt; 0.25, Weight__c &gt; 4, MOD(Weight__c * 4, 1) &lt;&gt; 0)</errorConditionFormula>
+    <errorDisplayField>Weight__c</errorDisplayField>
+    <errorMessage>Weight must be between 0.25 and 4 in steps of 0.25.</errorMessage>
+</ValidationRule>

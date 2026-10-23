@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>Org-wide settings for Distribution Engine by NC Squared.</description>
+    <enableFeeds>false</enableFeeds>
+    <label>Distribution Engine Settings</label>
+    <visibility>Public</visibility>
+</CustomObject>

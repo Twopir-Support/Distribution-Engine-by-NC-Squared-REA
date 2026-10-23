@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Match_Company_Name__c</fullName>
+    <defaultValue>true</defaultValue>
+    <inlineHelpText>Normalised: case, punctuation and suffixes like Inc, Ltd, LLC are ignored. Fuzzy similarity is scored.</inlineHelpText>
+    <label>Company Name Matching</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

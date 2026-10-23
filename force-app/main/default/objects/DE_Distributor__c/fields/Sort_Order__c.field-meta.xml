@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sort_Order__c</fullName>
+    <inlineHelpText>Comma-separated fields with optional ASC or DESC, e.g. Rating DESC, CreatedDate ASC. Default is CreatedDate ASC.</inlineHelpText>
+    <label>Sort Order</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+</CustomField>

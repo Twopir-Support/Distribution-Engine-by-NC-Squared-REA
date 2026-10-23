@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Custom_Length__c</fullName>
+    <inlineHelpText>Minutes 5-180, Hours 1-168 or Days 1-31. Custom caps are rolling.</inlineHelpText>
+    <label>Custom Period Length</label>
+    <precision>4</precision>
+    <scale>0</scale>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+</CustomField>

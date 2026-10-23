@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Match__c</fullName>
+    <label>Match</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Any</fullName>
+                <default>true</default>
+                <label>Any</label>
+            </value>
+            <value>
+                <fullName>No Match</fullName>
+                <default>false</default>
+                <label>No Match</label>
+            </value>
+            <value>
+                <fullName>Account and Contact Match</fullName>
+                <default>false</default>
+                <label>Account and Contact Match</label>
+            </value>
+            <value>
+                <fullName>Account Only Match</fullName>
+                <default>false</default>
+                <label>Account Only Match</label>
+            </value>
+            <value>
+                <fullName>Lead Only Match</fullName>
+                <default>false</default>
+                <label>Lead Only Match</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

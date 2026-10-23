@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Weight__c</fullName>
+    <inlineHelpText>0.25 to 4. Weight 2 receives two assignments per round robin cycle; 0.5 is skipped every other cycle.</inlineHelpText>
+    <label>Weight</label>
+    <precision>4</precision>
+    <scale>2</scale>
+    <defaultValue>1</defaultValue>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+</CustomField>

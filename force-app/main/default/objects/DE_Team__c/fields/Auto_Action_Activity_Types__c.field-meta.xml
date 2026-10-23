@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Auto_Action_Activity_Types__c</fullName>
+    <inlineHelpText>Semicolon-separated Task/Event Type values that set the action automatically, e.g. Call;Email.</inlineHelpText>
+    <label>Auto Action Activity Types</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+</CustomField>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Active_Status_Values__c</fullName>
+    <inlineHelpText>Semicolon-separated values of the Active Status Field, e.g. New;Working.</inlineHelpText>
+    <label>Active Status Values</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

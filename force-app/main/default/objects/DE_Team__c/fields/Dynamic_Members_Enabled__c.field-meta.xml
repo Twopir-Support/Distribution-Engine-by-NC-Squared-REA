@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Dynamic_Members_Enabled__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>Keep membership in sync with Dynamic Membership conditions on User fields.</inlineHelpText>
+    <label>Dynamic Team Members</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

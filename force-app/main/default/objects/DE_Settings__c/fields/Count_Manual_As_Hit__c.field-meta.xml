@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Count_Manual_As_Hit__c</fullName>
+    <defaultValue>false</defaultValue>
+    <label>Count Manual Assignments in Rotation</label>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Match_Email_Domain__c</fullName>
+    <defaultValue>true</defaultValue>
+    <inlineHelpText>Lead to Account: lead email domain matches account website or contact email domains. Email domain takes priority over website. Personal domains never match.</inlineHelpText>
+    <label>Email Domain Matching</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

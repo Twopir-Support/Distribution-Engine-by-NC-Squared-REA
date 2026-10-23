@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Cap_Owner</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(AND(ISBLANK(Team__c), ISBLANK(Distributor__c)), AND(NOT(ISBLANK(Team__c)), NOT(ISBLANK(Distributor__c))))</errorConditionFormula>
+    <errorMessage>A cap belongs to exactly one team or one distributor.</errorMessage>
+</ValidationRule>

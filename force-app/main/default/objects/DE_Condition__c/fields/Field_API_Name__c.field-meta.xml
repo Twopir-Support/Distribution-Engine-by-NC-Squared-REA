@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Field_API_Name__c</fullName>
+    <inlineHelpText>Field API name or path (Account.Industry), DE classifier value (DE.Territory, DE.Stamp.Priority, DE.MatchedAccount.Type) or, for member filters, Tag:Collection / DynamicTag:Collection / Territory.</inlineHelpText>
+    <label>Field</label>
+    <length>255</length>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+</CustomField>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Checkpoint_Range</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(Checkpoint__c &lt; 1, Checkpoint__c &gt; 3)</errorConditionFormula>
+    <errorDisplayField>Checkpoint__c</errorDisplayField>
+    <errorMessage>Checkpoint must be 1, 2 or 3.</errorMessage>
+</ValidationRule>

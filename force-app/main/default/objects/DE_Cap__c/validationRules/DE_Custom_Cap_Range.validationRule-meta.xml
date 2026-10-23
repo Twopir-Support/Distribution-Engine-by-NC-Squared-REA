@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Custom_Cap_Range</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(AND(ISPICKVAL(Period__c, "Custom Minutes"), OR(Custom_Length__c &lt; 5, Custom_Length__c &gt; 180)), AND(ISPICKVAL(Period__c, "Custom Hours"), OR(Custom_Length__c &lt; 1, Custom_Length__c &gt; 168)), AND(ISPICKVAL(Period__c, "Custom Days"), OR(Custom_Length__c &lt; 1, Custom_Length__c &gt; 31)), AND(BEGINS(TEXT(Period__c), "Custom"), ISBLANK(Custom_Length__c)))</errorConditionFormula>
+    <errorDisplayField>Custom_Length__c</errorDisplayField>
+    <errorMessage>Custom caps: minutes 5-180, hours 1-168, days 1-31.</errorMessage>
+</ValidationRule>

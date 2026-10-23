@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Toggle_At_End_Of_Day__c</fullName>
+    <inlineHelpText>No Change, Always On or Always Off</inlineHelpText>
+    <label>Toggle Status at End of Day</label>
+    <length>20</length>
+    <type>Text</type>
+</CustomField>

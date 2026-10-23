@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Source_Required</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(OR(ISPICKVAL(Type__c, "Standard"), ISPICKVAL(Type__c, "Pull")), OR(AND(OR(ISPICKVAL(Source_Type__c, "Queue"), ISPICKVAL(Source_Type__c, "User")), ISBLANK(Source_Id__c)), AND(ISPICKVAL(Source_Type__c, "Field Value"), OR(ISBLANK(Source_Field__c), ISBLANK(Source_Ready_Value__c))), ISPICKVAL(Source_Type__c, "Any")))</errorConditionFormula>
+    <errorMessage>Standard and Pull distributors need a source: a queue or user Id, or a field and ready value.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Reassign_Target_Required</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(Auto_Reassign__c, ISBLANK(Reassign_To_Id__c))</errorConditionFormula>
+    <errorDisplayField>Reassign_To_Id__c</errorDisplayField>
+    <errorMessage>Choose a queue or user to reassign to.</errorMessage>
+</ValidationRule>

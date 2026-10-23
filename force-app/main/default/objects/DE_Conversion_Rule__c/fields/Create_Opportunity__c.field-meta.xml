@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Create_Opportunity__c</fullName>
+    <label>Create Opportunity</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Never</fullName>
+                <default>true</default>
+                <label>Never</label>
+            </value>
+            <value>
+                <fullName>Always</fullName>
+                <default>false</default>
+                <label>Always</label>
+            </value>
+            <value>
+                <fullName>Only When No Open Opportunity</fullName>
+                <default>false</default>
+                <label>Only When No Open Opportunity</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

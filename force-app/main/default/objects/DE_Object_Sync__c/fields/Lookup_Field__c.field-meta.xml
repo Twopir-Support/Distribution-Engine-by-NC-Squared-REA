@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lookup_Field__c</fullName>
+    <inlineHelpText>Lookup on the related object pointing at the distribution object, e.g. WhoId or AccountId.</inlineHelpText>
+    <label>Related Lookup Field</label>
+    <length>120</length>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+</CustomField>

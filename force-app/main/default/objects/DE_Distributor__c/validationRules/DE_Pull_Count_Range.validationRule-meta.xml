@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Pull_Count_Range</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ISPICKVAL(Type__c, "Pull"), OR(ISBLANK(Pull_Count__c), Pull_Count__c &lt; 1, Pull_Count__c &gt; 100))</errorConditionFormula>
+    <errorDisplayField>Pull_Count__c</errorDisplayField>
+    <errorMessage>Number of records to pull must be between 1 and 100.</errorMessage>
+</ValidationRule>

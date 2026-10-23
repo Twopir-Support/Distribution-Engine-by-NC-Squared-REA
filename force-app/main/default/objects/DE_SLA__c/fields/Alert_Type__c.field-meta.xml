@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Alert_Type__c</fullName>
+    <label>Alert Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Time Checkpoint</fullName>
+                <default>true</default>
+                <label>Time Checkpoint</label>
+            </value>
+            <value>
+                <fullName>Continuous Field Monitoring</fullName>
+                <default>false</default>
+                <label>Continuous Field Monitoring</label>
+            </value>
+            <value>
+                <fullName>Custom Date/Time</fullName>
+                <default>false</default>
+                <label>Custom Date/Time</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
