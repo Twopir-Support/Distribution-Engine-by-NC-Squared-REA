@@ -98,6 +98,7 @@ public without sharing class DE_DistributionRunner {
                 detailFields.addAll(DE_Conditions.detailFields(dc.filters));
                 Map<Id, DE_Record_Detail__c> loaded = DE_RecordDetails.load(candidateIds, detailFields);
                 ctx.cond.details.putAll(loaded);
+                DE_DistributionCore.preloadCampaigns(dc, candidates, ctx);
                 for (SObject r : candidates) {
                     if (ready.size() >= budget) {
                         break;
@@ -218,6 +219,7 @@ public without sharing class DE_DistributionRunner {
                         Message__c = ('On hold for ' + holdMinutes + ' minutes after ' + threshold + ' failed attempts. ' + reasons.get(recordId)).left(255)
                     )
                 );
+                DE_AssignmentWriter.linkRecord(holdLogs[holdLogs.size() - 1], objects.get(recordId), recordId);
             }
             updates.add(d);
         }

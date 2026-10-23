@@ -2,6 +2,14 @@
  * Persists assignment decisions: updates the records (or the Trigger.new rows in place),
  * writes Distribution Logs, updates per-record details, sends notifications and platform events,
  * and runs Object Sync. Record DML is partial-success: one failing record never blocks the others.
+ *
+ * Role assignment distributors add the assignee to the record's Account/Opportunity/Case team
+ * (DE_SalesforceTeamService) instead of changing the owner. Standard emails are sent by the
+ * "DE Email Notification" flows from the log's Send_Email__c flag.
+ *
+ * When the team has Distribution Logging Disabled, no logs are written. Rotation state is kept,
+ * but caps, load balancing and sticky assignment count logs, so they see no assignments from
+ * that team (a validation rule stops logging being disabled together with action tracking or object sync).
  */
 public without sharing class DE_AssignmentWriter {
     public class Result {
@@ -34,7 +42,7 @@ public without sharing class DE_AssignmentWriter {
         List<SObject> targets = new List<SObject>();
         for (DE_Model.Decision d : toWrite) {
             SObject target = inPlace ? d.record : sType.newSObject(d.recordId);
-            if (d.method != 'Current Owner') {
+            if (d.method != 'Current Owner' && !isRoleAssignment(d)) {
                 target.put(cfg.assignmentField, d.assigneeId);
             }
             if (hasDistributed) {
@@ -78,47 +86,60 @@ public without sharing class DE_AssignmentWriter {
             }
         }
 
-        // 2. Logs.
+        // 2. Role assignment: add the assignee to the record's team instead of changing the owner.
+        Map<Id, DE_SalesforceTeamService.Result> roles = addTeamMembers(obj, toWrite);
+
+        // 3. Logs.
         Set<String> successIds = new Set<String>();
         for (DE_Model.Decision d : toWrite) {
-            if (d.status == 'Assigned') {
+            if (d.status == 'Assigned' && !isRoleAssignment(d)) {
                 successIds.add(String.valueOf(d.recordId));
             }
         }
         retireCurrentLogs(successIds);
         String nameField = DE_Schema.nameField(obj);
         Boolean traceOn = DE_Settings.decisionTraceEnabled();
+        Map<Id, String> names = assigneeNames(toWrite);
         List<DE_Record_Detail__c> detailUpdates = new List<DE_Record_Detail__c>();
         List<DE_Notifier.Item> notes = new List<DE_Notifier.Item>();
         List<DE_Assignment_Event__e> events = new List<DE_Assignment_Event__e>();
         for (DE_Model.Decision d : toWrite) {
             DE_Assignment_Log__c log = baseLog(cfg, d, ctx.logType, now, nameField);
+            log.Assignee_Name__c = names.get(d.assigneeId);
             DE_Record_Detail__c detail = DE_RecordDetails.ensure(ctx.cond.details, d.recordId, obj);
+            DE_SalesforceTeamService.Result role = roles.get(d.recordId);
+            if (role != null) {
+                log.Team_Role__c = role.role == null ? null : role.role.left(80);
+                log.Team_Member_Record_Id__c = role.teamMemberId;
+            }
             if (d.status == 'Assigned') {
                 result.assigned++;
                 log.Status__c = 'Assigned';
-                log.Current__c = true;
+                // Role assignments do not change the owner, so they never become the record's current assignment.
+                log.Current__c = role == null;
                 DE_Distributor__c dist = d.distributor == null ? null : d.distributor.dist;
-                if (dist != null && dist.SLA_Enabled__c == true && !cfg.slas.isEmpty() && d.method != 'Current Owner') {
+                if (dist != null && role == null && dist.SLA_Enabled__c == true && !cfg.slas.isEmpty() && d.method != 'Current Owner') {
                     DE_SlaService.Checkpoint next = DE_SlaService.nextCheckpoint(cfg, d.member, now, d.record, 0, detail);
                     if (next != null) {
                         log.SLA_Status__c = 'Pending';
                         log.Next_SLA_Check__c = next.due;
                     }
                 }
-                DE_RecordDetails.pushAssignee(detail, d.assigneeId);
+                if (role == null) {
+                    DE_RecordDetails.pushAssignee(detail, d.assigneeId);
+                }
                 detail.Failed_Attempts__c = 0;
                 detail.On_Hold_Until__c = null;
                 detail.Last_Error__c = null;
                 if (dist != null && d.assigneeId.getSobjectType() == User.SObjectType && dist.Send_Notification__c != false) {
-                    DE_Notifier.Item n = new DE_Notifier.Item(
-                        d.assigneeId,
-                        d.recordId,
-                        'New ' + obj + ' assigned: ' + log.Record_Name__c,
-                        'Assigned to you by ' + cfg.team.Name + ' (' + dist.Name + ').'
+                    notes.add(
+                        new DE_Notifier.Item(
+                            d.assigneeId,
+                            d.recordId,
+                            (role == null ? 'New ' + obj + ' assigned: ' : 'Added to the ' + obj + ' team: ') + log.Record_Name__c,
+                            'Assigned to you by ' + cfg.team.Name + ' (' + dist.Name + ').'
+                        )
                     );
-                    n.email = dist.Send_Email__c == true;
-                    notes.add(n);
                 }
                 events.add(
                     new DE_Assignment_Event__e(
@@ -145,15 +166,109 @@ public without sharing class DE_AssignmentWriter {
             result.logs.add(log);
             detailUpdates.add(detail);
         }
-        Database.insert(result.logs, false, AccessLevel.SYSTEM_MODE);
+        if (cfg.team.Logging_Disabled__c != true) {
+            Database.insert(result.logs, false, AccessLevel.SYSTEM_MODE);
+        }
         DE_RecordDetails.save(detailUpdates);
         DE_Notifier.send(notes);
         DE_Notifier.publish(events);
         if (cfg.team.Object_Sync_Enabled__c == true) {
-            DE_ObjectSyncService.sync(cfg, toWrite);
+            List<DE_Model.Decision> owned = new List<DE_Model.Decision>();
+            for (DE_Model.Decision d : toWrite) {
+                if (!isRoleAssignment(d)) {
+                    owned.add(d);
+                }
+            }
+            DE_ObjectSyncService.sync(cfg, owned);
         }
         return result;
     }
+
+    public static Boolean isRoleAssignment(DE_Model.Decision d) {
+        return d.distributor != null && d.distributor.dist.Salesforce_Team_Enabled__c == true;
+    }
+
+    /** Runs role assignment for the successful role-assignment decisions; failures turn the decision into an error. */
+    private static Map<Id, DE_SalesforceTeamService.Result> addTeamMembers(String obj, List<DE_Model.Decision> decisions) {
+        Map<Id, DE_SalesforceTeamService.Result> out = new Map<Id, DE_SalesforceTeamService.Result>();
+        Map<Id, List<DE_Model.Decision>> byDistributor = new Map<Id, List<DE_Model.Decision>>();
+        Map<Id, DE_Model.DistributorConfig> configs = new Map<Id, DE_Model.DistributorConfig>();
+        for (DE_Model.Decision d : decisions) {
+            if (d.status != 'Assigned' || !isRoleAssignment(d)) {
+                continue;
+            }
+            Id key = d.distributor.dist.Id;
+            if (!byDistributor.containsKey(key)) {
+                byDistributor.put(key, new List<DE_Model.Decision>());
+                configs.put(key, d.distributor);
+            }
+            byDistributor.get(key).add(d);
+        }
+        for (Id key : byDistributor.keySet()) {
+            out.putAll(DE_SalesforceTeamService.addMembers(obj, configs.get(key), byDistributor.get(key)));
+        }
+        for (DE_Model.Decision d : decisions) {
+            DE_SalesforceTeamService.Result r = out.get(d.recordId);
+            if (r != null && r.error != null) {
+                d.status = 'Error';
+                d.message = r.error;
+                d.trace.add('Role assignment failed: ' + r.error);
+            }
+        }
+        return out;
+    }
+
+    /** Display names of user and queue assignees. */
+    public static Map<Id, String> assigneeNames(List<DE_Model.Decision> decisions) {
+        Map<Id, String> out = new Map<Id, String>();
+        Set<Id> users = new Set<Id>();
+        Set<Id> queues = new Set<Id>();
+        for (DE_Model.Decision d : decisions) {
+            if (d.assigneeId == null) {
+                continue;
+            }
+            if (d.member != null && d.member.user != null) {
+                out.put(d.assigneeId, d.member.user.Name);
+            } else if (d.assigneeId.getSobjectType() == User.SObjectType) {
+                users.add(d.assigneeId);
+            } else {
+                queues.add(d.assigneeId);
+            }
+        }
+        out.putAll(namesOf(users, queues));
+        return out;
+    }
+
+    public static Map<Id, String> namesOf(Set<Id> users, Set<Id> queues) {
+        Map<Id, String> out = new Map<Id, String>();
+        if (!users.isEmpty()) {
+            for (User u : [SELECT Id, Name FROM User WHERE Id IN :users]) {
+                out.put(u.Id, u.Name);
+            }
+        }
+        if (!queues.isEmpty()) {
+            for (Group g : [SELECT Id, Name FROM Group WHERE Id IN :queues]) {
+                out.put(g.Id, g.Name);
+            }
+        }
+        return out;
+    }
+
+    /** Sets the log's lookup to the routed record (Lead__c, Case__c, Contact__c, Account__c or Opportunity__c). */
+    public static void linkRecord(DE_Assignment_Log__c log, String objectName, Id recordId) {
+        String field = RECORD_LOOKUPS.get(objectName == null ? '' : objectName.toLowerCase());
+        if (field != null && recordId != null) {
+            log.put(field, recordId);
+        }
+    }
+
+    private static final Map<String, String> RECORD_LOOKUPS = new Map<String, String>{
+        'lead' => 'Lead__c',
+        'case' => 'Case__c',
+        'contact' => 'Contact__c',
+        'account' => 'Account__c',
+        'opportunity' => 'Opportunity__c'
+    };
 
     public static DE_Assignment_Log__c baseLog(DE_Model.TeamConfig cfg, DE_Model.Decision d, String logType, Datetime now, String nameField) {
         Object name = null;
@@ -188,8 +303,18 @@ public without sharing class DE_AssignmentWriter {
             Speed_To_Assign_Seconds__c = created == null ? null : (now.getTime() - created.getTime()) / 1000,
             Balance_Value__c = d.balanceValue,
             SLA_Status__c = 'Not Applicable',
+            Send_Email__c = dist != null && dist.Send_Email__c == true && cfg.team.Logging_Disabled__c != true,
             Message__c = d.message == null ? null : d.message.left(255)
         );
+        linkRecord(log, cfg.objectName, d.recordId);
+        if (String.isNotBlank(cfg.team.Active_Status_Field__c)) {
+            try {
+                Object status = DE_Conditions.readPath(d.record, cfg.team.Active_Status_Field__c);
+                log.Status_On_Assignment__c = status == null ? null : String.valueOf(status).left(255);
+            } catch (Exception e) {
+                log.Status_On_Assignment__c = null;
+            }
+        }
         return log;
     }
 

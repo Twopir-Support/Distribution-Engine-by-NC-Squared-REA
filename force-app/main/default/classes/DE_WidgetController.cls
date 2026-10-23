@@ -72,7 +72,7 @@ public with sharing class DE_WidgetController {
         s.allowOtherReason = DE_Settings.allowOtherRejectReason();
         s.pullOptions = DE_PullService.options(me);
         String key = String.valueOf(me);
-        for (DE_Assignment_Log__c l : [
+        List<DE_Assignment_Log__c> current = [
             SELECT
                 Record_Id__c,
                 Record_Name__c,
@@ -81,12 +81,21 @@ public with sharing class DE_WidgetController {
                 Next_SLA_Check__c,
                 SLA_Missed__c,
                 Team__r.Name,
-                Distributor__r.Rejection_Enabled__c
+                Team__r.Widget_Active_Only__c,
+                Team__r.Active_Status_Field__c,
+                Team__r.Active_Status_Values__c,
+                Distributor__r.Rejection_Enabled__c,
+                Distributor__r.Salesforce_Team_Enabled__c
             FROM DE_Assignment_Log__c
             WHERE Assignee_Id__c = :key AND Current__c = TRUE
             ORDER BY Next_SLA_Check__c ASC NULLS LAST, Assigned_At__c DESC
             LIMIT 50
-        ]) {
+        ];
+        Set<Id> inactive = inactiveRecords(current);
+        for (DE_Assignment_Log__c l : current) {
+            if (inactive.contains(Id.valueOf(l.Record_Id__c))) {
+                continue;
+            }
             AssignedItem a = new AssignedItem();
             a.recordId = Id.valueOf(l.Record_Id__c);
             a.name = l.Record_Name__c;
@@ -95,7 +104,7 @@ public with sharing class DE_WidgetController {
             a.nextSlaCheck = l.Next_SLA_Check__c;
             a.slaMissed = l.SLA_Missed__c == null ? 0 : l.SLA_Missed__c.intValue();
             a.teamName = l.Team__r == null ? null : l.Team__r.Name;
-            a.canReject = l.Distributor__r != null && l.Distributor__r.Rejection_Enabled__c;
+            a.canReject = l.Distributor__r != null && l.Distributor__r.Rejection_Enabled__c && l.Distributor__r.Salesforce_Team_Enabled__c != true;
             if (s.assigned.size() < 5) {
                 s.assigned.add(a);
             }
@@ -104,6 +113,54 @@ public with sharing class DE_WidgetController {
             }
         }
         return s;
+    }
+
+    /**
+     * Records that must be hidden from "Assigned to me" because their team shows only active records
+     * (Show Only Active Records in Widget) and the record's active status field is not an active value.
+     * One query per object and status field.
+     */
+    @TestVisible
+    private static Set<Id> inactiveRecords(List<DE_Assignment_Log__c> logs) {
+        Set<Id> out = new Set<Id>();
+        Map<String, Set<Id>> idsByQuery = new Map<String, Set<Id>>();
+        Map<String, Set<String>> valuesByRecord = new Map<String, Set<String>>();
+        for (DE_Assignment_Log__c l : logs) {
+            if (l.Team__r == null || l.Team__r.Widget_Active_Only__c != true || String.isBlank(l.Team__r.Active_Status_Field__c)) {
+                continue;
+            }
+            Set<String> active = new Set<String>();
+            for (String v : DE_Conditions.splitValues(l.Team__r.Active_Status_Values__c)) {
+                active.add(v.toLowerCase());
+            }
+            if (active.isEmpty() || !DE_Schema.hasField(l.Object_API_Name__c, l.Team__r.Active_Status_Field__c)) {
+                continue;
+            }
+            String queryKey = l.Object_API_Name__c + '|' + l.Team__r.Active_Status_Field__c;
+            if (!idsByQuery.containsKey(queryKey)) {
+                idsByQuery.put(queryKey, new Set<Id>());
+            }
+            idsByQuery.get(queryKey).add(Id.valueOf(l.Record_Id__c));
+            valuesByRecord.put(l.Record_Id__c, active);
+        }
+        for (String queryKey : idsByQuery.keySet()) {
+            String obj = queryKey.substringBefore('|');
+            String field = queryKey.substringAfter('|');
+            Set<Id> ids = idsByQuery.get(queryKey);
+            for (
+                SObject r : Database.queryWithBinds(
+                    'SELECT Id, ' + String.escapeSingleQuotes(field) + ' FROM ' + String.escapeSingleQuotes(obj) + ' WHERE Id IN :ids',
+                    new Map<String, Object>{ 'ids' => ids },
+                    AccessLevel.SYSTEM_MODE
+                )
+            ) {
+                Object v = r.get(field);
+                if (v == null || !valuesByRecord.get(String.valueOf(r.Id)).contains(String.valueOf(v).toLowerCase())) {
+                    out.add(r.Id);
+                }
+            }
+        }
+        return out;
     }
 
     @AuraEnabled

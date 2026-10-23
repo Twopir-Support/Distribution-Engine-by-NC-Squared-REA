@@ -78,6 +78,7 @@ public without sharing class DE_TriggerDistribution {
                 if (dc.type() != 'Trigger' || remaining.isEmpty()) {
                     continue;
                 }
+                DE_DistributionCore.preloadCampaigns(dc, remaining, ctx);
                 List<SObject> subset = new List<SObject>();
                 for (SObject r : remaining) {
                     if (DE_DistributionCore.passesFilters(cfg, dc, r, ctx, null)) {
@@ -113,7 +114,21 @@ public without sharing class DE_TriggerDistribution {
             ctx.servicesFor(cfg).rotation.save();
         }
         applyDefaults(remaining, firstMatch, firstTeam, ctx, inPlace, outcome);
+        if (!ctx.dryRun) {
+            stampAttempt(records, ctx);
+        }
         return outcome;
+    }
+
+    /** Records when trigger distribution last ran for each record (Distribution Engine Details). */
+    private static void stampAttempt(List<SObject> records, DE_DistributionCore.RunContext ctx) {
+        List<DE_Record_Detail__c> details = new List<DE_Record_Detail__c>();
+        for (SObject r : records) {
+            DE_Record_Detail__c d = DE_RecordDetails.ensure(ctx.cond.details, r.Id, r.getSObjectType().getDescribe().getName());
+            d.Trigger_Last_Attempt__c = ctx.now;
+            details.add(d);
+        }
+        DE_RecordDetails.save(details);
     }
 
     private static void applyDefaults(
@@ -161,6 +176,7 @@ public without sharing class DE_TriggerDistribution {
                     Message__c = ('No trigger distributor could assign this record: ' + msg).left(255)
                 )
             );
+            DE_AssignmentWriter.linkRecord(errors[errors.size() - 1], r.getSObjectType().getDescribe().getName(), r.Id);
         }
         for (Id teamId : defaultsByTeam.keySet()) {
             DE_AssignmentWriter.Result res = DE_AssignmentWriter.persist(teamById.get(teamId), defaultsByTeam.get(teamId), ctx, inPlace);

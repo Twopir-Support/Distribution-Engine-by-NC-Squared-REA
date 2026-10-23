@@ -11,6 +11,8 @@
  * SLAs only apply while the record is still owned by the assignee and (optionally) in Active Status.
  */
 public without sharing class DE_SlaService {
+    /** A failed auto reassignment is retried on the next scheduler runs up to this many times. */
+    public static final Integer MAX_REASSIGN_RETRIES = 3;
     public class Checkpoint {
         public DE_SLA__c sla;
         public Datetime due;
@@ -107,7 +109,9 @@ public without sharing class DE_SlaService {
                 Status__c,
                 Sticky_Key__c,
                 Current__c,
-                Message__c
+                Message__c,
+                Reassign_Attempts__c,
+                Reassign_Error_At__c
             FROM DE_Assignment_Log__c
             WHERE Current__c = TRUE AND SLA_Status__c = 'Pending' AND Next_SLA_Check__c <= :now
             ORDER BY Next_SLA_Check__c
@@ -210,6 +214,12 @@ public without sharing class DE_SlaService {
             }
             DE_Model.Member member = cfg.member(DE_Ids.toId(l.Assignee_Id__c));
             DE_Model.DistributorConfig dc = cfg.distributor(l.Distributor__c);
+            Integer failures = l.Reassign_Attempts__c == null ? 0 : l.Reassign_Attempts__c.intValue();
+            if (l.Reassign_Error_At__c != null && failures > 0 && failures <= MAX_REASSIGN_RETRIES && dc != null && dc.dist.Auto_Reassign__c == true) {
+                // Retry a failed auto reassignment without re-evaluating (or re-alerting) the checkpoint.
+                reassignments.add(new ReassignRequest(l, rec, dc));
+                continue;
+            }
             Integer last = l.Last_SLA_Checkpoint__c == null ? 0 : l.Last_SLA_Checkpoint__c.intValue();
             DE_Record_Detail__c detail = ctx.details.get(rec.Id);
             Boolean done = false;
@@ -322,6 +332,14 @@ public without sharing class DE_SlaService {
             DE_TriggerHandler.bypass = previous;
         }
         Integer ok = 0;
+        Set<Id> targetUsers = new Set<Id>();
+        for (ReassignRequest r : requests) {
+            Id target = DE_Ids.toId(r.dc.dist.Reassign_To_Id__c);
+            if (DE_Ids.isUser(target)) {
+                targetUsers.add(target);
+            }
+        }
+        Map<Id, String> names = DE_AssignmentWriter.namesOf(targetUsers, new Set<Id>());
         List<DE_Assignment_Log__c> newLogs = new List<DE_Assignment_Log__c>();
         List<DE_Record_Detail__c> detailUpdates = new List<DE_Record_Detail__c>();
         Map<String, List<DE_Assignment_Log__c>> stickyByMode = new Map<String, List<DE_Assignment_Log__c>>();
@@ -329,7 +347,19 @@ public without sharing class DE_SlaService {
         for (Integer i = 0; i < saves.size(); i++) {
             ReassignRequest r = requests[i];
             if (!saves[i].isSuccess()) {
-                r.log.Message__c = ('Reassignment failed: ' + saves[i].getErrors()[0].getMessage()).left(255);
+                Integer failures = (r.log.Reassign_Attempts__c == null ? 0 : r.log.Reassign_Attempts__c.intValue()) + 1;
+                String error = saves[i].getErrors()[0].getMessage();
+                r.log.Reassign_Attempts__c = failures;
+                r.log.Reassign_Error_At__c = now;
+                if (failures > MAX_REASSIGN_RETRIES) {
+                    r.log.Message__c = ('Auto reassignment failed after ' + failures + ' attempts: ' + error).left(255);
+                    r.log.SLA_Status__c = 'Missed';
+                    r.log.Next_SLA_Check__c = null;
+                } else {
+                    r.log.Message__c = ('Auto reassignment failed (attempt ' + failures + '), retrying: ' + error).left(255);
+                    r.log.SLA_Status__c = 'Pending';
+                    r.log.Next_SLA_Check__c = now.addMinutes(DE_Settings.schedulerIntervalMinutes());
+                }
                 logUpdates.add(r.log);
                 messages.add(r.log.Message__c);
                 continue;
@@ -366,9 +396,12 @@ public without sharing class DE_SlaService {
                         Counts_As_Hit__c = false,
                         Current__c = true,
                         Assigned_At__c = now,
-                        SLA_Status__c = 'Not Applicable'
+                        SLA_Status__c = 'Not Applicable',
+                        Assignee_Name__c = names.get(target),
+                        Send_Email__c = r.dc.dist.Send_Email__c == true && cfg.team.Logging_Disabled__c != true
                     )
                 );
+                DE_AssignmentWriter.linkRecord(newLogs[newLogs.size() - 1], obj, r.record.Id);
                 notes.add(new DE_Notifier.Item(target, r.record.Id, 'Reassigned to you: ' + r.log.Record_Name__c, 'Reassigned after a missed SLA.'));
             }
             if (r.log.Assigned_User__c != null) {

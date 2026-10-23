@@ -1,11 +1,18 @@
 /**
- * Action tracking: measures time from assignment to the first tracked action (speed to lead).
+ * Action tracking: measures time from assignment to each tracked action (speed to lead).
  * An action is a change of the team's action field to a tracked value by the assignee
  * (or by anyone when "Track action from any user" is on), or an activity of a configured type
  * logged against the record (auto action).
+ *
+ * Every action becomes a Distribution Log Action (DE_Log_Action__c) with its elapsed time; the log keeps
+ * the count and the last action date. The first action also sets the log's Actioned At / Time to Action
+ * and the record's DE_Time_To_Action__c.
  */
 public without sharing class DE_ActionTracking {
     private static Map<String, List<DE_Team__c>> teamsByObject = new Map<String, List<DE_Team__c>>();
+    /** Records updated by autoAction in this transaction: activity type (Task/Event) and the activity's creator. */
+    private static Map<Id, String> autoSource = new Map<Id, String>();
+    private static Map<Id, Id> autoActor = new Map<Id, Id>();
 
     private static List<DE_Team__c> trackingTeams(String objectName) {
         String key = objectName.toLowerCase();
@@ -61,9 +68,9 @@ public without sharing class DE_ActionTracking {
             return;
         }
         List<DE_Assignment_Log__c> logs = [
-            SELECT Id, Team__c, Record_Id__c, Assignee_Id__c, Assigned_At__c
+            SELECT Id, Team__c, Record_Id__c, Assignee_Id__c, Assigned_At__c, Action_At__c, Actions_Complete__c
             FROM DE_Assignment_Log__c
-            WHERE Record_Id__c IN :candidates AND Current__c = TRUE AND Action_At__c = NULL AND Team__c IN :teamById.keySet()
+            WHERE Record_Id__c IN :candidates AND Current__c = TRUE AND Team__c IN :teamById.keySet()
         ];
         if (logs.isEmpty()) {
             return;
@@ -76,6 +83,7 @@ public without sharing class DE_ActionTracking {
         Datetime now = System.now();
         Boolean hasField = DE_Schema.hasField(objectName, 'DE_Time_To_Action__c');
         List<DE_Assignment_Log__c> updates = new List<DE_Assignment_Log__c>();
+        List<DE_Log_Action__c> actions = new List<DE_Log_Action__c>();
         for (DE_Assignment_Log__c l : logs) {
             SObject r = byId.get(Id.valueOf(l.Record_Id__c));
             DE_Team__c t = teamById.get(l.Team__c);
@@ -84,18 +92,35 @@ public without sharing class DE_ActionTracking {
             if (nv == null || nv == ov || !tracked(t).contains(String.valueOf(nv).toLowerCase())) {
                 continue;
             }
-            if (t.Track_Action_From_Any_User__c != true && UserInfo.getUserId() != l.Assignee_Id__c) {
+            Id actor = autoActor.containsKey(r.Id) ? autoActor.get(r.Id) : UserInfo.getUserId();
+            if (t.Track_Action_From_Any_User__c != true && String.valueOf(actor) != l.Assignee_Id__c) {
                 continue;
             }
             Decimal minutes = minutesBetween(configs.get(t.Id), l, now);
-            l.Action_At__c = now;
-            l.Time_To_Action_Mins__c = minutes;
-            updates.add(l);
-            if (hasField) {
-                r.put('DE_Time_To_Action__c', minutes);
+            actions.add(
+                new DE_Log_Action__c(
+                    Assignment_Log__c = l.Id,
+                    Action__c = String.valueOf(nv).left(255),
+                    Action_At__c = now,
+                    Actioned_By__c = actor,
+                    Time_To_Action_Mins__c = minutes,
+                    Time_To_Action_Days__c = minutes == null ? null : minutes.divide(1440, 2),
+                    Source__c = autoSource.containsKey(r.Id) ? autoSource.get(r.Id) : 'Field Change'
+                )
+            );
+            l.Actions_Complete__c = (l.Actions_Complete__c == null ? 0 : l.Actions_Complete__c) + 1;
+            l.Last_Action_At__c = now;
+            if (l.Action_At__c == null) {
+                l.Action_At__c = now;
+                l.Time_To_Action_Mins__c = minutes;
+                if (hasField) {
+                    r.put('DE_Time_To_Action__c', minutes);
+                }
             }
+            updates.add(l);
         }
         Database.update(updates, false, AccessLevel.SYSTEM_MODE);
+        Database.insert(actions, false, AccessLevel.SYSTEM_MODE);
     }
 
     public static Decimal minutesBetween(DE_Model.TeamConfig cfg, DE_Assignment_Log__c l, Datetime now) {
@@ -173,6 +198,8 @@ public without sharing class DE_ActionTracking {
                 }
                 SObject rec = DE_Schema.sobjectType(l.Object_API_Name__c).newSObject(Id.valueOf(l.Record_Id__c));
                 rec.put(t.Action_Field__c, actions[0]);
+                autoSource.put(rec.Id, a.getSObjectType() == Event.SObjectType ? 'Event' : 'Task');
+                autoActor.put(rec.Id, creator);
                 if (!updatesByObject.containsKey(l.Object_API_Name__c)) {
                     updatesByObject.put(l.Object_API_Name__c, new List<SObject>());
                 }

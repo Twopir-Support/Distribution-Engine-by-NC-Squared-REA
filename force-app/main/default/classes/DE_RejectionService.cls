@@ -2,6 +2,11 @@
  * Assignment rejection: the assignee (or a manager) hands a record back. The record goes to the
  * distributor's Reject To queue/user, optional fields are updated, the rejecting user is tracked so
  * they do not receive it again, and they can be given a replacement record.
+ *
+ * Every request is recorded in the Distribution Reject Log (DE_Reject_Request__c): Approved when it
+ * was applied, Denied with the reason when it was refused. A manager rejecting on a user's behalf is
+ * recorded as the reviewer. Callers that throw on failure (the UI) roll the denied row back with
+ * their transaction; the API and Flow action return results, so their denied rows persist.
  */
 public without sharing class DE_RejectionService {
     public class RejectResult {
@@ -48,20 +53,22 @@ public without sharing class DE_RejectionService {
             byRecord.put(i, r);
             keys.add(String.valueOf(i));
         }
+        Map<String, DE_Assignment_Log__c> logs = new Map<String, DE_Assignment_Log__c>();
         String reasonError = validateReason(reason);
         if (reasonError != null) {
             for (RejectResult r : results) {
                 r.message = reasonError;
             }
+            recordRequests(recordIds, byRecord, logs, reason, actingUserId, actorIsManager);
             return results;
         }
-        Map<String, DE_Assignment_Log__c> logs = new Map<String, DE_Assignment_Log__c>();
         Set<Id> teamIds = new Set<Id>();
         for (DE_Assignment_Log__c l : [
             SELECT
                 Id,
                 Record_Id__c,
                 Record_Name__c,
+                Object_API_Name__c,
                 Team__c,
                 Distributor__c,
                 Assignee_Id__c,
@@ -95,6 +102,10 @@ public without sharing class DE_RejectionService {
                 res.message = 'Rejection is not enabled for the distributor that assigned this record.';
                 continue;
             }
+            if (dc.dist.Salesforce_Team_Enabled__c == true) {
+                res.message = 'Rejection is not available for role assignments.';
+                continue;
+            }
             if (String.valueOf(actingUserId) != l.Assignee_Id__c && !actorIsManager) {
                 res.message = 'Only the assignee or a manager can reject this record.';
                 continue;
@@ -121,7 +132,52 @@ public without sharing class DE_RejectionService {
         for (Id teamId : byTeam.keySet()) {
             applyTeam(teams.get(teamId), byTeam.get(teamId), reason, actingUserId, byRecord);
         }
+        recordRequests(recordIds, byRecord, logs, reason, actingUserId, actorIsManager);
         return results;
+    }
+
+    /** Writes one Distribution Reject Log row per request and links approved rows to their distribution log. */
+    private static void recordRequests(
+        List<Id> recordIds,
+        Map<Id, RejectResult> byRecord,
+        Map<String, DE_Assignment_Log__c> logs,
+        String reason,
+        Id actingUserId,
+        Boolean actorIsManager
+    ) {
+        Datetime now = System.now();
+        List<DE_Reject_Request__c> requests = new List<DE_Reject_Request__c>();
+        List<DE_Assignment_Log__c> requestLogs = new List<DE_Assignment_Log__c>();
+        for (Id recordId : recordIds) {
+            RejectResult res = byRecord.get(recordId);
+            DE_Assignment_Log__c l = logs.get(String.valueOf(recordId));
+            Boolean onBehalf = actorIsManager && l != null && String.valueOf(actingUserId) != l.Assignee_Id__c;
+            requests.add(
+                new DE_Reject_Request__c(
+                    Record_Id__c = recordId,
+                    Object_API_Name__c = recordId.getSobjectType().getDescribe().getName(),
+                    Record_Name__c = l == null ? null : l.Record_Name__c,
+                    Team__c = l == null ? null : l.Team__c,
+                    Assignment_Log__c = l == null ? null : l.Id,
+                    Reason__c = reason == null ? null : reason.left(255),
+                    Requested_By__c = actingUserId,
+                    Requested_At__c = now,
+                    Status__c = res.success ? 'Approved' : 'Denied',
+                    Message__c = res.message,
+                    Reviewed_By__c = onBehalf && res.success ? actingUserId : null,
+                    Reviewed_At__c = onBehalf && res.success ? now : null
+                )
+            );
+            requestLogs.add(res.success ? l : null);
+        }
+        List<Database.SaveResult> saves = Database.insert(requests, false, AccessLevel.SYSTEM_MODE);
+        List<DE_Assignment_Log__c> links = new List<DE_Assignment_Log__c>();
+        for (Integer i = 0; i < saves.size(); i++) {
+            if (saves[i].isSuccess() && requestLogs[i] != null) {
+                links.add(new DE_Assignment_Log__c(Id = requestLogs[i].Id, Reject_Request__c = saves[i].getId()));
+            }
+        }
+        Database.update(links, false, AccessLevel.SYSTEM_MODE);
     }
 
     private static Map<Id, Integer> rejectionsToday(Id userId) {
@@ -207,7 +263,7 @@ public without sharing class DE_RejectionService {
                 l.SLA_Status__c = 'Cancelled';
             }
             logUpdates.add(l);
-            String mode = dc.dist.Remove_Sticky_On_Reassign__c == null ? 'New Sticky Only' : dc.dist.Remove_Sticky_On_Reassign__c;
+            String mode = dc.dist.Remove_Sticky_On_Reject__c == null ? 'New Sticky Only' : dc.dist.Remove_Sticky_On_Reject__c;
             if (!stickyByMode.containsKey(mode)) {
                 stickyByMode.put(mode, new List<DE_Assignment_Log__c>());
             }

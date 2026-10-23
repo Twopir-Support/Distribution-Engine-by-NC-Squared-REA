@@ -236,6 +236,15 @@
                         onchange={handleField}
                     ></lightning-input>
                 </div>
+                <div class="slds-col">
+                    <lightning-input
+                        label="Related owner role (optional)"
+                        value={d.Related_Role__c}
+                        field-level-help="Assign to the related Account's or Opportunity's team member in this role instead of its owner."
+                        data-field="Related_Role__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
             </div>
         </template>
 
@@ -311,6 +320,15 @@
             max-rows={maxFilters}
             onchange={handleFilters}
         ></c-de-condition-builder>
+        <template lwc:if={supportsCampaigns}>
+            <lightning-textarea
+                label="Filter by campaign (Campaign Ids, one per line)"
+                field-level-help="Only records that are members of one of these campaigns are distributed. Leave blank for no campaign filter."
+                value={d.Campaign_Ids__c}
+                data-field="Campaign_Ids__c"
+                onchange={handleField}
+            ></lightning-textarea>
+        </template>
 
         <h3 class="slds-section-title_divider slds-m-top_medium">Team member filter (who)</h3>
         <div class="slds-grid slds-wrap slds-gutters_small">
@@ -449,6 +467,49 @@
             data-field="Send_Email__c"
             onchange={handleField}
         ></lightning-input>
+        <template lwc:if={supportsRoleAssignment}>
+            <h3 class="slds-section-title_divider slds-m-top_medium">Role assignment</h3>
+            <lightning-input
+                type="checkbox"
+                label="Add the member to the record's team with a role instead of changing the owner"
+                checked={d.Salesforce_Team_Enabled__c}
+                data-field="Salesforce_Team_Enabled__c"
+                onchange={handleField}
+            ></lightning-input>
+            <template lwc:if={d.Salesforce_Team_Enabled__c}>
+                <p class="slds-text-body_small slds-text-color_weak">
+                    Role assignment needs a Field Value source. Rejection, SLAs, object sync and active or criteria caps do not apply.
+                </p>
+                <template lwc:if={roleSourceWarning}>
+                    <p class="slds-text-color_error">Change the source to Field Value before saving.</p>
+                </template>
+                <div class="slds-grid slds-wrap slds-gutters_small">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input label={teamRoleLabel} value={d.Team_Role__c} data-field="Team_Role__c" onchange={handleField}></lightning-input>
+                    </div>
+                    <template lwc:if={hasAccessLevels}>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                label="Access levels"
+                                value={d.Team_Access_Level__c}
+                                placeholder={accessPlaceholder}
+                                data-field="Team_Access_Level__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-input
+                                type="checkbox"
+                                label="Also add the member's default team"
+                                checked={d.Assign_Default_Team__c}
+                                data-field="Assign_Default_Team__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </template>
 
         <h3 class="slds-section-title_divider slds-m-top_medium">SLAs and auto reassign</h3>
         <lightning-input
@@ -507,7 +568,7 @@
                 </div>
                 <div class="slds-col slds-size_1-of-2">
                     <lightning-combobox
-                        label="Remove sticky on reassignment or rejection"
+                        label="Remove sticky on reassignment"
                         options={removeSticky}
                         value={d.Remove_Sticky_On_Reassign__c}
                         data-field="Remove_Sticky_On_Reassign__c"
@@ -546,6 +607,17 @@
                         onchange={handleField}
                     ></lightning-combobox>
                 </div>
+                <template lwc:if={d.Sticky_Enabled__c}>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-combobox
+                            label="Remove sticky from rejected records"
+                            options={removeSticky}
+                            value={d.Remove_Sticky_On_Reject__c}
+                            data-field="Remove_Sticky_On_Reject__c"
+                            onchange={handleField}
+                        ></lightning-combobox>
+                    </div>
+                </template>
                 <div class="slds-col slds-size_1-of-1">
                     <lightning-textarea
                         label="Update fields on rejection (Field__c=Value per line)"

@@ -1,6 +1,8 @@
 /**
  * Assignment and SLA notifications: Salesforce in-app notifications (custom notification type
- * DE_Assignment), optional email, and DE_Assignment_Event__e platform events for real-time widgets.
+ * DE_Assignment) and DE_Assignment_Event__e platform events for real-time widgets.
+ * Standard emails are not sent here: the "DE Email Notification" flows send them from the
+ * distribution log (Send_Email__c), using the Distribution Engine email templates.
  * Notification failures never roll back an assignment.
  */
 public without sharing class DE_Notifier {
@@ -21,7 +23,6 @@ public without sharing class DE_Notifier {
         public Id targetId;
         public String title;
         public String body;
-        public Boolean email = false;
         public Item(Id recipientId, Id targetId, String title, String body) {
             this.recipientId = recipientId;
             this.targetId = targetId;
@@ -30,13 +31,12 @@ public without sharing class DE_Notifier {
         }
     }
 
-    /** Sends grouped in-app notifications (one per recipient) and individual emails. */
+    /** Sends grouped in-app notifications (one per recipient). */
     public static void send(List<Item> items) {
         if (items == null || items.isEmpty()) {
             return;
         }
         Map<Id, List<Item>> byRecipient = new Map<Id, List<Item>>();
-        List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
         for (Item i : items) {
             if (i.recipientId == null || i.recipientId.getSobjectType() != User.SObjectType) {
                 continue;
@@ -45,14 +45,6 @@ public without sharing class DE_Notifier {
                 byRecipient.put(i.recipientId, new List<Item>());
             }
             byRecipient.get(i.recipientId).add(i);
-            if (i.email) {
-                Messaging.SingleEmailMessage m = new Messaging.SingleEmailMessage();
-                m.setTargetObjectId(i.recipientId);
-                m.setSaveAsActivity(false);
-                m.setSubject(i.title);
-                m.setPlainTextBody(i.body + '\n\n' + URL.getOrgDomainUrl().toExternalForm() + '/' + i.targetId);
-                emails.add(m);
-            }
         }
         Id typeId = typeId();
         if (typeId != null) {
@@ -68,13 +60,6 @@ public without sharing class DE_Notifier {
                 } catch (Exception e) {
                     System.debug(LoggingLevel.WARN, 'DE notification failed: ' + e.getMessage());
                 }
-            }
-        }
-        if (!emails.isEmpty()) {
-            try {
-                Messaging.sendEmail(emails, false);
-            } catch (Exception e) {
-                System.debug(LoggingLevel.WARN, 'DE email failed: ' + e.getMessage());
             }
         }
     }

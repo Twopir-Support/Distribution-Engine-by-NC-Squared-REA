@@ -109,13 +109,15 @@ public without sharing class DE_OwnerResolver {
     /**
      * Related Owner: the owner of a related record (DE.MatchedAccount / DE.MatchedContact / DE.MatchedLead,
      * or a lookup field on the record) if they are a team member; otherwise the secondary related record.
+     * With a Related Owner Role, the related Account's or Opportunity's team member in that role is used
+     * instead of the owner.
      */
     public static Map<Id, Id> relatedOwners(DE_Model.DistributorConfig dc, List<SObject> records, Map<Id, DE_Record_Detail__c> details, Set<Id> memberIds) {
         Map<Id, Id> primary = relatedIds(dc.dist.Related_Field__c, records, details);
         Map<Id, Id> secondary = relatedIds(dc.dist.Related_Secondary_Field__c, records, details);
         Set<Id> all = new Set<Id>(primary.values());
         all.addAll(secondary.values());
-        Map<Id, Id> owners = ownersOf(all);
+        Map<Id, Id> owners = String.isBlank(dc.dist.Related_Role__c) ? ownersOf(all) : roleHolders(all, dc.dist.Related_Role__c.trim());
         Map<Id, Id> out = new Map<Id, Id>();
         for (SObject r : records) {
             Id o1 = owners.get(primary.get(r.Id));
@@ -152,6 +154,48 @@ public without sharing class DE_OwnerResolver {
             Id i = v == null ? null : DE_Ids.toId(String.valueOf(v));
             if (i != null) {
                 out.put(r.Id, i);
+            }
+        }
+        return out;
+    }
+
+    /** The (earliest added) Account or Opportunity team member holding a role, per related record. */
+    public static Map<Id, Id> roleHolders(Set<Id> ids, String role) {
+        Map<Id, Id> out = new Map<Id, Id>();
+        Set<Id> accounts = new Set<Id>();
+        Set<Id> opportunities = new Set<Id>();
+        for (Id i : ids) {
+            if (i == null) {
+                continue;
+            }
+            if (i.getSobjectType() == Account.SObjectType) {
+                accounts.add(i);
+            } else if (i.getSobjectType() == Opportunity.SObjectType) {
+                opportunities.add(i);
+            }
+        }
+        Map<String, Set<Id>> byTeamObject = new Map<String, Set<Id>>{
+            'AccountTeamMember|AccountId' => accounts,
+            'OpportunityTeamMember|OpportunityId' => opportunities
+        };
+        for (String key : byTeamObject.keySet()) {
+            Set<Id> parents = byTeamObject.get(key);
+            String api = key.substringBefore('|');
+            String parentField = key.substringAfter('|');
+            if (parents.isEmpty() || !Schema.getGlobalDescribe().containsKey(api.toLowerCase())) {
+                continue;
+            }
+            for (
+                SObject m : Database.queryWithBinds(
+                    'SELECT ' + parentField + ', UserId FROM ' + api + ' WHERE ' + parentField + ' IN :parents AND TeamMemberRole = :role ORDER BY CreatedDate',
+                    new Map<String, Object>{ 'parents' => parents, 'role' => role },
+                    AccessLevel.SYSTEM_MODE
+                )
+            ) {
+                Id parent = (Id) m.get(parentField);
+                if (!out.containsKey(parent)) {
+                    out.put(parent, (Id) m.get('UserId'));
+                }
             }
         }
         return out;

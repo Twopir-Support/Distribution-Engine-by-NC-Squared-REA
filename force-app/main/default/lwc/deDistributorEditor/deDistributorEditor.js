@@ -109,6 +109,24 @@ export default class DeDistributorEditor extends LightningElement {
     get showReject() {
         return this.d.Rejection_Enabled__c;
     }
+    get supportsCampaigns() {
+        return this.objectName === 'Lead' || this.objectName === 'Contact';
+    }
+    get supportsRoleAssignment() {
+        return ['Account', 'Opportunity', 'Case'].includes(this.objectName) && !this.isManual;
+    }
+    get roleSourceWarning() {
+        return this.d.Salesforce_Team_Enabled__c && this.needsSource && !this.isFieldSource;
+    }
+    get hasAccessLevels() {
+        return this.objectName !== 'Case';
+    }
+    get teamRoleLabel() {
+        return this.objectName === 'Case' ? 'Case team role' : 'Team role';
+    }
+    get accessPlaceholder() {
+        return this.objectName === 'Account' ? 'Account=Edit;Opportunity=Read;Case=Read' : 'Opportunity=Edit';
+    }
     get memberKind() {
         return this.team && this.team.Team_Type__c === 'Queue to Queue' ? 'Queue' : 'User';
     }

@@ -33,7 +33,6 @@ private class DE_RunLoggerAndNotifierTest {
         Lead l = new Lead(LastName = 'Notify', Company = 'Acme');
         insert l;
         DE_Notifier.Item withEmail = new DE_Notifier.Item(u.Id, l.Id, 'Assigned', 'A lead was assigned to you.');
-        withEmail.email = true;
         Boolean threw = false;
 
         Test.startTest();

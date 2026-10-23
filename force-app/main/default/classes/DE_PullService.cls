@@ -82,6 +82,7 @@ public without sharing class DE_PullService {
         List<String> warnings = new List<String>();
         List<SObject> candidates = DE_RecordQuery.sourceCandidates(cfg, dc, Math.min(2000, wanted * 20), warnings);
         ctx.cond.details = DE_RecordDetails.load(new Map<Id, SObject>(candidates).keySet(), DE_Conditions.detailFields(dc.filters));
+        DE_DistributionCore.preloadCampaigns(dc, candidates, ctx);
         List<SObject> ready = new List<SObject>();
         for (SObject r : candidates) {
             DE_Record_Detail__c d = ctx.cond.details.get(r.Id);

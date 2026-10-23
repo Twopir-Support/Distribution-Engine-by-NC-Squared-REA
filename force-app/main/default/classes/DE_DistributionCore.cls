@@ -17,6 +17,9 @@ public without sharing class DE_DistributionCore {
         public DE_Conditions.Context cond = new DE_Conditions.Context();
         public DE_AvailabilityService availability;
         public List<String> warnings = new List<String>();
+        /** Campaign filter cache per distributor: records checked, and those that are campaign members. */
+        public Map<String, Set<Id>> campaignChecked = new Map<String, Set<Id>>();
+        public Map<String, Set<Id>> campaignMembers = new Map<String, Set<Id>>();
         private Map<Id, TeamServices> services = new Map<Id, TeamServices>();
 
         public RunContext(List<DE_Model.TeamConfig> teams, Datetime now) {
@@ -57,6 +60,9 @@ public without sharing class DE_DistributionCore {
 
     public static Boolean passesFilters(DE_Model.TeamConfig cfg, DE_Model.DistributorConfig dc, SObject rec, RunContext ctx, List<String> trace) {
         try {
+            if (String.isNotBlank(dc.dist.Campaign_Ids__c) && !campaignPasses(dc, rec, ctx, trace)) {
+                return false;
+            }
             if (!cfg.teamFilters.isEmpty()) {
                 if (trace != null) {
                     trace.add('Team filters:');
@@ -81,6 +87,75 @@ public without sharing class DE_DistributionCore {
             ctx.warnings.add(dc.dist.Name + ': ' + e.getMessage());
             return false;
         }
+    }
+
+    // ------------------------------------------------------------------ campaign filter
+
+    private static String campaignKey(DE_Model.DistributorConfig dc) {
+        return dc.dist.Id == null ? dc.dist.Campaign_Ids__c : String.valueOf(dc.dist.Id);
+    }
+
+    /**
+     * Loads campaign membership for a batch of records in one query. Call before filtering a list of records;
+     * passesFilters falls back to loading a single record when a record was not preloaded.
+     */
+    public static void preloadCampaigns(DE_Model.DistributorConfig dc, List<SObject> records, RunContext ctx) {
+        Set<Id> campaigns = DE_Ids.parseList(dc.dist.Campaign_Ids__c);
+        if (campaigns.isEmpty() || records == null || records.isEmpty()) {
+            return;
+        }
+        String key = campaignKey(dc);
+        if (!ctx.campaignChecked.containsKey(key)) {
+            ctx.campaignChecked.put(key, new Set<Id>());
+            ctx.campaignMembers.put(key, new Set<Id>());
+        }
+        Set<Id> checked = ctx.campaignChecked.get(key);
+        Set<Id> members = ctx.campaignMembers.get(key);
+        Set<Id> toLoad = new Set<Id>();
+        for (SObject r : records) {
+            if (r.Id != null && !checked.contains(r.Id)) {
+                Schema.SObjectType t = r.Id.getSobjectType();
+                if (t == Lead.SObjectType || t == Contact.SObjectType) {
+                    toLoad.add(r.Id);
+                }
+            }
+        }
+        if (toLoad.isEmpty()) {
+            return;
+        }
+        for (CampaignMember cm : [
+            SELECT LeadId, ContactId
+            FROM CampaignMember
+            WHERE CampaignId IN :campaigns AND (LeadId IN :toLoad OR ContactId IN :toLoad)
+        ]) {
+            if (cm.LeadId != null) {
+                members.add(cm.LeadId);
+            }
+            if (cm.ContactId != null) {
+                members.add(cm.ContactId);
+            }
+        }
+        checked.addAll(toLoad);
+    }
+
+    /** Filter by campaign: only leads and contacts that are members of one of the distributor's campaigns pass. */
+    public static Boolean campaignPasses(DE_Model.DistributorConfig dc, SObject rec, RunContext ctx, List<String> trace) {
+        Schema.SObjectType t = rec.Id == null ? null : rec.Id.getSobjectType();
+        if (t != Lead.SObjectType && t != Contact.SObjectType) {
+            if (trace != null) {
+                trace.add('Filter by campaign: only leads and contacts can be campaign members.');
+            }
+            return false;
+        }
+        String key = campaignKey(dc);
+        if (!ctx.campaignChecked.containsKey(key) || !ctx.campaignChecked.get(key).contains(rec.Id)) {
+            preloadCampaigns(dc, new List<SObject>{ rec }, ctx);
+        }
+        Boolean member = ctx.campaignMembers.get(key).contains(rec.Id);
+        if (trace != null) {
+            trace.add('Filter by campaign: ' + (member ? 'member of a selected campaign.' : 'not a member of the selected campaigns.'));
+        }
+        return member;
     }
 
     /** Member filters: Tag:<Collection>, DynamicTag:<Collection>, Territory, Stamp:<Group>. All rows must pass. */
