@@ -48,7 +48,13 @@ public without sharing class DE_RecordDetails {
             keys.add(String.valueOf(i));
         }
         String soql = 'SELECT ' + String.join(new List<String>(fields), ', ') + ' FROM DE_Record_Detail__c WHERE Record_Id__c IN :keys';
-        for (DE_Record_Detail__c d : (List<DE_Record_Detail__c>) Database.queryWithBinds(soql, new Map<String, Object>{ 'keys' => keys }, AccessLevel.SYSTEM_MODE)) {
+        for (
+            DE_Record_Detail__c d : (List<DE_Record_Detail__c>) Database.queryWithBinds(
+                soql,
+                new Map<String, Object>{ 'keys' => keys },
+                AccessLevel.SYSTEM_MODE
+            )
+        ) {
             out.put(Id.valueOf(d.Record_Id__c), d);
         }
         return out;

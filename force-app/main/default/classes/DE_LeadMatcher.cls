@@ -189,7 +189,12 @@ public without sharing class DE_LeadMatcher {
         }
         String targetField = String.isBlank(rule.Target_Field__c) ? null : DE_Schema.canonicalPath('Account', rule.Target_Field__c);
         List<String> clauses = new List<String>();
-        Map<String, Object> binds = new Map<String, Object>{ 'ids' => accountIds, 'web' => websitePatterns, 'names' => new List<String>(prefixes), 'custom' => customValues };
+        Map<String, Object> binds = new Map<String, Object>{
+            'ids' => accountIds,
+            'web' => websitePatterns,
+            'names' => new List<String>(prefixes),
+            'custom' => customValues
+        };
         if (!accountIds.isEmpty()) {
             clauses.add('Id IN :ids');
         }
@@ -286,7 +291,13 @@ public without sharing class DE_LeadMatcher {
         if (targetField != null) {
             extra.add(targetField);
         }
-        List<SObject> contacts = query('Contact', extra, rule, '(' + String.join(clauses, ' OR ') + ')', new Map<String, Object>{ 'emails' => emails, 'custom' => customValues });
+        List<SObject> contacts = query(
+            'Contact',
+            extra,
+            rule,
+            '(' + String.join(clauses, ' OR ') + ')',
+            new Map<String, Object>{ 'emails' => emails, 'custom' => customValues }
+        );
         for (SObject l : leads) {
             DE_Record_Detail__c d = details.get(l.Id);
             if (d.Matched_Contact__c != null) {

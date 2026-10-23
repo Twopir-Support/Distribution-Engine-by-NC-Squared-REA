@@ -66,7 +66,14 @@ public without sharing class DE_SlaService {
     }
 
     /** The next applicable checkpoint after the given checkpoint number. */
-    public static Checkpoint nextCheckpoint(DE_Model.TeamConfig cfg, DE_Model.Member member, Datetime assignedAt, SObject rec, Integer after, DE_Record_Detail__c detail) {
+    public static Checkpoint nextCheckpoint(
+        DE_Model.TeamConfig cfg,
+        DE_Model.Member member,
+        Datetime assignedAt,
+        SObject rec,
+        Integer after,
+        DE_Record_Detail__c detail
+    ) {
         for (DE_SLA__c s : cfg.slas) {
             if (s.Checkpoint__c == null || s.Checkpoint__c.intValue() <= after || !stampApplies(s, detail)) {
                 continue;
@@ -223,7 +230,9 @@ public without sharing class DE_SlaService {
                 List<DE_Condition__c> conds = cfg.slaConditions.get(cp.sla.Id);
                 Boolean conditionTrue = conds == null || conds.isEmpty() || DE_Conditions.matches(rec, conds, cp.sla.Condition_Logic__c, ctx, null);
                 if (cp.sla.Alert_Type__c == 'Continuous Field Monitoring' && !conditionTrue) {
-                    Datetime windowEnd = l.Assigned_At__c.addMinutes(cp.sla.Minutes_After_Assignment__c == null ? 0 : cp.sla.Minutes_After_Assignment__c.intValue());
+                    Datetime windowEnd = l.Assigned_At__c.addMinutes(
+                        cp.sla.Minutes_After_Assignment__c == null ? 0 : cp.sla.Minutes_After_Assignment__c.intValue()
+                    );
                     if (now < windowEnd) {
                         l.Next_SLA_Check__c = now.addMinutes(DE_Settings.schedulerIntervalMinutes());
                         done = true;
@@ -246,7 +255,11 @@ public without sharing class DE_SlaService {
                 if (cp.sla.Notify_Manager__c == true && u != null && u.ManagerId != null) {
                     notes.add(new DE_Notifier.Item(u.ManagerId, rec.Id, what, 'Assigned to a member of your team through ' + cfg.team.Name + '.'));
                 }
-                if (dc != null && dc.dist.Auto_Reassign__c == true && last >= (dc.dist.Reassign_From_SLA__c == null ? 1 : dc.dist.Reassign_From_SLA__c.intValue())) {
+                if (
+                    dc != null &&
+                    dc.dist.Auto_Reassign__c == true &&
+                    last >= (dc.dist.Reassign_From_SLA__c == null ? 1 : dc.dist.Reassign_From_SLA__c.intValue())
+                ) {
                     reassignments.add(new ReassignRequest(l, rec, dc));
                     reassigning = true;
                     done = true;

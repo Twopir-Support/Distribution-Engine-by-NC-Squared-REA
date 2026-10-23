@@ -1,0 +1,114 @@
+<template>
+    <lightning-card title="Distribution Engine" icon-name="utility:routing_offline">
+        <div slot="actions">
+            <template lwc:if={state}>
+                <lightning-button-group>
+                    <template lwc:if={state.canDistribute}>
+                        <lightning-button label="Distribute now" onclick={handleDistribute} disabled={busy}></lightning-button>
+                    </template>
+                    <template lwc:if={state.canAssign}>
+                        <lightning-button label="Assign" onclick={handleOpenAssign}></lightning-button>
+                    </template>
+                    <template lwc:if={state.canReject}>
+                        <lightning-button label="Reject" onclick={handleOpenReject}></lightning-button>
+                    </template>
+                    <template lwc:if={state.canSimulate}>
+                        <lightning-button label="Simulate" onclick={handleOpenSimulate}></lightning-button>
+                    </template>
+                </lightning-button-group>
+            </template>
+        </div>
+        <div class="slds-p-horizontal_medium">
+            <template lwc:if={error}>
+                <p class="slds-text-color_error">{error}</p>
+            </template>
+            <template lwc:if={state}>
+                <p class="slds-text-heading_small slds-m-bottom_x-small">{summary}</p>
+                <div class="slds-grid slds-wrap">
+                    <template for:each={facts} for:item="f">
+                        <div key={f.key} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-vertical_xx-small">
+                            <span class="slds-text-color_weak">{f.label}: </span><span>{f.value}</span>
+                        </div>
+                    </template>
+                </div>
+
+                <template lwc:if={showAssign}>
+                    <div class="slds-box slds-m-top_small">
+                        <lightning-combobox
+                            label="Team / manual distributor"
+                            options={distributorOptions}
+                            value={selectedDistributor}
+                            onchange={handleDistributor}
+                        ></lightning-combobox>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_x-small">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">Member</th>
+                                    <th scope="col">Availability</th>
+                                    <th scope="col">Today</th>
+                                    <th scope="col">Caps</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={memberRows} for:item="m">
+                                    <tr key={m.memberId} class={m.rowClass} data-id={m.memberId} onclick={handlePickMember}>
+                                        <td>{m.name}</td>
+                                        <td><span class={m.badgeClass}>{m.availability}</span></td>
+                                        <td>{m.assignedToday}</td>
+                                        <td>{m.capState}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                            Manual assignment is allowed even when the member is at a cap.
+                        </p>
+                        <lightning-button
+                            class="slds-m-top_x-small"
+                            variant="brand"
+                            label="Assign"
+                            onclick={handleAssign}
+                            disabled={assignDisabled}
+                        ></lightning-button>
+                    </div>
+                </template>
+
+                <template lwc:if={showReject}>
+                    <div class="slds-box slds-m-top_small">
+                        <lightning-combobox
+                            label="Reject reason"
+                            options={rejectOptions}
+                            value={rejectReason}
+                            onchange={handleRejectReason}
+                            required
+                        ></lightning-combobox>
+                        <template lwc:if={rejectIsOther}>
+                            <lightning-input label="Other reason" value={rejectOther} onchange={handleRejectOther} required></lightning-input>
+                        </template>
+                        <lightning-button
+                            class="slds-m-top_x-small"
+                            variant="destructive"
+                            label="Reject"
+                            onclick={handleReject}
+                            disabled={busy}
+                        ></lightning-button>
+                    </div>
+                </template>
+
+                <template lwc:if={showSimulate}>
+                    <div class="slds-m-top_small">
+                        <c-de-simulator record-id={recordId}></c-de-simulator>
+                    </div>
+                </template>
+
+                <h3 class="slds-text-heading_small slds-m-top_medium slds-m-bottom_x-small">History</h3>
+                <template lwc:if={hasHistory}>
+                    <lightning-datatable key-field="Id" data={history} columns={columns} hide-checkbox-column></lightning-datatable>
+                </template>
+                <template lwc:else>
+                    <p class="slds-text-body_small slds-text-color_weak">No distribution history.</p>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

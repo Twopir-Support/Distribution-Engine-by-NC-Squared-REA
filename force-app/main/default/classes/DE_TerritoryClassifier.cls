@@ -14,8 +14,22 @@ public without sharing class DE_TerritoryClassifier {
         'lead' => new List<String>{ 'Country', 'State', 'PostalCode', 'Phone', 'Email', 'Website' },
         'account' => new List<String>{ 'BillingCountry', 'BillingState', 'BillingPostalCode', 'Phone', null, 'Website' },
         'contact' => new List<String>{ 'MailingCountry', 'MailingState', 'MailingPostalCode', 'Phone', 'Email', null },
-        'opportunity' => new List<String>{ 'Account.BillingCountry', 'Account.BillingState', 'Account.BillingPostalCode', 'Account.Phone', null, 'Account.Website' },
-        'case' => new List<String>{ 'Account.BillingCountry', 'Account.BillingState', 'Account.BillingPostalCode', 'SuppliedPhone', 'SuppliedEmail', 'Account.Website' }
+        'opportunity' => new List<String>{
+            'Account.BillingCountry',
+            'Account.BillingState',
+            'Account.BillingPostalCode',
+            'Account.Phone',
+            null,
+            'Account.Website'
+        },
+        'case' => new List<String>{
+            'Account.BillingCountry',
+            'Account.BillingState',
+            'Account.BillingPostalCode',
+            'SuppliedPhone',
+            'SuppliedEmail',
+            'Account.Website'
+        }
     };
 
     public static List<DE_Territory__c> territories(String objectName) {
@@ -131,7 +145,12 @@ public without sharing class DE_TerritoryClassifier {
     }
 
     /** Classifies records; returns the field stamps to write back on the records (recordId -> field -> value). */
-    public static Map<Id, Map<String, Object>> classify(String objectName, List<SObject> records, Map<Id, DE_Record_Detail__c> details, List<DE_Territory__c> territories) {
+    public static Map<Id, Map<String, Object>> classify(
+        String objectName,
+        List<SObject> records,
+        Map<Id, DE_Record_Detail__c> details,
+        List<DE_Territory__c> territories
+    ) {
         Map<Id, Map<String, Object>> stamps = new Map<Id, Map<String, Object>>();
         DE_Conditions.Context ctx = new DE_Conditions.Context();
         ctx.details = details;

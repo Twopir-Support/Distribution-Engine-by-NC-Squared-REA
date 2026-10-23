@@ -1,0 +1,95 @@
+<template>
+    <lightning-card title="Distribution Console" icon-name="standard:dashboard">
+        <div class="slds-p-horizontal_medium">
+            <template lwc:if={error}>
+                <p class="slds-text-color_error">{error}</p>
+            </template>
+            <lightning-tabset>
+                <lightning-tab label="Application Monitoring" value="monitoring" onactive={handleTab}>
+                    <template lwc:if={monitoring}>
+                        <div class="slds-grid slds-wrap slds-gutters_small">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <div class="slds-box">
+                                    <p class="slds-text-title">Scheduler</p>
+                                    <p class="slds-m-vertical_x-small">
+                                        <span class={statusClass}>{monitoring.schedulerStatus}</span>
+                                    </p>
+                                    <p class="slds-text-body_small">Runs every {monitoring.intervalMinutes} min</p>
+                                    <p class="slds-text-body_small">Last noteworthy run: {lastRun}</p>
+                                    <p class="slds-text-body_small slds-text-color_weak slds-truncate" title={monitoring.lastRunMessage}>
+                                        {monitoring.lastRunMessage}
+                                    </p>
+                                    <div class="slds-m-top_small">
+                                        <lightning-button label="Start" onclick={handleStart}></lightning-button>
+                                        <lightning-button
+                                            class="slds-m-left_x-small"
+                                            variant="destructive-text"
+                                            label="Stop"
+                                            onclick={handleStop}
+                                        ></lightning-button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <div class="slds-box">
+                                    <p class="slds-text-title">Health Checker</p>
+                                    <p class="slds-m-vertical_x-small">{healthLabel}</p>
+                                    <p class="slds-text-body_small">Errors in the past day: {monitoring.errorsLastDay}</p>
+                                    <p class="slds-text-body_small">Restarts in the past day: {monitoring.restartsLastDay}</p>
+                                    <lightning-combobox
+                                        label="Frequency"
+                                        options={healthOptions}
+                                        value={healthEvery}
+                                        onchange={handleHealthEvery}
+                                    ></lightning-combobox>
+                                    <div class="slds-m-top_x-small">
+                                        <lightning-button label="Schedule" onclick={handleScheduleHealth}></lightning-button>
+                                        <lightning-button class="slds-m-left_x-small" label="Run now" onclick={handleHealth}></lightning-button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <div class="slds-box">
+                                    <p class="slds-text-title">Classifier and SLAs</p>
+                                    <p class="slds-m-vertical_x-small">Classifier enabled: {monitoring.classifierEnabled}</p>
+                                    <p class="slds-text-body_small">Last classifier issue: {lastClassifier}</p>
+                                    <p class="slds-text-body_small">SLAs pending: {monitoring.pendingSlas}</p>
+                                    <p class="slds-text-body_small">Records on hold: {monitoring.onHold}</p>
+                                    <p class="slds-text-body_small slds-text-color_weak">Version {monitoring.version}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </lightning-tab>
+                <lightning-tab label="Today's Distributions" value="today" onactive={handleTab}>
+                    <lightning-datatable key-field="teamId" data={today} columns={todayColumns} hide-checkbox-column></lightning-datatable>
+                </lightning-tab>
+                <lightning-tab label="Sources" value="sources" onactive={handleTab}>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_x-small">
+                        Records waiting at each Standard and Pull distributor's source. Open a team's distributor for a preview.
+                    </p>
+                    <lightning-datatable key-field="distributorId" data={sources} columns={sourceColumns} hide-checkbox-column></lightning-datatable>
+                </lightning-tab>
+                <lightning-tab label="Simulator" value="simulator">
+                    <c-de-simulator></c-de-simulator>
+                </lightning-tab>
+                <lightning-tab label="Archive" value="archive" onactive={handleTab}>
+                    <div class="slds-grid slds-grid_vertical-align-end slds-gutters_small slds-m-bottom_small">
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning-combobox
+                                label="Object"
+                                options={archiveObjects}
+                                value={archiveObject}
+                                onchange={handleArchiveObject}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-no-flex">
+                            <lightning-button label="Restore selected" onclick={handleRestore}></lightning-button>
+                        </div>
+                    </div>
+                    <lightning-datatable key-field="id" data={archived} columns={archiveColumns} onrowselection={handleArchiveSelect}></lightning-datatable>
+                </lightning-tab>
+            </lightning-tabset>
+        </div>
+    </lightning-card>
+</template>

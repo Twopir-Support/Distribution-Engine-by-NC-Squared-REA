@@ -13,7 +13,15 @@ public without sharing class DE_ActionTracking {
             teamsByObject.put(
                 key,
                 [
-                    SELECT Id, Name, Object_API_Name__c, Action_Field__c, Tracked_Actions__c, Action_Respect_Hours__c, Track_Action_From_Any_User__c, Auto_Action_Activity_Types__c
+                    SELECT
+                        Id,
+                        Name,
+                        Object_API_Name__c,
+                        Action_Field__c,
+                        Tracked_Actions__c,
+                        Action_Respect_Hours__c,
+                        Track_Action_From_Any_User__c,
+                        Auto_Action_Activity_Types__c
                     FROM DE_Team__c
                     WHERE Object_API_Name__c = :objectName AND Action_Tracking_Enabled__c = TRUE AND Active__c = TRUE
                 ]

@@ -1,0 +1,320 @@
+<template>
+    <lightning-card title="Distribution Settings" icon-name="standard:settings">
+        <div slot="actions">
+            <lightning-button variant="brand" label="Save settings" onclick={handleSave} disabled={saving}></lightning-button>
+        </div>
+        <div class="slds-p-horizontal_medium">
+            <template lwc:if={error}><p class="slds-text-color_error">{error}</p></template>
+            <lightning-tabset>
+                <lightning-tab label="Settings">
+                    <h3 class="slds-section-title_divider">Engine</h3>
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="toggle"
+                                label="Engine enabled"
+                                checked={s.Engine_Enabled__c}
+                                data-field="Engine_Enabled__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                min="1"
+                                max="10"
+                                label="Scheduler interval (minutes)"
+                                value={s.Scheduler_Interval_Minutes__c}
+                                data-field="Scheduler_Interval_Minutes__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                label="Records per run"
+                                value={s.Records_Per_Run__c}
+                                data-field="Records_Per_Run__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                min="0"
+                                max="50"
+                                label="Number of previous assignees tracked"
+                                value={s.Previous_Assignees_Tracked__c}
+                                data-field="Previous_Assignees_Tracked__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                label="Put on hold after failed attempts"
+                                value={s.Hold_After_Failures__c}
+                                data-field="Hold_After_Failures__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                label="Hold duration (minutes)"
+                                value={s.Hold_Minutes__c}
+                                data-field="Hold_Minutes__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                label="Log retention (days)"
+                                value={s.Log_Retention_Days__c}
+                                data-field="Log_Retention_Days__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="checkbox"
+                                label="Record decision trace on logs"
+                                checked={s.Decision_Trace_Enabled__c}
+                                data-field="Decision_Trace_Enabled__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="checkbox"
+                                label="Publish platform events on assignment"
+                                checked={s.Publish_Platform_Events__c}
+                                data-field="Publish_Platform_Events__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-combobox
+                                label="Week starts on (weekly caps)"
+                                options={weekStarts}
+                                value={s.Default_Weekday_Start__c}
+                                data-field="Default_Weekday_Start__c"
+                                onchange={handleField}
+                            ></lightning-combobox>
+                        </div>
+                    </div>
+
+                    <h3 class="slds-section-title_divider slds-m-top_medium">Rotation and load balancing</h3>
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="checkbox"
+                                label="Pull assignments count in round robin"
+                                checked={s.Count_Pull_As_Hit__c}
+                                data-field="Count_Pull_As_Hit__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="checkbox"
+                                label="Manual assignments count in round robin"
+                                checked={s.Count_Manual_As_Hit__c}
+                                data-field="Count_Manual_As_Hit__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="checkbox"
+                                label="Include sticky assignments in load balancing"
+                                checked={s.Count_Sticky_In_Balance__c}
+                                data-field="Count_Sticky_In_Balance__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="checkbox"
+                                label="Include lookup and related owner assignments in load balancing"
+                                checked={s.Count_Lookup_In_Balance__c}
+                                data-field="Count_Lookup_In_Balance__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                    </div>
+
+                    <h3 class="slds-section-title_divider slds-m-top_medium">Availability toggle</h3>
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="checkbox"
+                                label="Require a reason to go offline"
+                                checked={s.Require_Toggle_Reason__c}
+                                data-field="Require_Toggle_Reason__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                label="Toggle off reasons (comma separated)"
+                                value={s.Toggle_Reasons__c}
+                                max-length="255"
+                                data-field="Toggle_Reasons__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                label="Timer durations in minutes (comma separated)"
+                                value={s.Timer_Durations__c}
+                                data-field="Timer_Durations__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="checkbox"
+                                label="Timer toggles only (managers exempt)"
+                                checked={s.Timer_Toggles_Only__c}
+                                data-field="Timer_Toggles_Only__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-combobox
+                                label="Toggle status at start of day"
+                                options={dayRules}
+                                value={s.Toggle_At_Start_Of_Day__c}
+                                data-field="Toggle_At_Start_Of_Day__c"
+                                onchange={handleField}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-combobox
+                                label="Toggle status at end of day"
+                                options={dayRules}
+                                value={s.Toggle_At_End_Of_Day__c}
+                                data-field="Toggle_At_End_Of_Day__c"
+                                onchange={handleField}
+                            ></lightning-combobox>
+                        </div>
+                    </div>
+
+                    <h3 class="slds-section-title_divider slds-m-top_medium">Rejection</h3>
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_2-of-3">
+                            <lightning-input
+                                label="Reject reasons (comma separated)"
+                                value={s.Reject_Reasons__c}
+                                max-length="255"
+                                data-field="Reject_Reasons__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="checkbox"
+                                label="Allow an Other reason"
+                                checked={s.Allow_Other_Reject_Reason__c}
+                                data-field="Allow_Other_Reject_Reason__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                    </div>
+
+                    <h3 class="slds-section-title_divider slds-m-top_medium">Classifier and triggers</h3>
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="toggle"
+                                label="Classifier enabled"
+                                checked={s.Classifier_Enabled__c}
+                                data-field="Classifier_Enabled__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_2-of-3">
+                            <lightning-input
+                                label="Classify these objects on insert (comma separated)"
+                                value={s.Classifier_Objects__c}
+                                data-field="Classifier_Objects__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="checkbox"
+                                label="Distribute new records immediately after classification"
+                                checked={s.Distribute_After_Classify__c}
+                                data-field="Distribute_After_Classify__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="checkbox"
+                                label="Process trigger distributors"
+                                checked={s.Trigger_Distribution_Enabled__c}
+                                data-field="Trigger_Distribution_Enabled__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-input
+                                label="Extra personal email domains (comma separated)"
+                                value={s.Personal_Domains__c}
+                                data-field="Personal_Domains__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                    </div>
+
+                    <h3 class="slds-section-title_divider slds-m-top_medium">Auto archive (Leads and Cases)</h3>
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="toggle"
+                                label="Auto archive enabled"
+                                checked={s.Archive_Enabled__c}
+                                data-field="Archive_Enabled__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                label="Archive after (days)"
+                                value={s.Archive_After_Days__c}
+                                data-field="Archive_After_Days__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <c-de-record-picker
+                                label="Archive queue"
+                                kind="Queue"
+                                value={s.Archive_Queue_Id__c}
+                                onchange={handleArchiveQueue}
+                            ></c-de-record-picker>
+                        </div>
+                    </div>
+                </lightning-tab>
+                <lightning-tab label="Export / Import">
+                    <p class="slds-m-bottom_small">
+                        Export teams, distributors, members, caps, SLAs, shifts, holidays, territories, stamp groups, matching, conversion and sync rules as
+                        JSON. Users are matched by Username and queues by Developer Name on import.
+                    </p>
+                    <lightning-button label="Export configuration" icon-name="utility:download" onclick={handleExport}></lightning-button>
+                    <div class="slds-m-top_medium">
+                        <lightning-input type="file" label="Import file" accept=".json" onchange={handleFile}></lightning-input>
+                        <lightning-textarea label="…or paste JSON" value={importText} onchange={handleImportText}></lightning-textarea>
+                        <lightning-button class="slds-m-top_x-small" variant="brand" label="Import" onclick={handleImport}></lightning-button>
+                        <template lwc:if={importResult}><p class="slds-m-top_small">{importResult}</p></template>
+                    </div>
+                </lightning-tab>
+            </lightning-tabset>
+        </div>
+    </lightning-card>
+</template>

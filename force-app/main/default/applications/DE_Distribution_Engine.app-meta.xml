@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#2A78D6</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <description>Distribution Engine by NC Squared: lead, case and opportunity routing, availability, SLAs and classification.</description>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutomaticallyAdded>true</isNavAutomaticallyAdded>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <label>Distribution Engine by NC Squared</label>
+    <navType>Standard</navType>
+    <tabs>DE_Console</tabs>
+    <tabs>DE_Teams</tabs>
+    <tabs>DE_Availability</tabs>
+    <tabs>DE_Tags</tabs>
+    <tabs>DE_Classifier</tabs>
+    <tabs>DE_Sync</tabs>
+    <tabs>DE_Logs</tabs>
+    <tabs>DE_Analytics</tabs>
+    <tabs>DE_Settings</tabs>
+    <tabs>standard-Lead</tabs>
+    <tabs>standard-Case</tabs>
+    <tabs>standard-report</tabs>
+    <tabs>standard-Dashboard</tabs>
+    <uiType>Lightning</uiType>
+    <utilityBar>DE_Utility_Bar</utilityBar>
+</CustomApplication>

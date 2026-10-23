@@ -1,0 +1,937 @@
+<template>
+    <lightning-card>
+        <div slot="title" class="slds-grid slds-grid_vertical-align-center">
+            <lightning-button-icon
+                icon-name="utility:back"
+                alternative-text="Back to teams"
+                onclick={handleBack}
+                class="slds-m-right_small"
+            ></lightning-button-icon>
+            <span class="slds-text-heading_medium">{title}</span>
+            <template lwc:if={teamId}>
+                <span class={statusBadge}>{statusText}</span>
+                <span class="slds-badge">{team.Object_API_Name__c}</span>
+                <span class="slds-badge">{team.Team_Type__c}</span>
+            </template>
+        </div>
+        <div slot="actions">
+            <template lwc:if={teamId}>
+                <template lwc:if={canEdit}>
+                    <lightning-button label={activeLabel} onclick={handleToggleActive}></lightning-button>
+                </template>
+            </template>
+        </div>
+        <template lwc:if={error}>
+            <p class="slds-text-color_error slds-p-horizontal_medium">{error}</p>
+        </template>
+        <div class="slds-grid">
+            <div class="slds-col slds-size_1-of-5 slds-border_right">
+                <lightning-vertical-navigation selected-item={section} onselect={handleNav}>
+                    <lightning-vertical-navigation-section label="Team">
+                        <template lwc:if={teamId}>
+                            <lightning-vertical-navigation-item label="Summary" name="summary"></lightning-vertical-navigation-item>
+                            <lightning-vertical-navigation-item label="Team Members" name="members"></lightning-vertical-navigation-item>
+                            <lightning-vertical-navigation-item label="Distributors" name="distributors"></lightning-vertical-navigation-item>
+                            <lightning-vertical-navigation-item label="Weighting and Caps" name="caps"></lightning-vertical-navigation-item>
+                            <lightning-vertical-navigation-item label="Distribution Hours" name="hours"></lightning-vertical-navigation-item>
+                            <lightning-vertical-navigation-item label="Tracking and SLAs" name="slas"></lightning-vertical-navigation-item>
+                            <lightning-vertical-navigation-item label="Assignment Rejection" name="rejection"></lightning-vertical-navigation-item>
+                            <lightning-vertical-navigation-item label="Post Assignment" name="post"></lightning-vertical-navigation-item>
+                        </template>
+                        <lightning-vertical-navigation-item label="Team Settings" name="settings"></lightning-vertical-navigation-item>
+                    </lightning-vertical-navigation-section>
+                </lightning-vertical-navigation>
+            </div>
+            <div class="slds-col slds-size_4-of-5 slds-p-horizontal_medium">
+                <!-- ===================== SUMMARY ===================== -->
+                <template lwc:if={show.summary}>
+                    <template lwc:if={detail}>
+                        <template lwc:if={holiday}>
+                            <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+                                Team holiday today: {holiday}. Nothing is distributed.
+                            </div>
+                        </template>
+                        <div class="slds-grid slds-wrap slds-gutters_small slds-m-top_small">
+                            <div class="slds-col slds-size_1-of-3">
+                                <div class="slds-box">
+                                    <p class="slds-text-title">Members</p>
+                                    <p class="slds-text-heading_large">{members.length}</p>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3">
+                                <div class="slds-box">
+                                    <p class="slds-text-title">Distributors</p>
+                                    <p class="slds-text-heading_large">{distributorRows.length}</p>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3">
+                                <div class="slds-box">
+                                    <p class="slds-text-title">Total assignments</p>
+                                    <p class="slds-text-heading_large">{team.Total_Assignments__c}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <dl class="slds-m-top_medium">
+                            <dt class="slds-text-title">Execution order</dt>
+                            <dd>{team.Execution_Order__c}</dd>
+                            <dt class="slds-text-title slds-m-top_x-small">Assignment field</dt>
+                            <dd>{team.Assignment_Field__c}</dd>
+                            <dt class="slds-text-title slds-m-top_x-small">Round robin level</dt>
+                            <dd>{team.Round_Robin_Level__c}</dd>
+                            <dt class="slds-text-title slds-m-top_x-small">Load balancing</dt>
+                            <dd>{team.Load_Balancing_Type__c} · {team.Load_Balancing_Level__c} level · {team.Balance_By__c}</dd>
+                            <dt class="slds-text-title slds-m-top_x-small">Holiday region</dt>
+                            <dd>{team.Holiday_Region__c}</dd>
+                            <dt class="slds-text-title slds-m-top_x-small">Last assignment</dt>
+                            <dd>
+                                <lightning-formatted-date-time
+                                    value={team.Last_Assigned_At__c}
+                                    year="numeric"
+                                    month="short"
+                                    day="numeric"
+                                    hour="2-digit"
+                                    minute="2-digit"
+                                ></lightning-formatted-date-time>
+                            </dd>
+                        </dl>
+                        <p class="slds-m-top_medium"><a href={historyUrl}>Change history</a> (field history of this team)</p>
+                    </template>
+                </template>
+
+                <!-- ===================== MEMBERS ===================== -->
+                <template lwc:if={show.members}>
+                    <template lwc:if={canManage}>
+                        <div class="slds-grid slds-grid_vertical-align-end slds-gutters_small slds-m-bottom_small">
+                            <div class="slds-col">
+                                <c-de-record-picker
+                                    data-id="add"
+                                    label="Add team members"
+                                    kind={memberKind}
+                                    object-name={team.Object_API_Name__c}
+                                    multiple
+                                    onchange={handleAddIds}
+                                ></c-de-record-picker>
+                            </div>
+                            <div class="slds-col slds-no-flex">
+                                <lightning-button label="Add selection" onclick={handleAddMembers}></lightning-button>
+                            </div>
+                        </div>
+                    </template>
+                    <template lwc:if={hasMembers}>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th>Member</th>
+                                    <th>Active</th>
+                                    <th>Weight</th>
+                                    <th>Member hours</th>
+                                    <th>Online</th>
+                                    <th>Availability now</th>
+                                    <th>Today</th>
+                                    <th>Tags</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={members} for:item="m">
+                                    <tr key={m.key}>
+                                        <td>
+                                            {m.name}<template lwc:if={m.dynamic}> <span class="slds-badge">dynamic</span></template>
+                                        </td>
+                                        <td>
+                                            <lightning-input
+                                                type="checkbox"
+                                                label="Active"
+                                                variant="label-hidden"
+                                                checked={m.Active__c}
+                                                data-id={m.Id}
+                                                data-field="Active__c"
+                                                onchange={handleMemberField}
+                                                disabled={readOnlyMembers}
+                                            ></lightning-input>
+                                        </td>
+                                        <td>
+                                            <lightning-input
+                                                type="number"
+                                                step="0.25"
+                                                min="0.25"
+                                                max="4"
+                                                label="Weight"
+                                                variant="label-hidden"
+                                                value={m.Weight__c}
+                                                data-id={m.Id}
+                                                data-field="Weight__c"
+                                                onchange={handleMemberField}
+                                            ></lightning-input>
+                                        </td>
+                                        <td>
+                                            <lightning-combobox
+                                                label="Member hours"
+                                                variant="label-hidden"
+                                                options={memberShiftOptions}
+                                                value={m.Member_Hours__c}
+                                                data-id={m.Id}
+                                                data-field="Member_Hours__c"
+                                                onchange={handleMemberField}
+                                            ></lightning-combobox>
+                                        </td>
+                                        <td>
+                                            <template lwc:if={m.isQueue}>—</template>
+                                            <template lwc:else>
+                                                <lightning-input
+                                                    type="toggle"
+                                                    label="Online"
+                                                    variant="label-hidden"
+                                                    checked={m.online}
+                                                    data-user={m.userId}
+                                                    onchange={handleMemberOnline}
+                                                    message-toggle-active=""
+                                                    message-toggle-inactive=""
+                                                ></lightning-input>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <span class={m.availabilityClass}>{m.availability}</span>
+                                        </td>
+                                        <td>{m.today}</td>
+                                        <td class="slds-cell-wrap">{m.tags}</td>
+                                        <td>
+                                            <lightning-button-icon
+                                                icon-name="utility:delete"
+                                                alternative-text="Remove"
+                                                data-id={m.Id}
+                                                onclick={handleRemoveMember}
+                                            ></lightning-button-icon>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                        <lightning-button class="slds-m-top_small" variant="brand" label="Save members" onclick={handleSaveMembers}></lightning-button>
+                    </template>
+                    <template lwc:else>
+                        <p class="slds-text-color_weak">No members yet.</p>
+                    </template>
+                </template>
+
+                <!-- ===================== DISTRIBUTORS ===================== -->
+                <template lwc:if={show.distributors}>
+                    <template lwc:if={distributorDraft}>
+                        <c-de-distributor-editor
+                            draft={distributorDraft}
+                            team={team}
+                            owner-names={detail.ownerNames}
+                            onclose={handleEditorClose}
+                            onsaved={handleEditorSaved}
+                        ></c-de-distributor-editor>
+                    </template>
+                    <template lwc:else>
+                        <div class="slds-m-bottom_small">
+                            <template lwc:if={canEdit}>
+                                <lightning-button label="New distributor" icon-name="utility:add" onclick={handleNewDistributor}></lightning-button>
+                            </template>
+                        </div>
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                            Distributors run top to bottom. A record no distributor can assign overflows to the next one.
+                        </p>
+                        <template lwc:if={hasDistributors}>
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th>Order</th>
+                                        <th>Distributor</th>
+                                        <th>Type</th>
+                                        <th>Method</th>
+                                        <th>Source</th>
+                                        <th>Filters</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={distributorRows} for:item="d">
+                                        <tr key={d.key}>
+                                            <td>{d.order}</td>
+                                            <td>
+                                                <a data-id={d.id} onclick={handleEditDistributor}>{d.name}</a>
+                                                <p class="slds-text-body_small slds-text-color_weak">{d.extras}</p>
+                                            </td>
+                                            <td>{d.type}</td>
+                                            <td>{d.method}</td>
+                                            <td class="slds-cell-wrap">{d.source}</td>
+                                            <td>{d.filters}</td>
+                                            <td><span class={d.badge}>{d.status}</span></td>
+                                            <td>
+                                                <lightning-button-group>
+                                                    <lightning-button-icon
+                                                        icon-name="utility:arrowup"
+                                                        alternative-text="Move up"
+                                                        data-id={d.id}
+                                                        data-action="up"
+                                                        onclick={handleDistributorAction}
+                                                    ></lightning-button-icon>
+                                                    <lightning-button-icon
+                                                        icon-name="utility:arrowdown"
+                                                        alternative-text="Move down"
+                                                        data-id={d.id}
+                                                        data-action="down"
+                                                        onclick={handleDistributorAction}
+                                                    ></lightning-button-icon>
+                                                    <lightning-button-icon
+                                                        icon-name="utility:power"
+                                                        alternative-text={d.activeLabel}
+                                                        title={d.activeLabel}
+                                                        data-id={d.id}
+                                                        data-action="toggle"
+                                                        onclick={handleDistributorAction}
+                                                    ></lightning-button-icon>
+                                                    <lightning-button-icon
+                                                        icon-name="utility:preview"
+                                                        alternative-text="Records waiting"
+                                                        title="Records waiting at the source"
+                                                        data-id={d.id}
+                                                        data-action="preview"
+                                                        onclick={handleDistributorAction}
+                                                    ></lightning-button-icon>
+                                                    <lightning-button-icon
+                                                        icon-name="utility:copy"
+                                                        alternative-text="Clone"
+                                                        data-id={d.id}
+                                                        data-action="clone"
+                                                        onclick={handleDistributorAction}
+                                                    ></lightning-button-icon>
+                                                    <lightning-button-icon
+                                                        icon-name="utility:delete"
+                                                        alternative-text="Delete"
+                                                        data-id={d.id}
+                                                        data-action="delete"
+                                                        onclick={handleDistributorAction}
+                                                    ></lightning-button-icon>
+                                                </lightning-button-group>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                        <template lwc:if={preview}>
+                            <div class="slds-box slds-m-top_small">
+                                <div class="slds-grid slds-grid_align-spread">
+                                    <h3 class="slds-text-heading_small">{preview.title}</h3>
+                                    <lightning-button-icon
+                                        icon-name="utility:close"
+                                        alternative-text="Close"
+                                        onclick={handleClosePreview}
+                                    ></lightning-button-icon>
+                                </div>
+                                <ul class="slds-list_dotted">
+                                    <template for:each={preview.rows} for:item="p">
+                                        <li key={p.key}><a href={p.url}>{p.name}</a> · {p.created}</li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </template>
+                    </template>
+                </template>
+
+                <!-- ===================== WEIGHTING AND CAPS ===================== -->
+                <template lwc:if={show.caps}>
+                    <h3 class="slds-text-heading_small slds-m-bottom_x-small">Weighting</h3>
+                    <lightning-combobox
+                        label="Weighting mode"
+                        options={weightingModes}
+                        value={team.Weighting_Mode__c}
+                        data-field="Weighting_Mode__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-combobox>
+                    <template lwc:if={isTagWeighting}>
+                        <lightning-input
+                            type="number"
+                            step="0.25"
+                            label="Default weight for members without a weighted tag"
+                            value={team.Default_Tag_Weight__c}
+                            data-field="Default_Tag_Weight__c"
+                            onchange={handleTeamField}
+                            disabled={readOnly}
+                        ></lightning-input>
+                        <lightning-textarea
+                            label="Tag weights (one per line: Collection:Tag=Weight)"
+                            value={team.Tag_Weights__c}
+                            data-field="Tag_Weights__c"
+                            onchange={handleTeamField}
+                            disabled={readOnly}
+                        ></lightning-textarea>
+                    </template>
+                    <template lwc:else>
+                        <p class="slds-text-body_small slds-text-color_weak">
+                            Individual weights are set on the Team Members page (0.25–4). Expected share of assignments per cycle:
+                        </p>
+                        <ul class="slds-list_horizontal slds-has-dividers_left slds-wrap">
+                            <template for:each={weightShares} for:item="w">
+                                <li key={w.key} class="slds-item">{w.name}: {w.weight} ({w.share})</li>
+                            </template>
+                        </ul>
+                    </template>
+                    <template lwc:if={canEdit}>
+                        <lightning-button class="slds-m-top_x-small" label="Save weighting" onclick={handleSaveTeam}></lightning-button>
+                    </template>
+
+                    <h3 class="slds-text-heading_small slds-m-top_large slds-m-bottom_x-small">Team-level caps</h3>
+                    <p class="slds-text-body_small slds-text-color_weak">
+                        Limit total assignments per member across all distributors. Up to three periods. Blank cap = unlimited. Distributors can opt out.
+                    </p>
+                    <template for:each={capRows} for:item="c">
+                        <div key={c.key} class="slds-box slds-box_x-small slds-m-top_x-small">
+                            <div class="slds-grid slds-wrap slds-gutters_x-small slds-grid_vertical-align-end">
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-combobox
+                                        label="Period"
+                                        options={capPeriods}
+                                        value={c.cap.Period__c}
+                                        data-key={c.key}
+                                        data-field="Period__c"
+                                        onchange={handleCapField}
+                                    ></lightning-combobox>
+                                </div>
+                                <template lwc:if={c.isCustom}>
+                                    <div class="slds-col slds-size_1-of-4">
+                                        <lightning-input
+                                            type="number"
+                                            label="Custom length"
+                                            value={c.cap.Custom_Length__c}
+                                            data-key={c.key}
+                                            data-field="Custom_Length__c"
+                                            onchange={handleCapField}
+                                        ></lightning-input>
+                                    </div>
+                                </template>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input
+                                        type="number"
+                                        label="Default cap"
+                                        value={c.cap.Default_Cap__c}
+                                        data-key={c.key}
+                                        data-field="Default_Cap__c"
+                                        onchange={handleCapField}
+                                    ></lightning-input>
+                                </div>
+                                <template lwc:if={c.isCriteria}>
+                                    <div class="slds-col slds-size_1-of-4">
+                                        <lightning-combobox
+                                            label="Criteria"
+                                            options={criteriaSources}
+                                            value={c.cap.Criteria_Source__c}
+                                            data-key={c.key}
+                                            data-field="Criteria_Source__c"
+                                            onchange={handleCapField}
+                                        ></lightning-combobox>
+                                    </div>
+                                </template>
+                                <div class="slds-col slds-no-flex">
+                                    <lightning-button-icon
+                                        icon-name="utility:delete"
+                                        alternative-text="Remove cap"
+                                        data-key={c.key}
+                                        onclick={handleRemoveCap}
+                                    ></lightning-button-icon>
+                                </div>
+                            </div>
+                            <lightning-textarea
+                                label="Caps by tag (one per line: Collection:Tag=Cap, blank = unlimited)"
+                                value={c.cap.Tag_Caps__c}
+                                data-key={c.key}
+                                data-field="Tag_Caps__c"
+                                onchange={handleCapField}
+                            ></lightning-textarea>
+                            <template lwc:if={c.isFieldCriteria}>
+                                <c-de-condition-builder
+                                    label="Count owned records matching"
+                                    object-name={team.Object_API_Name__c}
+                                    conditions={c.criteria}
+                                    logic={c.cap.Criteria_Logic__c}
+                                    show-logic
+                                    data-key={c.key}
+                                    onchange={handleCapCriteria}
+                                ></c-de-condition-builder>
+                            </template>
+                        </div>
+                    </template>
+                    <div class="slds-m-top_small">
+                        <template lwc:if={canAddCap}
+                            ><lightning-button label="Add cap period" icon-name="utility:add" onclick={handleAddCap}></lightning-button
+                        ></template>
+                        <lightning-button class="slds-m-left_x-small" variant="brand" label="Save team caps" onclick={handleSaveCaps}></lightning-button>
+                    </div>
+                </template>
+
+                <!-- ===================== HOURS ===================== -->
+                <template lwc:if={show.hours}>
+                    <lightning-combobox
+                        label="Team hours (shift)"
+                        options={shiftOptions}
+                        value={team.Team_Hours__c}
+                        data-field="Team_Hours__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-combobox>
+                    <p class="slds-text-body_small slds-text-color_weak">
+                        Members without their own hours inherit the team hours. Member hours are set on the Team Members page. Create shifts on the Distribution
+                        Availability tab.
+                    </p>
+                    <lightning-input
+                        label="Holiday region"
+                        value={team.Holiday_Region__c}
+                        data-field="Holiday_Region__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-input>
+                    <lightning-input
+                        type="checkbox"
+                        label="Respect distribution hours for trigger distributors"
+                        checked={team.Respect_Hours_For_Triggers__c}
+                        data-field="Respect_Hours_For_Triggers__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-input>
+                    <template lwc:if={canEdit}
+                        ><lightning-button class="slds-m-top_small" variant="brand" label="Save hours" onclick={handleSaveTeam}></lightning-button
+                    ></template>
+                </template>
+
+                <!-- ===================== SLAs & TRACKING ===================== -->
+                <template lwc:if={show.slas}>
+                    <h3 class="slds-text-heading_small slds-m-bottom_x-small">Action tracking</h3>
+                    <lightning-input
+                        type="toggle"
+                        label="Track time to action"
+                        checked={team.Action_Tracking_Enabled__c}
+                        data-field="Action_Tracking_Enabled__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-input>
+                    <div class="slds-grid slds-gutters_small slds-wrap">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                label="Action field"
+                                value={team.Action_Field__c}
+                                placeholder="DE_Action__c or Status"
+                                data-field="Action_Field__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                label="Actions to track (separated by ;)"
+                                value={team.Tracked_Actions__c}
+                                data-field="Tracked_Actions__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-combobox
+                                label="Respect distribution hours"
+                                options={hoursOptions}
+                                value={team.Action_Respect_Hours__c}
+                                data-field="Action_Respect_Hours__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                label="Auto action activity types (Task/Event Type, separated by ;)"
+                                value={team.Auto_Action_Activity_Types__c}
+                                data-field="Auto_Action_Activity_Types__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-input>
+                        </div>
+                    </div>
+                    <lightning-input
+                        type="checkbox"
+                        label="Track action from any user"
+                        checked={team.Track_Action_From_Any_User__c}
+                        data-field="Track_Action_From_Any_User__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-input>
+
+                    <h3 class="slds-text-heading_small slds-m-top_large slds-m-bottom_x-small">SLA checkpoints</h3>
+                    <p class="slds-text-body_small slds-text-color_weak">
+                        Each checkpoint fires when its time is reached and its "SLA missed if" conditions are true. Enable SLAs and auto reassign on each
+                        distributor.
+                    </p>
+                    <lightning-combobox
+                        label="SLA hours"
+                        options={hoursOptions}
+                        value={team.SLA_Respect_Hours__c}
+                        data-field="SLA_Respect_Hours__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-combobox>
+                    <lightning-input
+                        type="checkbox"
+                        label="Apply Active Status to SLAs (stop when the record leaves Active Status)"
+                        checked={team.Apply_Active_Status_To_SLAs__c}
+                        data-field="Apply_Active_Status_To_SLAs__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-input>
+                    <template for:each={slaRows} for:item="s">
+                        <div key={s.key} class="slds-box slds-box_x-small slds-m-top_x-small">
+                            <div class="slds-grid slds-wrap slds-gutters_x-small slds-grid_vertical-align-end">
+                                <div class="slds-col slds-size_1-of-6">
+                                    <lightning-input
+                                        type="number"
+                                        label="Checkpoint"
+                                        value={s.sla.Checkpoint__c}
+                                        data-key={s.key}
+                                        data-field="Checkpoint__c"
+                                        onchange={handleSlaField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-6">
+                                    <lightning-input
+                                        label="Name"
+                                        value={s.sla.Name}
+                                        data-key={s.key}
+                                        data-field="Name"
+                                        onchange={handleSlaField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-combobox
+                                        label="Alert type"
+                                        options={alertTypes}
+                                        value={s.sla.Alert_Type__c}
+                                        data-key={s.key}
+                                        data-field="Alert_Type__c"
+                                        onchange={handleSlaField}
+                                    ></lightning-combobox>
+                                </div>
+                                <template lwc:if={s.isCustomDate}>
+                                    <div class="slds-col slds-size_1-of-4">
+                                        <lightning-input
+                                            label="SLA check after field"
+                                            value={s.sla.Check_After_Field__c}
+                                            data-key={s.key}
+                                            data-field="Check_After_Field__c"
+                                            onchange={handleSlaField}
+                                        ></lightning-input>
+                                    </div>
+                                </template>
+                                <template lwc:else>
+                                    <div class="slds-col slds-size_1-of-4">
+                                        <lightning-input
+                                            type="number"
+                                            label={s.minutesLabel}
+                                            value={s.sla.Minutes_After_Assignment__c}
+                                            data-key={s.key}
+                                            data-field="Minutes_After_Assignment__c"
+                                            onchange={handleSlaField}
+                                        ></lightning-input>
+                                    </div>
+                                </template>
+                                <div class="slds-col slds-no-flex">
+                                    <lightning-button-icon
+                                        icon-name="utility:delete"
+                                        alternative-text="Remove checkpoint"
+                                        data-key={s.key}
+                                        onclick={handleRemoveSla}
+                                    ></lightning-button-icon>
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-gutters_x-small">
+                                <div class="slds-col">
+                                    <lightning-input
+                                        label="Only for stamp (optional, Group:Value)"
+                                        value={s.sla.Stamp_Value__c}
+                                        data-key={s.key}
+                                        data-field="Stamp_Value__c"
+                                        onchange={handleSlaField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-input
+                                        type="checkbox"
+                                        label="Notify assignee"
+                                        checked={s.sla.Notify_Assignee__c}
+                                        data-key={s.key}
+                                        data-field="Notify_Assignee__c"
+                                        onchange={handleSlaField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-input
+                                        type="checkbox"
+                                        label="Notify manager"
+                                        checked={s.sla.Notify_Manager__c}
+                                        data-key={s.key}
+                                        data-field="Notify_Manager__c"
+                                        onchange={handleSlaField}
+                                    ></lightning-input>
+                                </div>
+                            </div>
+                            <c-de-condition-builder
+                                label="SLA missed if (blank = missed whenever the checkpoint is reached)"
+                                object-name={team.Object_API_Name__c}
+                                conditions={s.conditions}
+                                logic={s.sla.Condition_Logic__c}
+                                show-logic
+                                include-classifier
+                                data-key={s.key}
+                                onchange={handleSlaConditions}
+                            ></c-de-condition-builder>
+                        </div>
+                    </template>
+                    <div class="slds-m-top_small">
+                        <template lwc:if={canAddSla}
+                            ><lightning-button label="Add checkpoint" icon-name="utility:add" onclick={handleAddSla}></lightning-button
+                        ></template>
+                        <template lwc:if={canEdit}
+                            ><lightning-button
+                                class="slds-m-left_x-small"
+                                variant="brand"
+                                label="Save tracking and SLAs"
+                                onclick={handleSaveSlas}
+                            ></lightning-button
+                        ></template>
+                    </div>
+                </template>
+
+                <!-- ===================== REJECTION ===================== -->
+                <template lwc:if={show.rejection}>
+                    <lightning-combobox
+                        label="Daily assignment rejection limit"
+                        options={rejectionLimits}
+                        value={team.Rejection_Limit__c}
+                        data-field="Rejection_Limit__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-combobox>
+                    <template lwc:if={isLimitedRejection}>
+                        <lightning-input
+                            type="number"
+                            label="Rejections per user per day"
+                            value={team.Rejections_Per_Day__c}
+                            data-field="Rejections_Per_Day__c"
+                            onchange={handleTeamField}
+                            disabled={readOnly}
+                        ></lightning-input>
+                    </template>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                        Enable rejection, reject-to, field updates and replacement on each distributor. Reject reasons are set in Distribution Settings.
+                    </p>
+                    <template lwc:if={canEdit}
+                        ><lightning-button class="slds-m-top_small" variant="brand" label="Save rejection settings" onclick={handleSaveTeam}></lightning-button
+                    ></template>
+                </template>
+
+                <!-- ===================== POST ASSIGNMENT ===================== -->
+                <template lwc:if={show.post}>
+                    <lightning-input
+                        type="toggle"
+                        label="Object Sync: related records follow the new owner"
+                        checked={team.Object_Sync_Enabled__c}
+                        data-field="Object_Sync_Enabled__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-input>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                        Configure sync actions on the Distribution Sync tab. Field updates and notifications on assignment are set on each distributor.
+                    </p>
+                    <template lwc:if={canEdit}
+                        ><lightning-button class="slds-m-top_small" variant="brand" label="Save" onclick={handleSaveTeam}></lightning-button
+                    ></template>
+                </template>
+
+                <!-- ===================== SETTINGS ===================== -->
+                <template lwc:if={show.settings}>
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                label="Team name"
+                                required
+                                value={team.Name}
+                                data-field="Name"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-combobox
+                                label="Distribution object"
+                                options={objectOptions}
+                                value={team.Object_API_Name__c}
+                                data-field="Object_API_Name__c"
+                                onchange={handleTeamField}
+                                disabled={objectLocked}
+                                field-level-help="Cannot be changed after the team is created."
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-combobox
+                                label="Team type"
+                                options={teamTypes}
+                                value={team.Team_Type__c}
+                                data-field="Team_Type__c"
+                                onchange={handleTeamField}
+                                disabled={objectLocked}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                label="Assignment field"
+                                value={team.Assignment_Field__c}
+                                data-field="Assignment_Field__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                                field-level-help="OwnerId or any User lookup. Can only change while the team has no distributors."
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="number"
+                                label="Execution order"
+                                value={team.Execution_Order__c}
+                                data-field="Execution_Order__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-combobox
+                                label="Round robin level"
+                                options={rrLevels}
+                                value={team.Round_Robin_Level__c}
+                                data-field="Round_Robin_Level__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-combobox
+                                label="Load balancing type"
+                                options={lbTypes}
+                                value={team.Load_Balancing_Type__c}
+                                data-field="Load_Balancing_Type__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-combobox
+                                label="Load balancing level"
+                                options={rrLevels}
+                                value={team.Load_Balancing_Level__c}
+                                data-field="Load_Balancing_Level__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-combobox
+                                label="Active cap and balance by"
+                                options={balanceBy}
+                                value={team.Balance_By__c}
+                                data-field="Balance_By__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-combobox>
+                        </div>
+                        <template lwc:if={isFieldBalance}>
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input
+                                    label="Balance field (numeric)"
+                                    value={team.Balance_Field__c}
+                                    data-field="Balance_Field__c"
+                                    onchange={handleTeamField}
+                                    disabled={readOnly}
+                                ></lightning-input>
+                            </div>
+                        </template>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                label="Active status field"
+                                value={team.Active_Status_Field__c}
+                                data-field="Active_Status_Field__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                                field-level-help="Records not in active status are not picked up, and active caps and balancing count them."
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                label="Active status values (separated by ;)"
+                                value={team.Active_Status_Values__c}
+                                data-field="Active_Status_Values__c"
+                                onchange={handleTeamField}
+                                disabled={readOnly}
+                            ></lightning-input>
+                        </div>
+                    </div>
+                    <c-de-record-picker
+                        class="slds-m-top_small"
+                        label="Team managers (Team Manager permission set)"
+                        kind="User"
+                        multiple
+                        value={team.Manager_User_Ids__c}
+                        onchange={handleManagers}
+                        disabled={readOnly}
+                    ></c-de-record-picker>
+                    <lightning-textarea
+                        label="Description"
+                        value={team.Description__c}
+                        data-field="Description__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                    ></lightning-textarea>
+                    <c-de-condition-builder
+                        class="slds-m-top_small"
+                        label="Team filters (apply to every distributor)"
+                        object-name={team.Object_API_Name__c}
+                        conditions={teamFilters}
+                        logic={teamLogic}
+                        show-logic
+                        include-classifier
+                        read-only={readOnly}
+                        onchange={handleTeamFilters}
+                    ></c-de-condition-builder>
+                    <template lwc:if={teamId}>
+                        <h3 class="slds-text-heading_small slds-m-top_medium">Dynamic team members</h3>
+                        <lightning-input
+                            type="toggle"
+                            label="Keep membership in sync with User conditions"
+                            checked={team.Dynamic_Members_Enabled__c}
+                            data-field="Dynamic_Members_Enabled__c"
+                            onchange={handleTeamField}
+                            disabled={readOnly}
+                        ></lightning-input>
+                        <c-de-condition-builder
+                            label="Users matching"
+                            object-name="User"
+                            conditions={dynamicConditions}
+                            logic={team.Dynamic_Members_Logic__c}
+                            show-logic
+                            read-only={readOnly}
+                            onchange={handleDynamic}
+                        ></c-de-condition-builder>
+                        <template lwc:if={canEdit}><lightning-button label="Sync members now" onclick={handleSyncDynamic}></lightning-button></template>
+                    </template>
+                    <template lwc:if={canEdit}>
+                        <lightning-button
+                            class="slds-m-top_medium slds-show"
+                            variant="brand"
+                            label="Save team settings"
+                            onclick={handleSaveTeam}
+                            disabled={busy}
+                        ></lightning-button>
+                    </template>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>

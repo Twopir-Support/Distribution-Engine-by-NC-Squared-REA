@@ -1,0 +1,574 @@
+<template>
+    <div class="slds-box">
+        <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+            <h2 class="slds-text-heading_medium">{title}</h2>
+            <div>
+                <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+                <lightning-button class="slds-m-left_x-small" variant="brand" label="Save" onclick={handleSave} disabled={saving}></lightning-button>
+            </div>
+        </div>
+
+        <h3 class="slds-section-title_divider">Details</h3>
+        <div class="slds-grid slds-wrap slds-gutters_small">
+            <div class="slds-col slds-size_1-of-2">
+                <lightning-input label="Distributor name" required value={d.Name} data-field="Name" onchange={handleField}></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-4">
+                <lightning-combobox label="Type" options={typeOptions} value={d.Type__c} data-field="Type__c" onchange={handleField}></lightning-combobox>
+            </div>
+            <div class="slds-col slds-size_1-of-4">
+                <lightning-input type="number" label="Order" value={d.Order__c} data-field="Order__c" onchange={handleField}></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-1">
+                <lightning-input label="Description" value={d.Description__c} data-field="Description__c" onchange={handleField}></lightning-input>
+            </div>
+        </div>
+
+        <h3 class="slds-section-title_divider slds-m-top_medium">Method (how)</h3>
+        <div class="slds-grid slds-wrap slds-gutters_small">
+            <template lwc:if={isManual}>
+                <p class="slds-col slds-size_1-of-1 slds-text-body_small slds-text-color_weak">
+                    Managers choose the member from the record page. A team can have one manual distributor.
+                </p>
+            </template>
+            <template lwc:else>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        label="Method"
+                        options={methodOptions}
+                        value={d.Method__c}
+                        data-field="Method__c"
+                        onchange={handleField}
+                    ></lightning-combobox>
+                </div>
+            </template>
+            <template lwc:if={isPull}>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="number"
+                        min="1"
+                        max="100"
+                        label="Number of records to pull (1-100)"
+                        value={d.Pull_Count__c}
+                        data-field="Pull_Count__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+            </template>
+            <template lwc:if={isTrigger}>
+                <div class="slds-col slds-size_1-of-2">
+                    <c-de-record-picker
+                        label="Default owner (when nobody can be assigned)"
+                        kind="Both"
+                        object-name={objectName}
+                        value={d.Default_Owner_Id__c}
+                        data-field="Default_Owner_Id__c"
+                        onchange={handlePicker}
+                    ></c-de-record-picker>
+                </div>
+            </template>
+            <template lwc:if={isDynamic}>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        label="Field holding the owner's User Id"
+                        value={d.Dynamic_Owner_Field__c}
+                        data-field="Dynamic_Owner_Field__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+            </template>
+        </div>
+        <template lwc:if={isRotation}>
+            <lightning-input
+                type="toggle"
+                label="Sticky assignment (same match value goes to the same member)"
+                checked={d.Sticky_Enabled__c}
+                data-field="Sticky_Enabled__c"
+                onchange={handleField}
+            ></lightning-input>
+            <template lwc:if={showStickySettings}>
+                <div class="slds-grid slds-wrap slds-gutters_small">
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning-input
+                            label="Sticky match field"
+                            value={d.Sticky_Field__c}
+                            placeholder="e.g. Email"
+                            data-field="Sticky_Field__c"
+                            onchange={handleField}
+                        ></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning-input
+                            type="number"
+                            label="Sticky period (days)"
+                            value={d.Sticky_Days__c}
+                            data-field="Sticky_Days__c"
+                            onchange={handleField}
+                        ></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning-combobox
+                            label="Sticky match level"
+                            options={stickyLevels}
+                            value={d.Sticky_Level__c}
+                            data-field="Sticky_Level__c"
+                            onchange={handleField}
+                        ></lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-combobox
+                            label="Sticky and caps"
+                            options={stickyCaps}
+                            value={d.Sticky_Cap_Behaviour__c}
+                            data-field="Sticky_Cap_Behaviour__c"
+                            onchange={handleField}
+                        ></lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input
+                            type="checkbox"
+                            label="Retain sticky when user is unavailable"
+                            checked={d.Sticky_Retain_Unavailable__c}
+                            data-field="Sticky_Retain_Unavailable__c"
+                            onchange={handleField}
+                        ></lightning-input>
+                        <lightning-input
+                            type="checkbox"
+                            label="Retain sticky when user is offline in widget"
+                            checked={d.Sticky_Retain_Offline__c}
+                            data-field="Sticky_Retain_Offline__c"
+                            onchange={handleField}
+                        ></lightning-input>
+                        <lightning-input
+                            type="checkbox"
+                            label="Disable round robin (only assign sticky matches)"
+                            checked={d.Sticky_Only__c}
+                            data-field="Sticky_Only__c"
+                            onchange={handleField}
+                        ></lightning-input>
+                    </div>
+                </div>
+            </template>
+        </template>
+        <template lwc:if={isLookup}>
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-input
+                        label="Lookup to (object)"
+                        value={d.Lookup_Object__c}
+                        placeholder="e.g. Account"
+                        data-field="Lookup_Object__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-input
+                        label="Record field"
+                        value={d.Lookup_Record_Field__c}
+                        placeholder="e.g. Company"
+                        data-field="Lookup_Record_Field__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-input
+                        label="Equals target field"
+                        value={d.Lookup_Target_Field__c}
+                        placeholder="e.g. Name"
+                        data-field="Lookup_Target_Field__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-input
+                        label="Assign to (user field on match)"
+                        value={d.Lookup_Assign_Field__c}
+                        placeholder="OwnerId"
+                        data-field="Lookup_Assign_Field__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-input
+                        label="Tie breaker field"
+                        value={d.Lookup_Tie_Breaker_Field__c}
+                        placeholder="LastModifiedDate"
+                        data-field="Lookup_Tie_Breaker_Field__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-combobox
+                        label="Tie breaker"
+                        options={tieDirections}
+                        value={d.Lookup_Tie_Breaker_Direction__c}
+                        data-field="Lookup_Tie_Breaker_Direction__c"
+                        onchange={handleField}
+                    ></lightning-combobox>
+                </div>
+            </div>
+            <c-de-condition-builder
+                label="Where (on the looked-up object)"
+                object-name={d.Lookup_Object__c}
+                conditions={lookupWhere}
+                logic={d.Lookup_Where_Logic__c}
+                show-logic
+                max-rows="3"
+                onchange={handleLookupWhere}
+            ></c-de-condition-builder>
+        </template>
+        <template lwc:if={isRelated}>
+            <div class="slds-grid slds-gutters_small">
+                <div class="slds-col">
+                    <lightning-input
+                        label="Assign using related object"
+                        value={d.Related_Field__c}
+                        placeholder="DE.MatchedAccount, DE.MatchedContact, DE.MatchedLead or AccountId"
+                        data-field="Related_Field__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col">
+                    <lightning-input
+                        label="Otherwise use related object"
+                        value={d.Related_Secondary_Field__c}
+                        data-field="Related_Secondary_Field__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+            </div>
+        </template>
+
+        <template lwc:if={needsSource}>
+            <h3 class="slds-section-title_divider slds-m-top_medium">Source (which records)</h3>
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-combobox
+                        label="Source"
+                        options={sourceOptions}
+                        value={d.Source_Type__c}
+                        data-field="Source_Type__c"
+                        onchange={handleField}
+                    ></lightning-combobox>
+                </div>
+                <template lwc:if={isFieldSource}>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning-input
+                            label="Source field (picklist)"
+                            value={d.Source_Field__c}
+                            data-field="Source_Field__c"
+                            onchange={handleField}
+                        ></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-6">
+                        <lightning-input
+                            label="Ready value"
+                            value={d.Source_Ready_Value__c}
+                            data-field="Source_Ready_Value__c"
+                            onchange={handleField}
+                        ></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-6">
+                        <lightning-input
+                            label="Value after assignment"
+                            value={d.Source_After_Value__c}
+                            data-field="Source_After_Value__c"
+                            onchange={handleField}
+                        ></lightning-input>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <div class="slds-col slds-size_2-of-3">
+                        <c-de-record-picker
+                            label="Source queue or holding user"
+                            kind={sourceKind}
+                            object-name={objectName}
+                            value={d.Source_Id__c}
+                            data-field="Source_Id__c"
+                            onchange={handlePicker}
+                        ></c-de-record-picker>
+                    </div>
+                </template>
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-input
+                        label="Custom sort order"
+                        value={d.Sort_Order__c}
+                        placeholder="e.g. Rating DESC, CreatedDate ASC (default CreatedDate ASC)"
+                        data-field="Sort_Order__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+            </div>
+        </template>
+        <c-de-condition-builder
+            class="slds-m-top_small"
+            label="Field filters"
+            object-name={objectName}
+            conditions={filters}
+            logic={d.Filter_Logic__c}
+            show-logic
+            include-classifier
+            max-rows={maxFilters}
+            onchange={handleFilters}
+        ></c-de-condition-builder>
+
+        <h3 class="slds-section-title_divider slds-m-top_medium">Team member filter (who)</h3>
+        <div class="slds-grid slds-wrap slds-gutters_small">
+            <div class="slds-col slds-size_1-of-3">
+                <lightning-combobox
+                    label="Assign to"
+                    options={assignToOptions}
+                    value={d.Assign_To__c}
+                    data-field="Assign_To__c"
+                    onchange={handleField}
+                ></lightning-combobox>
+            </div>
+            <template lwc:if={isSelected}>
+                <div class="slds-col slds-size_2-of-3">
+                    <c-de-record-picker
+                        label="Selected members"
+                        kind={memberKind}
+                        multiple
+                        value={d.Selected_Member_Ids__c}
+                        data-field="Selected_Member_Ids__c"
+                        onchange={handlePicker}
+                    ></c-de-record-picker>
+                </div>
+            </template>
+            <div class="slds-col slds-size_1-of-3">
+                <lightning-input
+                    label="Exclude members field"
+                    value={d.Exclude_Members_Field__c}
+                    data-field="Exclude_Members_Field__c"
+                    onchange={handleField}
+                    field-level-help="Text or user lookup field holding User Ids that must not receive the record."
+                ></lightning-input>
+            </div>
+        </div>
+        <c-de-condition-builder
+            label="Member filters (tags, territory, stamps)"
+            mode="member"
+            conditions={memberFilters}
+            max-rows="5"
+            onchange={handleMemberFilters}
+        ></c-de-condition-builder>
+
+        <h3 class="slds-section-title_divider slds-m-top_medium">Availability, weighting and caps</h3>
+        <lightning-input
+            type="checkbox"
+            label="Assign if user is unavailable (ignores out of office, hours and toggle; holidays still apply)"
+            checked={d.Assign_If_Unavailable__c}
+            data-field="Assign_If_Unavailable__c"
+            onchange={handleField}
+        ></lightning-input>
+        <lightning-input
+            type="checkbox"
+            label="Assign if user is offline in widget"
+            checked={d.Assign_If_Offline__c}
+            data-field="Assign_If_Offline__c"
+            onchange={handleField}
+        ></lightning-input>
+        <lightning-input
+            type="checkbox"
+            label="Use weighting"
+            checked={d.Weighting_Enabled__c}
+            data-field="Weighting_Enabled__c"
+            onchange={handleField}
+        ></lightning-input>
+        <lightning-input
+            type="checkbox"
+            label="Respect team caps"
+            checked={d.Respect_Team_Caps__c}
+            data-field="Respect_Team_Caps__c"
+            onchange={handleField}
+        ></lightning-input>
+        <template for:each={capRows} for:item="c">
+            <div key={c.key} class="slds-grid slds-gutters_x-small slds-grid_vertical-align-end slds-m-top_x-small">
+                <div class="slds-col">
+                    <lightning-combobox
+                        label="Distributor cap period"
+                        options={capPeriods}
+                        value={c.cap.Period__c}
+                        data-key={c.key}
+                        data-field="Period__c"
+                        onchange={handleCapField}
+                    ></lightning-combobox>
+                </div>
+                <template lwc:if={c.isCustom}>
+                    <div class="slds-col">
+                        <lightning-input
+                            type="number"
+                            label="Length"
+                            value={c.cap.Custom_Length__c}
+                            data-key={c.key}
+                            data-field="Custom_Length__c"
+                            onchange={handleCapField}
+                        ></lightning-input>
+                    </div>
+                </template>
+                <div class="slds-col">
+                    <lightning-input
+                        type="number"
+                        label="Cap"
+                        value={c.cap.Default_Cap__c}
+                        data-key={c.key}
+                        data-field="Default_Cap__c"
+                        onchange={handleCapField}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-no-flex">
+                    <lightning-button-icon
+                        icon-name="utility:delete"
+                        alternative-text="Remove cap"
+                        data-key={c.key}
+                        onclick={handleRemoveCap}
+                    ></lightning-button-icon>
+                </div>
+            </div>
+        </template>
+        <lightning-button class="slds-m-top_x-small" label="Add distributor cap" icon-name="utility:add" onclick={handleAddCap}></lightning-button>
+
+        <h3 class="slds-section-title_divider slds-m-top_medium">Post assignment</h3>
+        <lightning-textarea
+            label="Update fields on assignment (one per line: Field__c=Value)"
+            value={d.Field_Updates__c}
+            data-field="Field_Updates__c"
+            onchange={handleField}
+        ></lightning-textarea>
+        <lightning-input
+            type="checkbox"
+            label="Salesforce notification to the assignee"
+            checked={d.Send_Notification__c}
+            data-field="Send_Notification__c"
+            onchange={handleField}
+        ></lightning-input>
+        <lightning-input
+            type="checkbox"
+            label="Email notification to the assignee"
+            checked={d.Send_Email__c}
+            data-field="Send_Email__c"
+            onchange={handleField}
+        ></lightning-input>
+
+        <h3 class="slds-section-title_divider slds-m-top_medium">SLAs and auto reassign</h3>
+        <lightning-input
+            type="checkbox"
+            label="Apply the team's SLA checkpoints to records assigned by this distributor"
+            checked={d.SLA_Enabled__c}
+            data-field="SLA_Enabled__c"
+            onchange={handleField}
+        ></lightning-input>
+        <lightning-input
+            type="checkbox"
+            label="Auto reassign on missed SLA"
+            checked={d.Auto_Reassign__c}
+            data-field="Auto_Reassign__c"
+            onchange={handleField}
+        ></lightning-input>
+        <template lwc:if={showReassign}>
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-input
+                        type="number"
+                        min="1"
+                        max="3"
+                        label="Reassign from SLA checkpoint"
+                        value={d.Reassign_From_SLA__c}
+                        data-field="Reassign_From_SLA__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_2-of-3">
+                    <c-de-record-picker
+                        label="Reassign to (queue to redistribute, or user)"
+                        kind="Both"
+                        object-name={objectName}
+                        value={d.Reassign_To_Id__c}
+                        data-field="Reassign_To_Id__c"
+                        onchange={handlePicker}
+                    ></c-de-record-picker>
+                </div>
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-textarea
+                        label="Update fields on reassignment (Field__c=Value per line)"
+                        value={d.Reassign_Field_Updates__c}
+                        data-field="Reassign_Field_Updates__c"
+                        onchange={handleField}
+                    ></lightning-textarea>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="checkbox"
+                        label="Toggle the user offline on reassignment"
+                        checked={d.Toggle_User_Off__c}
+                        data-field="Toggle_User_Off__c"
+                        onchange={handleField}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        label="Remove sticky on reassignment or rejection"
+                        options={removeSticky}
+                        value={d.Remove_Sticky_On_Reassign__c}
+                        data-field="Remove_Sticky_On_Reassign__c"
+                        onchange={handleField}
+                    ></lightning-combobox>
+                </div>
+            </div>
+        </template>
+
+        <h3 class="slds-section-title_divider slds-m-top_medium">Assignment rejection</h3>
+        <lightning-input
+            type="checkbox"
+            label="Allow assignment rejection"
+            checked={d.Rejection_Enabled__c}
+            data-field="Rejection_Enabled__c"
+            onchange={handleField}
+        ></lightning-input>
+        <template lwc:if={showReject}>
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                <div class="slds-col slds-size_1-of-2">
+                    <c-de-record-picker
+                        label="Reject to"
+                        kind="Both"
+                        object-name={objectName}
+                        value={d.Reject_To_Id__c}
+                        data-field="Reject_To_Id__c"
+                        onchange={handlePicker}
+                    ></c-de-record-picker>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        label="Replace rejected records"
+                        options={replaceOptions}
+                        value={d.Replace_Rejected__c}
+                        data-field="Replace_Rejected__c"
+                        onchange={handleField}
+                    ></lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-textarea
+                        label="Update fields on rejection (Field__c=Value per line)"
+                        value={d.Reject_Field_Updates__c}
+                        data-field="Reject_Field_Updates__c"
+                        onchange={handleField}
+                    ></lightning-textarea>
+                </div>
+            </div>
+        </template>
+        <template lwc:if={isManual}>
+            <lightning-input
+                type="checkbox"
+                label="Treat manual assignment as rejection by the previous owner"
+                checked={d.Treat_Manual_As_Rejection__c}
+                data-field="Treat_Manual_As_Rejection__c"
+                onchange={handleField}
+            ></lightning-input>
+        </template>
+
+        <div class="slds-m-top_medium slds-text-align_right">
+            <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save" onclick={handleSave} disabled={saving}></lightning-button>
+        </div>
+    </div>
+</template>

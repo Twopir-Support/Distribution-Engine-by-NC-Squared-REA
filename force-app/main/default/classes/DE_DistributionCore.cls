@@ -237,7 +237,11 @@ public without sharing class DE_DistributionCore {
                     stickyKeys.put(r.Id, k);
                 }
             }
-            stickyOwners = DE_StickyService.lookup(new Set<String>(stickyKeys.values()), dc.dist.Sticky_Days__c == null ? 90 : dc.dist.Sticky_Days__c.intValue(), ctx.now);
+            stickyOwners = DE_StickyService.lookup(
+                new Set<String>(stickyKeys.values()),
+                dc.dist.Sticky_Days__c == null ? 90 : dc.dist.Sticky_Days__c.intValue(),
+                ctx.now
+            );
         }
 
         for (SObject rec : records) {

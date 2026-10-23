@@ -1,0 +1,80 @@
+<template>
+    <lightning-card title="Distribution Tags" icon-name="standard:topic">
+        <div class="slds-p-horizontal_medium">
+            <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                Tags are written as Collection:Tag (for example Language:French or Tier:Gold) and apply in every team. Use them in distributor member filters,
+                tag weighting and caps by tag.
+            </p>
+            <template lwc:if={error}><p class="slds-text-color_error">{error}</p></template>
+            <lightning-tabset>
+                <lightning-tab label="Tag Assignment">
+                    <lightning-input type="search" label="Filter users or tags" value={filter} onchange={handleFilter}></lightning-input>
+                    <template lwc:if={editing}>
+                        <div class="slds-box slds-m-top_small">
+                            <p class="slds-text-heading_small">{editing.name}</p>
+                            <lightning-textarea label="Tags (one per line, Collection:Tag)" value={editTags} onchange={handleEditTags}></lightning-textarea>
+                            <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save" onclick={handleSave}></lightning-button>
+                        </div>
+                    </template>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Tags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={visibleUsers} for:item="u">
+                                <tr key={u.userId}>
+                                    <td>
+                                        <a data-id={u.userId} onclick={handleEdit}>{u.name}</a>
+                                    </td>
+                                    <td>
+                                        <template for:each={u.pills} for:item="p"><span key={p.key} class="slds-badge">{p.label}</span></template>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </lightning-tab>
+                <lightning-tab label="Tag Collections">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr>
+                                <th>Collection</th>
+                                <th>Tags in use</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={collections} for:item="c"
+                                ><tr key={c.key}>
+                                    <td>{c.name}</td>
+                                    <td class="slds-cell-wrap">{c.tags}</td>
+                                </tr></template
+                            >
+                        </tbody>
+                    </table>
+                </lightning-tab>
+                <lightning-tab label="Clone Tags">
+                    <div class="slds-grid slds-gutters_small">
+                        <div class="slds-col">
+                            <lightning-combobox label="Copy tags from" options={userOptions} value={cloneFrom} onchange={handleCloneFrom}></lightning-combobox>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-dual-listbox
+                                label="To users"
+                                source-label="Users"
+                                selected-label="Selected"
+                                options={userOptions}
+                                value={cloneTo}
+                                onchange={handleCloneTo}
+                            ></lightning-dual-listbox>
+                        </div>
+                    </div>
+                    <lightning-button class="slds-m-top_small" variant="brand" label="Clone tags" onclick={handleClone}></lightning-button>
+                </lightning-tab>
+            </lightning-tabset>
+        </div>
+    </lightning-card>
+</template>

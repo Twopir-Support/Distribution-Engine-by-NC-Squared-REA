@@ -1,0 +1,691 @@
+<template>
+    <lightning-card title="Distribution Classifier" icon-name="standard:category">
+        <div slot="actions" class="object-picker">
+            <lightning-combobox label="Object" variant="label-inline" options={objectOptions} value={objectName} onchange={handleObject}></lightning-combobox>
+        </div>
+        <div class="slds-p-horizontal_medium">
+            <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                The classifier stamps new records before distributors see them. Distributors wait until classification is done.
+            </p>
+            <template lwc:if={error}><p class="slds-text-color_error">{error}</p></template>
+            <lightning-tabset>
+                <!-- Territories -->
+                <lightning-tab label="Territories" value="territories" onactive={handleTab}>
+                    <div class="slds-m-bottom_small">
+                        <lightning-button label="New territory" icon-name="utility:add" onclick={handleNewTerritory}></lightning-button>
+                        <template for:each={maps} for:item="m">
+                            <span key={m.key} class="slds-m-left_small">
+                                {m.name}:
+                                <lightning-button
+                                    variant="base"
+                                    label="Activate"
+                                    data-map={m.value}
+                                    data-status="Active"
+                                    onclick={handleMapStatus}
+                                ></lightning-button>
+                                /
+                                <lightning-button
+                                    variant="base"
+                                    label="Back to draft"
+                                    data-map={m.value}
+                                    data-status="Draft"
+                                    onclick={handleMapStatus}
+                                ></lightning-button>
+                            </span>
+                        </template>
+                    </div>
+                    <template lwc:if={territoryEdit}>
+                        <div class="slds-box slds-m-bottom_small">
+                            <div class="slds-grid slds-wrap slds-gutters_small">
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Territory name"
+                                        value={territoryEdit.Name}
+                                        data-field="Name"
+                                        onchange={handleTerritoryField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Map"
+                                        value={territoryEdit.Map__c}
+                                        placeholder="Default map"
+                                        data-field="Map__c"
+                                        onchange={handleTerritoryField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-6">
+                                    <lightning-input
+                                        type="number"
+                                        label="Order"
+                                        value={territoryEdit.Priority__c}
+                                        data-field="Priority__c"
+                                        onchange={handleTerritoryField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-6">
+                                    <lightning-input
+                                        label="Stamp field"
+                                        value={territoryEdit.Stamp_Field__c}
+                                        placeholder="DE_Territory__c"
+                                        data-field="Stamp_Field__c"
+                                        onchange={handleTerritoryField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-textarea
+                                        label="Countries (separated by ;)"
+                                        value={territoryEdit.Countries__c}
+                                        data-field="Countries__c"
+                                        onchange={handleTerritoryField}
+                                    ></lightning-textarea>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-textarea
+                                        label="States (names or codes, separated by ;)"
+                                        value={territoryEdit.States__c}
+                                        data-field="States__c"
+                                        onchange={handleTerritoryField}
+                                    ></lightning-textarea>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-textarea
+                                        label="Postal codes (codes, prefix*, low..high; separated by ;)"
+                                        value={territoryEdit.Postal_Codes__c}
+                                        data-field="Postal_Codes__c"
+                                        onchange={handleTerritoryField}
+                                    ></lightning-textarea>
+                                </div>
+                            </div>
+                            <c-de-condition-builder
+                                label="Extra conditions (optional)"
+                                object-name={objectName}
+                                conditions={territoryConditions}
+                                logic={territoryEdit.Condition_Logic__c}
+                                show-logic
+                                onchange={handleTerritoryConditions}
+                            ></c-de-condition-builder>
+                            <lightning-button label="Cancel" onclick={handleCancelTerritory}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save" onclick={handleSaveTerritory}></lightning-button>
+                        </div>
+                    </template>
+                    <p class="slds-text-body_small slds-text-color_weak">
+                        Territories are checked smallest order first: put postal codes before states, and states before countries. The first match wins.
+                    </p>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_x-small">
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Territory</th>
+                                <th>Map</th>
+                                <th>Status</th>
+                                <th>Countries</th>
+                                <th>States</th>
+                                <th>Postal codes</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={territories} for:item="t">
+                                <tr key={t.key}>
+                                    <td>{t.rec.Priority__c}</td>
+                                    <td>
+                                        <a data-id={t.key} onclick={handleEditTerritory}>{t.rec.Name}</a>
+                                    </td>
+                                    <td>{t.mapName}</td>
+                                    <td><span class={t.badge}>{t.rec.Status__c}</span></td>
+                                    <td class="slds-cell-wrap">{t.rec.Countries__c}</td>
+                                    <td class="slds-cell-wrap">{t.rec.States__c}</td>
+                                    <td class="slds-cell-wrap">{t.rec.Postal_Codes__c}</td>
+                                    <td>
+                                        <lightning-button-icon
+                                            icon-name="utility:arrowup"
+                                            alternative-text="Move up"
+                                            data-id={t.key}
+                                            data-action="up"
+                                            onclick={handleTerritoryAction}
+                                        ></lightning-button-icon>
+                                        <lightning-button-icon
+                                            icon-name="utility:arrowdown"
+                                            alternative-text="Move down"
+                                            data-id={t.key}
+                                            data-action="down"
+                                            onclick={handleTerritoryAction}
+                                        ></lightning-button-icon>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="Delete"
+                                            data-id={t.key}
+                                            data-action="delete"
+                                            onclick={handleTerritoryAction}
+                                        ></lightning-button-icon>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <div class="slds-box slds-m-top_medium">
+                        <h3 class="slds-text-heading_small">Import territories</h3>
+                        <p class="slds-text-body_small slds-text-color_weak">
+                            One territory per line: Name, Countries, States, Postal codes (lists inside a column use ;). Imported territories are drafts.
+                        </p>
+                        <lightning-input label="Map" value={importMap} onchange={handleImportMap}></lightning-input>
+                        <lightning-textarea
+                            label="Lines"
+                            value={importText}
+                            onchange={handleImportText}
+                            placeholder="East Coast,United States,NY;NJ;MA,"
+                        ></lightning-textarea>
+                        <lightning-button label="Import" onclick={handleImport}></lightning-button>
+                    </div>
+                </lightning-tab>
+
+                <!-- Lead matching -->
+                <lightning-tab label="Lead Matching" value="matching" onactive={handleTab}>
+                    <lightning-button label="New matching rule" icon-name="utility:add" onclick={handleNewMatch}></lightning-button>
+                    <template lwc:if={matchEdit}>
+                        <div class="slds-box slds-m-top_small">
+                            <div class="slds-grid slds-wrap slds-gutters_small">
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Rule name"
+                                        value={matchEdit.Name}
+                                        data-field="Name"
+                                        onchange={handleMatchField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-combobox
+                                        label="Match type"
+                                        options={matchTypes}
+                                        value={matchEdit.Match_Type__c}
+                                        data-field="Match_Type__c"
+                                        onchange={handleMatchField}
+                                    ></lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-size_1-of-6">
+                                    <lightning-input
+                                        type="number"
+                                        label="Order"
+                                        value={matchEdit.Priority__c}
+                                        data-field="Priority__c"
+                                        onchange={handleMatchField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-6">
+                                    <lightning-input
+                                        type="toggle"
+                                        label="Active"
+                                        checked={matchEdit.Active__c}
+                                        data-field="Active__c"
+                                        onchange={handleMatchField}
+                                    ></lightning-input>
+                                </div>
+                            </div>
+                            <template lwc:if={isAccountMatch}>
+                                <lightning-input
+                                    type="checkbox"
+                                    label="Email domain matching (contact email domains and account website; personal domains never match)"
+                                    checked={matchEdit.Match_Email_Domain__c}
+                                    data-field="Match_Email_Domain__c"
+                                    onchange={handleMatchField}
+                                ></lightning-input>
+                                <lightning-input
+                                    type="checkbox"
+                                    label="Company name matching (normalised, fuzzy)"
+                                    checked={matchEdit.Match_Company_Name__c}
+                                    data-field="Match_Company_Name__c"
+                                    onchange={handleMatchField}
+                                ></lightning-input>
+                                <lightning-input
+                                    type="number"
+                                    label="Fuzzy threshold (%)"
+                                    value={matchEdit.Fuzzy_Threshold__c}
+                                    data-field="Fuzzy_Threshold__c"
+                                    onchange={handleMatchField}
+                                ></lightning-input>
+                            </template>
+                            <template lwc:else>
+                                <lightning-input
+                                    type="checkbox"
+                                    label="Email address matching"
+                                    checked={matchEdit.Match_Email__c}
+                                    data-field="Match_Email__c"
+                                    onchange={handleMatchField}
+                                ></lightning-input>
+                            </template>
+                            <div class="slds-grid slds-wrap slds-gutters_small">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-input
+                                        label="Custom lead field (optional)"
+                                        value={matchEdit.Source_Field__c}
+                                        data-field="Source_Field__c"
+                                        onchange={handleMatchField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-input
+                                        label="Equals target field"
+                                        value={matchEdit.Target_Field__c}
+                                        data-field="Target_Field__c"
+                                        onchange={handleMatchField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-input
+                                        label="Multiple matches: order by field"
+                                        value={matchEdit.Tie_Breaker_Field__c}
+                                        placeholder="LastModifiedDate"
+                                        data-field="Tie_Breaker_Field__c"
+                                        onchange={handleMatchField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-combobox
+                                        label="Direction"
+                                        options={tieDirections}
+                                        value={matchEdit.Tie_Breaker_Direction__c}
+                                        data-field="Tie_Breaker_Direction__c"
+                                        onchange={handleMatchField}
+                                    ></lightning-combobox>
+                                </div>
+                            </div>
+                            <c-de-condition-builder
+                                label="Match filter (candidates must match)"
+                                object-name={matchTarget}
+                                conditions={matchConditions}
+                                logic={matchEdit.Filter_Logic__c}
+                                show-logic
+                                onchange={handleMatchConditions}
+                            ></c-de-condition-builder>
+                            <lightning-button label="Cancel" onclick={handleCancelMatch}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save" onclick={handleSaveMatch}></lightning-button>
+                        </div>
+                    </template>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small">
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Rule</th>
+                                <th>Type</th>
+                                <th>Active</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={matching} for:item="r">
+                                <tr key={r.key}>
+                                    <td>{r.rec.Priority__c}</td>
+                                    <td>
+                                        <a data-id={r.key} onclick={handleEditMatch}>{r.rec.Name}</a>
+                                    </td>
+                                    <td>{r.rec.Match_Type__c}</td>
+                                    <td>{r.rec.Active__c}</td>
+                                    <td>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="Delete"
+                                            data-id={r.key}
+                                            onclick={handleDeleteMatch}
+                                        ></lightning-button-icon>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </lightning-tab>
+
+                <!-- Auto conversion -->
+                <lightning-tab label="Auto Conversion" value="conversion" onactive={handleTab}>
+                    <lightning-button label="New rule" icon-name="utility:add" onclick={handleNewConv}></lightning-button>
+                    <template lwc:if={convEdit}>
+                        <div class="slds-box slds-m-top_small">
+                            <div class="slds-grid slds-wrap slds-gutters_small">
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Rule name"
+                                        value={convEdit.Name}
+                                        data-field="Name"
+                                        onchange={handleConvField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-6">
+                                    <lightning-input
+                                        type="number"
+                                        label="Order"
+                                        value={convEdit.Order__c}
+                                        data-field="Order__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-6">
+                                    <lightning-input
+                                        type="checkbox"
+                                        label="Default rule (runs last)"
+                                        checked={convEdit.Is_Default__c}
+                                        data-field="Is_Default__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        type="toggle"
+                                        label="Active"
+                                        checked={convEdit.Active__c}
+                                        data-field="Active__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-combobox
+                                        label="Match"
+                                        options={convMatches}
+                                        value={convEdit.Match__c}
+                                        data-field="Match__c"
+                                        onchange={handleConvField}
+                                    ></lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-combobox
+                                        label="Action"
+                                        options={convActions}
+                                        value={convEdit.Action__c}
+                                        data-field="Action__c"
+                                        onchange={handleConvField}
+                                    ></lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-combobox
+                                        label="Create opportunity"
+                                        options={convOpps}
+                                        value={convEdit.Create_Opportunity__c}
+                                        data-field="Create_Opportunity__c"
+                                        onchange={handleConvField}
+                                    ></lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-combobox
+                                        label="Owner"
+                                        options={convOwners}
+                                        value={convEdit.Owner_Source__c}
+                                        data-field="Owner_Source__c"
+                                        onchange={handleConvField}
+                                    ></lightning-combobox>
+                                </div>
+                                <template lwc:if={isDefaultUser}>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <c-de-record-picker
+                                            label="Default user"
+                                            kind="User"
+                                            value={convEdit.Default_User_Id__c}
+                                            onchange={handleConvUser}
+                                        ></c-de-record-picker>
+                                    </div>
+                                </template>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Converted lead status"
+                                        value={convEdit.Converted_Status__c}
+                                        data-field="Converted_Status__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Account field update (Field__c=Value)"
+                                        value={convEdit.Account_Field_Update__c}
+                                        data-field="Account_Field_Update__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Contact field update"
+                                        value={convEdit.Contact_Field_Update__c}
+                                        data-field="Contact_Field_Update__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Opportunity field update"
+                                        value={convEdit.Opportunity_Field_Update__c}
+                                        data-field="Opportunity_Field_Update__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                            </div>
+                            <template lwc:if={isDedupe}>
+                                <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+                                    De-duplication merges the new lead into the existing lead and cannot be undone.
+                                </div>
+                                <lightning-input
+                                    type="checkbox"
+                                    label="Copy values into blank fields of the surviving lead"
+                                    checked={convEdit.Copy_Blank_Fields__c}
+                                    data-field="Copy_Blank_Fields__c"
+                                    onchange={handleConvField}
+                                ></lightning-input>
+                                <lightning-input
+                                    label="Surviving lead field update (Field__c=Value)"
+                                    value={convEdit.Survivor_Field_Update__c}
+                                    data-field="Survivor_Field_Update__c"
+                                    onchange={handleConvField}
+                                ></lightning-input>
+                            </template>
+                            <c-de-condition-builder
+                                label="Filters (up to 5)"
+                                object-name="Lead"
+                                conditions={convConditions}
+                                logic={convEdit.Filter_Logic__c}
+                                show-logic
+                                max-rows="5"
+                                onchange={handleConvConditions}
+                            ></c-de-condition-builder>
+                            <lightning-button label="Cancel" onclick={handleCancelConv}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save" onclick={handleSaveConv}></lightning-button>
+                        </div>
+                    </template>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small">
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Rule</th>
+                                <th>Match</th>
+                                <th>Action</th>
+                                <th>Active</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={conversions} for:item="r">
+                                <tr key={r.key}>
+                                    <td>{r.orderLabel}</td>
+                                    <td>
+                                        <a data-id={r.key} onclick={handleEditConv}>{r.rec.Name}</a>
+                                    </td>
+                                    <td>{r.rec.Match__c}</td>
+                                    <td>{r.rec.Action__c}</td>
+                                    <td>{r.rec.Active__c}</td>
+                                    <td>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="Delete"
+                                            data-id={r.key}
+                                            onclick={handleDeleteConv}
+                                        ></lightning-button-icon>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </lightning-tab>
+
+                <!-- Stamp groups -->
+                <lightning-tab label="Stamp Groups" value="stamps" onactive={handleTab}>
+                    <lightning-button label="New stamp group" icon-name="utility:add" onclick={handleNewGroup}></lightning-button>
+                    <template lwc:if={groupEdit}>
+                        <div class="slds-box slds-m-top_small">
+                            <div class="slds-grid slds-gutters_small">
+                                <div class="slds-col">
+                                    <lightning-input
+                                        label="Group name"
+                                        value={groupEdit.Name}
+                                        data-field="Name"
+                                        onchange={handleGroupField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-combobox
+                                        label="Group type"
+                                        options={groupTypes}
+                                        value={groupEdit.Group_Type__c}
+                                        data-field="Group_Type__c"
+                                        onchange={handleGroupField}
+                                    ></lightning-combobox>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-input
+                                        label="Stamp field on record (optional)"
+                                        value={groupEdit.Stamp_Field__c}
+                                        data-field="Stamp_Field__c"
+                                        onchange={handleGroupField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-input
+                                        type="toggle"
+                                        label="Active"
+                                        checked={groupEdit.Active__c}
+                                        data-field="Active__c"
+                                        onchange={handleGroupField}
+                                    ></lightning-input>
+                                </div>
+                            </div>
+                            <lightning-button label="Cancel" onclick={handleCancelGroup}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save group" onclick={handleSaveGroup}></lightning-button>
+                        </div>
+                    </template>
+                    <template lwc:if={stampEdit}>
+                        <div class="slds-box slds-m-top_small">
+                            <div class="slds-grid slds-gutters_small">
+                                <div class="slds-col">
+                                    <lightning-input
+                                        label="Stamp value"
+                                        value={stampEdit.Name}
+                                        data-field="Name"
+                                        onchange={handleStampField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-input
+                                        type="number"
+                                        label="Order"
+                                        value={stampEdit.Order__c}
+                                        data-field="Order__c"
+                                        onchange={handleStampField}
+                                    ></lightning-input>
+                                </div>
+                            </div>
+                            <c-de-condition-builder
+                                label="Stamp records matching"
+                                object-name={objectName}
+                                conditions={stampConditions}
+                                logic={stampEdit.Condition_Logic__c}
+                                show-logic
+                                onchange={handleStampConditions}
+                            ></c-de-condition-builder>
+                            <lightning-button label="Cancel" onclick={handleCancelGroup}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save stamp" onclick={handleSaveStamp}></lightning-button>
+                        </div>
+                    </template>
+                    <template for:each={groups} for:item="g">
+                        <div key={g.key} class="slds-box slds-m-top_small">
+                            <div class="slds-grid slds-grid_align-spread">
+                                <h3 class="slds-text-heading_small">
+                                    <a data-id={g.key} onclick={handleEditGroup}>{g.rec.Name}</a>
+                                    <span class="slds-badge">{g.rec.Group_Type__c}</span>
+                                </h3>
+                                <div>
+                                    <lightning-button label="Add stamp" data-id={g.key} onclick={handleNewStamp}></lightning-button>
+                                    <lightning-button-icon
+                                        class="slds-m-left_x-small"
+                                        icon-name="utility:delete"
+                                        alternative-text="Delete group"
+                                        data-id={g.key}
+                                        onclick={handleDeleteGroup}
+                                    ></lightning-button-icon>
+                                </div>
+                            </div>
+                            <ul class="slds-list_dotted">
+                                <template for:each={g.stamps} for:item="s">
+                                    <li key={s.key}>
+                                        <a data-group={g.key} data-id={s.key} onclick={handleEditStamp}>{s.rec.Order__c}. {s.rec.Name}</a>
+                                        ({s.count} conditions)
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            size="small"
+                                            variant="bare"
+                                            alternative-text="Delete stamp"
+                                            data-id={s.key}
+                                            onclick={handleDeleteStamp}
+                                        ></lightning-button-icon>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </lightning-tab>
+
+                <!-- Backfill -->
+                <lightning-tab label="Backfill" value="backfill">
+                    <p class="slds-m-bottom_small">Classify existing records in the background.</p>
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-combobox
+                                label="1. Object"
+                                options={objectOptions}
+                                value={backfill.objectName}
+                                data-field="objectName"
+                                onchange={handleBackfillField}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_2-of-3">
+                            <lightning-checkbox-group
+                                label="2. Classification types"
+                                options={typeOptions}
+                                value={backfill.types}
+                                data-field="types"
+                                onchange={handleBackfillField}
+                            ></lightning-checkbox-group>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="date"
+                                label="3. Only records created since (optional)"
+                                value={backfill.since}
+                                data-field="since"
+                                onchange={handleBackfillField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="checkbox"
+                                label="Email me when finished"
+                                checked={backfill.email}
+                                data-field="email"
+                                onchange={handleBackfillField}
+                            ></lightning-input>
+                        </div>
+                    </div>
+                    <lightning-button class="slds-m-top_small" variant="brand" label="4. Run backfill" onclick={handleBackfill}></lightning-button>
+                </lightning-tab>
+            </lightning-tabset>
+        </div>
+    </lightning-card>
+</template>

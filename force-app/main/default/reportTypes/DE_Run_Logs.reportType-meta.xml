@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <baseObject>DE_Run_Log__c</baseObject>
+    <category>other</category>
+    <deployed>true</deployed>
+    <description>Distribution Engine scheduler, classifier and maintenance runs.</description>
+    <label>DE Run Logs</label>
+    <sections>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Name</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>CreatedDate</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Assignments__c</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Duration_Ms__c</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Errors__c</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Message__c</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Process__c</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Records_Processed__c</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Started_At__c</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Status__c</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <masterLabel>DE Run Logs</masterLabel>
+    </sections>
+</ReportType>

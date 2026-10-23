@@ -249,10 +249,14 @@ public inherited sharing class DE_Conditions {
                 if (c == null) {
                     return false;
                 }
-                return (op == 'less than' && c < 0) ||
-                    (op == 'greater than' && c > 0) ||
-                    (op == 'less or equal' && c <= 0) ||
-                    (op == 'greater or equal' && c >= 0);
+                return (op == 'less than' &&
+                    c < 0) ||
+                    (op == 'greater than' &&
+                    c > 0) ||
+                    (op == 'less or equal' &&
+                    c <= 0) ||
+                    (op == 'greater or equal' &&
+                    c >= 0);
             }
             when 'between' {
                 if (blank || !exp.contains('..')) {

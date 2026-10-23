@@ -1,0 +1,42 @@
+<template>
+    <div class="slds-form-element">
+        <label class="slds-form-element__label">
+            <template lwc:if={required}><abbr class="slds-required" title="required">* </abbr></template>{label}
+        </label>
+        <div class="slds-form-element__control">
+            <template for:each={pills} for:item="pill">
+                <lightning-pill key={pill.key} name={pill.value} label={pill.label} onremove={handleRemove}></lightning-pill>
+            </template>
+            <template lwc:if={showSearch}>
+                <lightning-input
+                    type="search"
+                    variant="label-hidden"
+                    label={label}
+                    value={term}
+                    placeholder={placeholder}
+                    onchange={handleTerm}
+                ></lightning-input>
+            </template>
+            <template lwc:if={hasResults}>
+                <ul class="slds-dropdown slds-dropdown_fluid slds-dropdown_length-5 picker-results" role="listbox">
+                    <template for:each={results} for:item="r">
+                        <li key={r.value} role="presentation" class="slds-listbox__item">
+                            <div
+                                class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                role="option"
+                                data-value={r.value}
+                                data-label={r.label}
+                                onclick={handleSelect}
+                            >
+                                <span class="slds-media__body">{r.label}</span>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+            </template>
+            <template lwc:if={error}>
+                <p class="slds-text-color_error">{error}</p>
+            </template>
+        </div>
+    </div>
+</template>

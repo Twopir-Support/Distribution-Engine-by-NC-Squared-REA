@@ -1,0 +1,158 @@
+<template>
+    <div class="slds-p-around_small">
+        <template lwc:if={error}>
+            <div class="slds-text-color_error">{error}</div>
+        </template>
+        <template lwc:if={state}>
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <div>
+                    <span class={statusClass}>{statusLabel}</span>
+                    <template lwc:if={offlineDetail}>
+                        <p class="slds-text-body_small slds-text-color_weak">{offlineDetail}</p>
+                    </template>
+                </div>
+                <lightning-input
+                    type="toggle"
+                    label="Available for assignments"
+                    variant="label-hidden"
+                    checked={state.online}
+                    message-toggle-active="Online"
+                    message-toggle-inactive="Offline"
+                    onchange={handleToggle}
+                    disabled={busy}
+                ></lightning-input>
+            </div>
+
+            <template lwc:if={showOffline}>
+                <div class="slds-box slds-box_x-small slds-m-top_small">
+                    <lightning-combobox
+                        label="Reason"
+                        options={reasonOptions}
+                        value={offlineReason}
+                        onchange={handleReason}
+                        required={state.requireReason}
+                    ></lightning-combobox>
+                    <lightning-combobox
+                        label="For how long?"
+                        options={durationOptions}
+                        value={offlineMinutes}
+                        onchange={handleDuration}
+                        required={state.timerOnly}
+                    ></lightning-combobox>
+                    <div class="slds-m-top_x-small">
+                        <lightning-button label="Cancel" onclick={handleCancelOffline}></lightning-button>
+                        <lightning-button
+                            class="slds-m-left_x-small"
+                            variant="brand"
+                            label="Go offline"
+                            onclick={handleConfirmOffline}
+                            disabled={busy}
+                        ></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <div class="slds-m-top_small">
+                <lightning-button variant="base" label="Out of office…" icon-name="utility:away" onclick={handleOooOpen}></lightning-button>
+                <template lwc:if={showOoo}>
+                    <div class="slds-box slds-box_x-small">
+                        <lightning-input
+                            type="datetime"
+                            label="Start"
+                            data-field="start"
+                            value={ooo.start}
+                            onchange={handleOooField}
+                            required
+                        ></lightning-input>
+                        <lightning-input type="datetime" label="End" data-field="end" value={ooo.end} onchange={handleOooField} required></lightning-input>
+                        <lightning-input type="checkbox" label="All day" data-field="allDay" checked={ooo.allDay} onchange={handleOooField}></lightning-input>
+                        <lightning-input label="Reason" max-length="80" data-field="reason" value={ooo.reason} onchange={handleOooField}></lightning-input>
+                        <lightning-button class="slds-m-top_x-small" variant="brand" label="Save" onclick={handleOooSave} disabled={busy}></lightning-button>
+                    </div>
+                </template>
+            </div>
+
+            <template lwc:if={hasPull}>
+                <h3 class="slds-text-heading_small slds-m-top_medium">Get next</h3>
+                <template for:each={pullOptions} for:item="p">
+                    <lightning-button
+                        key={p.distributorId}
+                        class="slds-m-top_x-small slds-show"
+                        label={p.label}
+                        data-id={p.distributorId}
+                        onclick={handlePull}
+                        disabled={p.disabled}
+                    ></lightning-button>
+                </template>
+            </template>
+
+            <div class="slds-grid slds-grid_align-spread slds-m-top_medium">
+                <h3 class="slds-text-heading_small">Assigned to me</h3>
+                <template lwc:if={missedCount}>
+                    <button class="slds-button slds-text-color_error" onclick={toggleMissed}>{missedCount} missed SLAs</button>
+                </template>
+            </div>
+            <template lwc:if={showMissed}>
+                <ul class="slds-list_dotted slds-m-bottom_small">
+                    <template for:each={missed} for:item="m">
+                        <li key={m.recordId}>
+                            <a href={m.url}>{m.name}</a>
+                            <span class={m.slaClass}> {m.sla}</span>
+                        </li>
+                    </template>
+                </ul>
+            </template>
+            <template lwc:if={hasAssigned}>
+                <ul class="slds-has-dividers_bottom-space">
+                    <template for:each={assigned} for:item="a">
+                        <li key={a.recordId} class="slds-item">
+                            <div class="slds-grid slds-grid_align-spread">
+                                <div>
+                                    <a href={a.url}>{a.name}</a>
+                                    <p class="slds-text-body_small slds-text-color_weak">{a.objectName} · {a.teamName}</p>
+                                    <p class="slds-text-body_small">
+                                        <span class={a.slaClass}>{a.sla}</span>
+                                    </p>
+                                </div>
+                                <template lwc:if={a.canReject}>
+                                    <lightning-button-icon
+                                        icon-name="utility:undo"
+                                        alternative-text="Reject"
+                                        title="Reject"
+                                        data-id={a.recordId}
+                                        onclick={handleStartReject}
+                                    ></lightning-button-icon>
+                                </template>
+                            </div>
+                            <template lwc:if={a.rejecting}>
+                                <div class="slds-box slds-box_x-small slds-m-top_x-small">
+                                    <lightning-combobox
+                                        label="Reject reason"
+                                        options={rejectOptions}
+                                        value={rejectReason}
+                                        onchange={handleRejectReason}
+                                        required
+                                    ></lightning-combobox>
+                                    <template lwc:if={rejectIsOther}>
+                                        <lightning-input label="Other reason" value={rejectOther} onchange={handleRejectOther} required></lightning-input>
+                                    </template>
+                                    <lightning-button label="Cancel" onclick={handleCancelReject}></lightning-button>
+                                    <lightning-button
+                                        class="slds-m-left_x-small"
+                                        variant="destructive"
+                                        label="Reject"
+                                        onclick={handleConfirmReject}
+                                        disabled={busy}
+                                    ></lightning-button>
+                                </div>
+                            </template>
+                        </li>
+                    </template>
+                </ul>
+            </template>
+            <template lwc:else>
+                <p class="slds-text-body_small slds-text-color_weak">Nothing assigned to you right now.</p>
+            </template>
+        </template>
+    </div>
+</template>

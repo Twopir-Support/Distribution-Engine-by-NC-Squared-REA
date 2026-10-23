@@ -1,0 +1,83 @@
+<template>
+    <lightning-card title="Distribution Logs" icon-name="standard:logging">
+        <div class="slds-p-horizontal_medium">
+            <lightning-tabset>
+                <lightning-tab label="Distribution Logs">
+                    <div class="slds-grid slds-wrap slds-gutters_x-small slds-grid_vertical-align-end">
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-input type="date" label="From" value={filter.fromDate} data-field="fromDate" onchange={handleFilter}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-input type="date" label="To" value={filter.toDate} data-field="toDate" onchange={handleFilter}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-combobox
+                                label="Status"
+                                options={statusOptions}
+                                value={filter.status}
+                                data-field="status"
+                                onchange={handleFilter}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-input
+                                label="Object"
+                                value={filter.objectName}
+                                placeholder="Lead"
+                                data-field="objectName"
+                                onchange={handleFilter}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-input
+                                label="Quick filter"
+                                value={filter.search}
+                                placeholder="Record name or Id"
+                                data-field="search"
+                                onchange={handleFilter}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-button variant="brand" label="Search" onclick={load}></lightning-button>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-grid_align-spread slds-m-vertical_small">
+                        <p class="slds-text-body_small slds-text-color_weak">{count} rows (top 500)</p>
+                        <div>
+                            <lightning-button label="Retry selected" onclick={handleRetrySelected}></lightning-button>
+                            <lightning-button
+                                class="slds-m-left_x-small"
+                                label="Retry all errors and holds (7 days)"
+                                onclick={handleRetryAll}
+                            ></lightning-button>
+                        </div>
+                    </div>
+                    <template lwc:if={error}><p class="slds-text-color_error">{error}</p></template>
+                    <template lwc:if={loading}><lightning-spinner size="small" alternative-text="Loading"></lightning-spinner></template>
+                    <lightning-datatable
+                        key-field="Id"
+                        data={rows}
+                        columns={columns}
+                        onrowselection={handleSelect}
+                        onrowaction={handleRowAction}
+                    ></lightning-datatable>
+                    <template lwc:if={trace}>
+                        <div class="slds-box slds-m-top_small">
+                            <div class="slds-grid slds-grid_align-spread">
+                                <h3 class="slds-text-heading_small">{trace.title}</h3>
+                                <lightning-button-icon icon-name="utility:close" alternative-text="Close" onclick={handleCloseTrace}></lightning-button-icon>
+                            </div>
+                            <pre class="slds-text-font_monospace slds-text-body_small trace">{trace.text}</pre>
+                        </div>
+                    </template>
+                </lightning-tab>
+                <lightning-tab label="Engine Runs" onactive={loadRuns}>
+                    <div class="slds-size_1-of-4 slds-m-bottom_small">
+                        <lightning-combobox label="Process" options={processOptions} value={process} onchange={handleProcess}></lightning-combobox>
+                    </div>
+                    <lightning-datatable key-field="Id" data={runs} columns={runColumns} hide-checkbox-column></lightning-datatable>
+                </lightning-tab>
+            </lightning-tabset>
+        </div>
+    </lightning-card>
+</template>

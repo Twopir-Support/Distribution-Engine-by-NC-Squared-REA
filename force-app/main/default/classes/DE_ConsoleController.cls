@@ -184,8 +184,20 @@ public with sharing class DE_ConsoleController {
         }
         m.healthCheckerScheduled = DE_HealthChecker.isScheduled();
         m.errorsLastDay = [SELECT COUNT() FROM DE_Run_Log__c WHERE Status__c = 'Error' AND Started_At__c >= :dayAgo WITH USER_MODE];
-        m.restartsLastDay = [SELECT COUNT() FROM DE_Run_Log__c WHERE Process__c = 'Health Checker' AND Status__c = 'Warning' AND Started_At__c >= :dayAgo WITH USER_MODE];
-        List<DE_Run_Log__c> classifier = [SELECT Started_At__c FROM DE_Run_Log__c WHERE Process__c = 'Classifier' WITH USER_MODE ORDER BY Started_At__c DESC LIMIT 1];
+        m.restartsLastDay = [
+            SELECT COUNT()
+            FROM DE_Run_Log__c
+            WHERE Process__c = 'Health Checker' AND Status__c = 'Warning' AND Started_At__c >= :dayAgo
+            WITH USER_MODE
+        ];
+        List<DE_Run_Log__c> classifier = [
+            SELECT Started_At__c
+            FROM DE_Run_Log__c
+            WHERE Process__c = 'Classifier'
+            WITH USER_MODE
+            ORDER BY Started_At__c DESC
+            LIMIT 1
+        ];
         m.lastClassifierRun = classifier.isEmpty() ? null : classifier[0].Started_At__c;
         m.pendingSlas = [SELECT COUNT() FROM DE_Assignment_Log__c WHERE Current__c = TRUE AND SLA_Status__c = 'Pending' WITH USER_MODE];
         Datetime now = System.now();
@@ -497,28 +509,44 @@ public with sharing class DE_ConsoleController {
             whereClause += ' AND Object_API_Name__c = :obj';
             binds.put('obj', objectName);
         }
-        for (AggregateResult ar : (List<AggregateResult>) Database.queryWithBinds(
-            'SELECT DAY_ONLY(convertTimezone(Assigned_At__c)) d, ' + keyField + ' k, COUNT(Id) c FROM DE_Assignment_Log__c WHERE ' + whereClause +
-                ' GROUP BY DAY_ONLY(convertTimezone(Assigned_At__c)), ' + keyField + ' ORDER BY DAY_ONLY(convertTimezone(Assigned_At__c))',
-            binds,
-            AccessLevel.USER_MODE
-        )) {
+        for (
+            AggregateResult ar : (List<AggregateResult>) Database.queryWithBinds(
+                'SELECT DAY_ONLY(convertTimezone(Assigned_At__c)) d, ' +
+                    keyField +
+                    ' k, COUNT(Id) c FROM DE_Assignment_Log__c WHERE ' +
+                    whereClause +
+                    ' GROUP BY DAY_ONLY(convertTimezone(Assigned_At__c)), ' +
+                    keyField +
+                    ' ORDER BY DAY_ONLY(convertTimezone(Assigned_At__c))',
+                binds,
+                AccessLevel.USER_MODE
+            )
+        ) {
             a.overTime.add(new SeriesPoint(String.valueOf(ar.get('d')), (String) ar.get('k'), (Decimal) ar.get('c')));
         }
-        for (AggregateResult ar : (List<AggregateResult>) Database.queryWithBinds(
-            'SELECT HOUR_IN_DAY(convertTimezone(Assigned_At__c)) h, COUNT(Id) c FROM DE_Assignment_Log__c WHERE ' + whereClause +
-                ' GROUP BY HOUR_IN_DAY(convertTimezone(Assigned_At__c)) ORDER BY HOUR_IN_DAY(convertTimezone(Assigned_At__c))',
-            binds,
-            AccessLevel.USER_MODE
-        )) {
+        for (
+            AggregateResult ar : (List<AggregateResult>) Database.queryWithBinds(
+                'SELECT HOUR_IN_DAY(convertTimezone(Assigned_At__c)) h, COUNT(Id) c FROM DE_Assignment_Log__c WHERE ' +
+                    whereClause +
+                    ' GROUP BY HOUR_IN_DAY(convertTimezone(Assigned_At__c)) ORDER BY HOUR_IN_DAY(convertTimezone(Assigned_At__c))',
+                binds,
+                AccessLevel.USER_MODE
+            )
+        ) {
             a.hourly.add(new SeriesPoint(String.valueOf(ar.get('h')), 'Assignments', (Decimal) ar.get('c')));
         }
-        for (AggregateResult ar : (List<AggregateResult>) Database.queryWithBinds(
-            'SELECT ' + keyField + ' k, AVG(Time_To_Action_Mins__c) m FROM DE_Assignment_Log__c WHERE ' + whereClause +
-                ' AND Time_To_Action_Mins__c != null GROUP BY ' + keyField,
-            binds,
-            AccessLevel.USER_MODE
-        )) {
+        for (
+            AggregateResult ar : (List<AggregateResult>) Database.queryWithBinds(
+                'SELECT ' +
+                    keyField +
+                    ' k, AVG(Time_To_Action_Mins__c) m FROM DE_Assignment_Log__c WHERE ' +
+                    whereClause +
+                    ' AND Time_To_Action_Mins__c != null GROUP BY ' +
+                    keyField,
+                binds,
+                AccessLevel.USER_MODE
+            )
+        ) {
             Decimal m = (Decimal) ar.get('m');
             a.timeToAction.add(new SeriesPoint((String) ar.get('k'), 'Avg minutes', m == null ? null : m.setScale(1)));
         }
@@ -542,9 +570,22 @@ public with sharing class DE_ConsoleController {
         Map<String, PerformanceRow> rows = new Map<String, PerformanceRow>();
         Map<String, Set<String>> leadIdsByUser = new Map<String, Set<String>>();
         for (DE_Assignment_Log__c l : [
-            SELECT Assignee_Id__c, Assigned_User__r.Name, Status__c, Time_To_Action_Mins__c, Action_At__c, SLA_Missed__c, Speed_To_Assign_Seconds__c, Object_API_Name__c, Record_Id__c
+            SELECT
+                Assignee_Id__c,
+                Assigned_User__r.Name,
+                Status__c,
+                Time_To_Action_Mins__c,
+                Action_At__c,
+                SLA_Missed__c,
+                Speed_To_Assign_Seconds__c,
+                Object_API_Name__c,
+                Record_Id__c
             FROM DE_Assignment_Log__c
-            WHERE Team__c = :teamId AND Assigned_At__c >= :fromAt AND Assigned_At__c < :toAt AND Status__c IN ('Assigned', 'SLA Alert', 'Reassigned', 'Rejected')
+            WHERE
+                Team__c = :teamId
+                AND Assigned_At__c >= :fromAt
+                AND Assigned_At__c < :toAt
+                AND Status__c IN ('Assigned', 'SLA Alert', 'Reassigned', 'Rejected')
             WITH USER_MODE
             LIMIT 20000
         ]) {
@@ -684,11 +725,24 @@ public with sharing class DE_ConsoleController {
         }
         String nameField = DE_Schema.nameField(objectName);
         List<Map<String, Object>> out = new List<Map<String, Object>>();
-        for (SObject r : Database.query(
-            'SELECT Id, ' + nameField + ', DE_Last_Archive_Date__c, DE_Source_Queue__c FROM ' + objectName + ' WHERE DE_Is_Archived__c = true ORDER BY DE_Last_Archive_Date__c DESC LIMIT 200',
-            AccessLevel.USER_MODE
-        )) {
-            out.add(new Map<String, Object>{ 'id' => r.Id, 'name' => r.get(nameField), 'archivedAt' => r.get('DE_Last_Archive_Date__c'), 'sourceQueue' => r.get('DE_Source_Queue__c') });
+        for (
+            SObject r : Database.query(
+                'SELECT Id, ' +
+                    nameField +
+                    ', DE_Last_Archive_Date__c, DE_Source_Queue__c FROM ' +
+                    objectName +
+                    ' WHERE DE_Is_Archived__c = true ORDER BY DE_Last_Archive_Date__c DESC LIMIT 200',
+                AccessLevel.USER_MODE
+            )
+        ) {
+            out.add(
+                new Map<String, Object>{
+                    'id' => r.Id,
+                    'name' => r.get(nameField),
+                    'archivedAt' => r.get('DE_Last_Archive_Date__c'),
+                    'sourceQueue' => r.get('DE_Source_Queue__c')
+                }
+            );
         }
         return out;
     }

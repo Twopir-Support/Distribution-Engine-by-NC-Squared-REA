@@ -72,7 +72,11 @@ public with sharing class DE_RecordDetailController {
                 break;
             }
         }
-        s.details = DE_RecordDetails.load(new Set<Id>{ recordId }, new Set<String>{ 'Matched_Account__r.Name', 'Matched_Contact__r.Name', 'Matched_Lead__r.Name' }).get(recordId);
+        s.details = DE_RecordDetails.load(
+                new Set<Id>{ recordId },
+                new Set<String>{ 'Matched_Account__r.Name', 'Matched_Contact__r.Name', 'Matched_Lead__r.Name' }
+            )
+            .get(recordId);
         Boolean edit = canEdit(recordId);
         Boolean manager = DE_Permissions.isTeamManager();
         s.canAssign = manager && edit;

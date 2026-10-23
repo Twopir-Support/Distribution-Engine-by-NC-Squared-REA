@@ -1,0 +1,5 @@
+.trace {
+    white-space: pre-wrap;
+    max-height: 24rem;
+    overflow: auto;
+}

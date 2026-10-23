@@ -1,0 +1,100 @@
+<template>
+    <lightning-card title="Distribution Sync" icon-name="standard:sync">
+        <div slot="actions">
+            <lightning-button label="New sync action" icon-name="utility:add" onclick={handleNew}></lightning-button>
+        </div>
+        <div class="slds-p-horizontal_medium">
+            <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                When a record is assigned by a team with Object Sync turned on, related records (for example open Tasks or Contacts) take the same owner.
+            </p>
+            <template lwc:if={error}><p class="slds-text-color_error">{error}</p></template>
+            <template lwc:if={editing}>
+                <div class="slds-box">
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input label="Action name" required value={editing.Name} data-field="Name" onchange={handleField}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="toggle"
+                                label="Active"
+                                checked={editing.Active__c}
+                                data-field="Active__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                label="Distribution object"
+                                value={editing.Parent_Object__c}
+                                data-field="Parent_Object__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                label="Related object"
+                                value={editing.Child_Object__c}
+                                data-field="Child_Object__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                label="Lookup field on related object"
+                                value={editing.Lookup_Field__c}
+                                data-field="Lookup_Field__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                    </div>
+                    <c-de-condition-builder
+                        label="Only related records matching"
+                        object-name={editing.Child_Object__c}
+                        conditions={conditions}
+                        logic={editing.Filter_Logic__c}
+                        show-logic
+                        onchange={handleConditions}
+                    ></c-de-condition-builder>
+                    <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+                    <lightning-button class="slds-m-left_x-small" variant="brand" label="Save" onclick={handleSave}></lightning-button>
+                </div>
+            </template>
+            <template lwc:if={hasActions}>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Distribution object</th>
+                            <th>Related object</th>
+                            <th>Lookup</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={actions} for:item="a">
+                            <tr key={a.key}>
+                                <td>
+                                    <a data-id={a.key} onclick={handleEdit}>{a.rec.Name}</a>
+                                </td>
+                                <td>{a.rec.Parent_Object__c}</td>
+                                <td>{a.rec.Child_Object__c}</td>
+                                <td>{a.rec.Lookup_Field__c}</td>
+                                <td>{a.status}</td>
+                                <td>
+                                    <lightning-button-icon
+                                        icon-name="utility:delete"
+                                        alternative-text="Delete"
+                                        data-id={a.key}
+                                        onclick={handleDelete}
+                                    ></lightning-button-icon>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </template>
+        </div>
+    </lightning-card>
+</template>

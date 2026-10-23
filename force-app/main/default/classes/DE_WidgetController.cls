@@ -73,7 +73,15 @@ public with sharing class DE_WidgetController {
         s.pullOptions = DE_PullService.options(me);
         String key = String.valueOf(me);
         for (DE_Assignment_Log__c l : [
-            SELECT Record_Id__c, Record_Name__c, Object_API_Name__c, Assigned_At__c, Next_SLA_Check__c, SLA_Missed__c, Team__r.Name, Distributor__r.Rejection_Enabled__c
+            SELECT
+                Record_Id__c,
+                Record_Name__c,
+                Object_API_Name__c,
+                Assigned_At__c,
+                Next_SLA_Check__c,
+                SLA_Missed__c,
+                Team__r.Name,
+                Distributor__r.Rejection_Enabled__c
             FROM DE_Assignment_Log__c
             WHERE Assignee_Id__c = :key AND Current__c = TRUE
             ORDER BY Next_SLA_Check__c ASC NULLS LAST, Assigned_At__c DESC
@@ -122,7 +130,12 @@ public with sharing class DE_WidgetController {
     public static DE_RejectionService.RejectResult reject(Id recordId, String reason) {
         DE_Permissions.require(DE_Permissions.isUser(), 'reject assignments');
         try {
-            DE_RejectionService.RejectResult r = DE_RejectionService.reject(new List<Id>{ recordId }, reason, UserInfo.getUserId(), DE_Permissions.isTeamManager())[0];
+            DE_RejectionService.RejectResult r = DE_RejectionService.reject(
+                new List<Id>{ recordId },
+                reason,
+                UserInfo.getUserId(),
+                DE_Permissions.isTeamManager()
+            )[0];
             if (!r.success) {
                 throw DE_Ui.error(r.message);
             }
@@ -135,7 +148,14 @@ public with sharing class DE_WidgetController {
     @AuraEnabled
     public static Id createOutOfOffice(Datetime startAt, Datetime endAt, String reason, Boolean allDay) {
         return DE_AvailabilityController.saveOutOfOffice(
-            new DE_Out_Of_Office__c(User__c = UserInfo.getUserId(), Start__c = startAt, End__c = endAt, Reason__c = reason, All_Day__c = allDay == true, Source__c = 'Manual')
+            new DE_Out_Of_Office__c(
+                User__c = UserInfo.getUserId(),
+                Start__c = startAt,
+                End__c = endAt,
+                Reason__c = reason,
+                All_Day__c = allDay == true,
+                Source__c = 'Manual'
+            )
         );
     }
 }

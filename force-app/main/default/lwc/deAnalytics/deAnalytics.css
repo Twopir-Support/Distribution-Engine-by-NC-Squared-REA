@@ -1,0 +1,65 @@
+:host {
+    --de-grid: #e5e5e3;
+    --de-axis: #52514e;
+    --de-value: #0b0b0b;
+    --de-tip-bg: #0b0b0b;
+    --de-tip-text: #fcfcfb;
+}
+
+.charts {
+    position: relative;
+}
+
+.chart {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.chart path {
+    cursor: default;
+}
+
+.grid {
+    stroke: var(--de-grid);
+    stroke-width: 1;
+}
+
+.axis {
+    fill: var(--de-axis);
+    font-size: 11px;
+}
+
+.value {
+    fill: var(--de-value);
+    font-size: 11px;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0.25rem 0 0.5rem;
+    font-size: 0.75rem;
+}
+
+.swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.tip {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--de-tip-bg);
+    color: var(--de-tip-text);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}

@@ -330,15 +330,20 @@ public with sharing class DE_ClassifierController {
                 errors.add(err == null ? 'Choose the default user.' : err);
             }
         }
-        if (String.isNotBlank(rule.Converted_Status__c) && [SELECT COUNT() FROM LeadStatus WHERE ApiName = :rule.Converted_Status__c AND IsConverted = TRUE] == 0) {
+        if (
+            String.isNotBlank(rule.Converted_Status__c) &&
+            [SELECT COUNT() FROM LeadStatus WHERE ApiName = :rule.Converted_Status__c AND IsConverted = TRUE] == 0
+        ) {
             errors.add('"' + rule.Converted_Status__c + '" is not a converted lead status.');
         }
-        for (List<String> pair : new List<List<String>>{
-            new List<String>{ 'Account', rule.Account_Field_Update__c },
-            new List<String>{ 'Contact', rule.Contact_Field_Update__c },
-            new List<String>{ 'Opportunity', rule.Opportunity_Field_Update__c },
-            new List<String>{ 'Lead', rule.Survivor_Field_Update__c }
-        }) {
+        for (
+            List<String> pair : new List<List<String>>{
+                new List<String>{ 'Account', rule.Account_Field_Update__c },
+                new List<String>{ 'Contact', rule.Contact_Field_Update__c },
+                new List<String>{ 'Opportunity', rule.Opportunity_Field_Update__c },
+                new List<String>{ 'Lead', rule.Survivor_Field_Update__c }
+            }
+        ) {
             String err = DE_FieldUpdates.validate(pair[0], pair[1]);
             if (err != null) {
                 errors.add(pair[0] + ' field update: ' + err);
@@ -391,7 +396,15 @@ public with sharing class DE_ClassifierController {
         requireAdmin();
         List<StampGroupDetail> out = new List<StampGroupDetail>();
         List<DE_Stamp_Group__c> groups = [
-            SELECT Id, Name, Object_API_Name__c, Active__c, Group_Type__c, Stamp_Field__c, Description__c, (SELECT Id, Name, Order__c, Condition_Logic__c, Stamp_Group__c FROM Stamps__r ORDER BY Order__c)
+            SELECT
+                Id,
+                Name,
+                Object_API_Name__c,
+                Active__c,
+                Group_Type__c,
+                Stamp_Field__c,
+                Description__c,
+                (SELECT Id, Name, Order__c, Condition_Logic__c, Stamp_Group__c FROM Stamps__r ORDER BY Order__c)
             FROM DE_Stamp_Group__c
             WHERE Object_API_Name__c = :objectName
             WITH USER_MODE
@@ -402,7 +415,13 @@ public with sharing class DE_ClassifierController {
             stampIds.addAll(new Map<Id, DE_Stamp__c>(g.Stamps__r).keySet());
         }
         Map<Id, List<DE_Condition__c>> conds = new Map<Id, List<DE_Condition__c>>();
-        for (DE_Condition__c c : [SELECT Id, Stamp__c, Sequence__c, Field_API_Name__c, Operator__c, Value__c, Purpose__c FROM DE_Condition__c WHERE Stamp__c IN :stampIds WITH USER_MODE ORDER BY Sequence__c]) {
+        for (DE_Condition__c c : [
+            SELECT Id, Stamp__c, Sequence__c, Field_API_Name__c, Operator__c, Value__c, Purpose__c
+            FROM DE_Condition__c
+            WHERE Stamp__c IN :stampIds
+            WITH USER_MODE
+            ORDER BY Sequence__c
+        ]) {
             if (!conds.containsKey(c.Stamp__c)) {
                 conds.put(c.Stamp__c, new List<DE_Condition__c>());
             }

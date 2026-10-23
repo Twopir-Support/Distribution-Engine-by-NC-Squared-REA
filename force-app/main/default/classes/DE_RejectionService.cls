@@ -58,7 +58,18 @@ public without sharing class DE_RejectionService {
         Map<String, DE_Assignment_Log__c> logs = new Map<String, DE_Assignment_Log__c>();
         Set<Id> teamIds = new Set<Id>();
         for (DE_Assignment_Log__c l : [
-            SELECT Id, Record_Id__c, Record_Name__c, Team__c, Distributor__c, Assignee_Id__c, Assigned_User__c, Status__c, SLA_Status__c, Sticky_Key__c, Current__c
+            SELECT
+                Id,
+                Record_Id__c,
+                Record_Name__c,
+                Team__c,
+                Distributor__c,
+                Assignee_Id__c,
+                Assigned_User__c,
+                Status__c,
+                SLA_Status__c,
+                Sticky_Key__c,
+                Current__c
             FROM DE_Assignment_Log__c
             WHERE Record_Id__c IN :keys AND Current__c = TRUE
         ]) {

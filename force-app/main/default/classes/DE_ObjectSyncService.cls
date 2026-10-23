@@ -77,7 +77,14 @@ public without sharing class DE_ObjectSyncService {
         } finally {
             DE_TriggerHandler.bypass = previous;
         }
-        DE_RunLogger.log('Object Sync', ok == updates.size() ? 'Success' : 'Warning', rows.size(), ok, updates.size() - ok, a.Name + ': ' + ok + ' related ' + child + ' records synced.');
+        DE_RunLogger.log(
+            'Object Sync',
+            ok == updates.size() ? 'Success' : 'Warning',
+            rows.size(),
+            ok,
+            updates.size() - ok,
+            a.Name + ': ' + ok + ' related ' + child + ' records synced.'
+        );
         return ok;
     }
 }

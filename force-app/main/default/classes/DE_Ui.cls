@@ -48,7 +48,11 @@ public with sharing class DE_Ui {
      */
     public static void replaceConditions(String parentField, Id parentId, Set<String> purposes, String purpose, List<DE_Condition__c> rows) {
         String soql = 'SELECT Id FROM DE_Condition__c WHERE ' + parentField + ' = :parentId AND Purpose__c IN :purposes';
-        List<DE_Condition__c> existing = Database.queryWithBinds(soql, new Map<String, Object>{ 'parentId' => parentId, 'purposes' => purposes }, AccessLevel.USER_MODE);
+        List<DE_Condition__c> existing = Database.queryWithBinds(
+            soql,
+            new Map<String, Object>{ 'parentId' => parentId, 'purposes' => purposes },
+            AccessLevel.USER_MODE
+        );
         if (!existing.isEmpty()) {
             Database.delete(existing, true, AccessLevel.USER_MODE);
         }

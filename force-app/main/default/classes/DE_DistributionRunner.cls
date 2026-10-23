@@ -150,7 +150,13 @@ public without sharing class DE_DistributionRunner {
         return prev;
     }
 
-    private static List<SObject> candidatesFor(DE_Model.TeamConfig cfg, DE_Model.DistributorConfig dc, Set<Id> onlyRecordIds, Integer budget, List<String> warnings) {
+    private static List<SObject> candidatesFor(
+        DE_Model.TeamConfig cfg,
+        DE_Model.DistributorConfig dc,
+        Set<Id> onlyRecordIds,
+        Integer budget,
+        List<String> warnings
+    ) {
         if (onlyRecordIds == null) {
             return DE_RecordQuery.sourceCandidates(cfg, dc, budget * 4, warnings);
         }

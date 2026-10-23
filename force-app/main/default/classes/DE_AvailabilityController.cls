@@ -181,7 +181,8 @@ public with sharing class DE_AvailabilityController {
     @AuraEnabled
     public static void deleteShift(Id shiftId) {
         DE_Permissions.require(DE_Permissions.isSystemManager(), 'delete shifts');
-        Integer used = [SELECT COUNT() FROM DE_Team__c WHERE Team_Hours__c = :shiftId] + [SELECT COUNT() FROM DE_Team_Member__c WHERE Member_Hours__c = :shiftId];
+        Integer used =
+            [SELECT COUNT() FROM DE_Team__c WHERE Team_Hours__c = :shiftId] + [SELECT COUNT() FROM DE_Team_Member__c WHERE Member_Hours__c = :shiftId];
         if (used > 0) {
             throw DE_Ui.error('This shift is used by ' + used + ' teams or members. Assign other hours first.');
         }
@@ -197,7 +198,9 @@ public with sharing class DE_AvailabilityController {
     @AuraEnabled
     public static List<RosterRow> getRoster(Id teamId) {
         DE_Permissions.require(DE_Permissions.isTeamManager(), 'view the team roster');
-        List<DE_Model.TeamConfig> teams = teamId == null ? DE_ConfigRepository.load(null, null, false) : DE_ConfigRepository.load(new Set<Id>{ teamId }, null, true);
+        List<DE_Model.TeamConfig> teams = teamId == null
+            ? DE_ConfigRepository.load(null, null, false)
+            : DE_ConfigRepository.load(new Set<Id>{ teamId }, null, true);
         DE_AvailabilityService availability = new DE_AvailabilityService(teams, System.now());
         Map<Id, RosterRow> rows = new Map<Id, RosterRow>();
         for (DE_Model.TeamConfig cfg : teams) {
@@ -274,7 +277,12 @@ public with sharing class DE_AvailabilityController {
                 userIds.add(m.memberId);
             }
         }
-        List<DE_Out_Of_Office__c> ooo = [SELECT User__c, Start__c, End__c FROM DE_Out_Of_Office__c WHERE User__c IN :userIds AND Start__c <= :toAt AND End__c >= :fromAt WITH USER_MODE];
+        List<DE_Out_Of_Office__c> ooo = [
+            SELECT User__c, Start__c, End__c
+            FROM DE_Out_Of_Office__c
+            WHERE User__c IN :userIds AND Start__c <= :toAt AND End__c >= :fromAt
+            WITH USER_MODE
+        ];
         List<DE_Holiday__c> holidays = String.isBlank(cfg.team.Holiday_Region__c)
             ? new List<DE_Holiday__c>()
             : [

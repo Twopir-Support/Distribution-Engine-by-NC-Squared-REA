@@ -147,9 +147,7 @@ public without sharing class DE_TriggerDistribution {
                 continue;
             }
             outcome.failed++;
-            String msg = outcome.messageByRecord.containsKey(r.Id)
-                ? outcome.messageByRecord.get(r.Id)
-                : 'No trigger distributor matched this record';
+            String msg = outcome.messageByRecord.containsKey(r.Id) ? outcome.messageByRecord.get(r.Id) : 'No trigger distributor matched this record';
             errors.add(
                 new DE_Assignment_Log__c(
                     Record_Id__c = r.Id,

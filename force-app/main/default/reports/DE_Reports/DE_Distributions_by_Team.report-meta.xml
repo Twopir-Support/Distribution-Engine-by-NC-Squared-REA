@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>DE_Assignment_Log__c$Name</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$Record_Name__c</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$Object_API_Name__c</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$Method__c</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$Status__c</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$Assigned_At__c</field>
+    </columns>
+    <description>Records distributed per team in the last 30 days.</description>
+    <filter>
+        <criteriaItems>
+            <column>DE_Assignment_Log__c$Status__c</column>
+            <columnToView>false</columnToView>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Assigned,Reassigned</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>DE_Assignment_Log__c$Team__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Distributions by Team</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>DE_Assignment_Logs__c</reportType>
+    <scope>organization</scope>
+    <showDetails>false</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>DE_Assignment_Log__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_LAST30</interval>
+    </timeFrameFilter>
+</Report>

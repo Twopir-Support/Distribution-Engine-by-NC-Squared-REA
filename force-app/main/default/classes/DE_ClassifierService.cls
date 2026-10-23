@@ -14,7 +14,9 @@ public without sharing class DE_ClassifierService {
                 [SELECT COUNT() FROM DE_Territory__c WHERE Object_API_Name__c = :objectName AND Status__c = 'Active'] > 0 ||
                 [SELECT COUNT() FROM DE_Stamp_Group__c WHERE Object_API_Name__c = :objectName AND Active__c = TRUE] > 0;
             if (!found && key == 'lead') {
-                found = [SELECT COUNT() FROM DE_Matching_Rule__c WHERE Active__c = TRUE] > 0 || [SELECT COUNT() FROM DE_Conversion_Rule__c WHERE Active__c = TRUE] > 0;
+                found =
+                    [SELECT COUNT() FROM DE_Matching_Rule__c WHERE Active__c = TRUE] > 0 ||
+                    [SELECT COUNT() FROM DE_Conversion_Rule__c WHERE Active__c = TRUE] > 0;
             }
             configured.put(key, found);
         }
@@ -23,7 +25,10 @@ public without sharing class DE_ClassifierService {
 
     /** After insert: mark records as waiting and classify asynchronously (or inline when already async). */
     public static void onInsert(String objectName, Set<Id> recordIds) {
-        Boolean classify = DE_Settings.classifierEnabled() && DE_Settings.classifierObjects().contains(objectName.toLowerCase()) && hasConfiguration(objectName);
+        Boolean classify =
+            DE_Settings.classifierEnabled() &&
+            DE_Settings.classifierObjects().contains(objectName.toLowerCase()) &&
+            hasConfiguration(objectName);
         Boolean distribute = DE_Settings.distributeAfterClassify();
         if (!classify && !distribute) {
             return;
@@ -31,7 +36,9 @@ public without sharing class DE_ClassifierService {
         if (classify) {
             List<DE_Record_Detail__c> waiting = new List<DE_Record_Detail__c>();
             for (Id i : recordIds) {
-                waiting.add(new DE_Record_Detail__c(Record_Id__c = i, Object_API_Name__c = objectName, Classifier_Status__c = 'Waiting', Failed_Attempts__c = 0));
+                waiting.add(
+                    new DE_Record_Detail__c(Record_Id__c = i, Object_API_Name__c = objectName, Classifier_Status__c = 'Waiting', Failed_Attempts__c = 0)
+                );
             }
             DE_RecordDetails.save(waiting);
         }

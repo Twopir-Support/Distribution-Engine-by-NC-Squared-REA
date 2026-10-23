@@ -1,0 +1,33 @@
+<template>
+    <template lwc:if={inWorkspace}>
+        <c-de-team-workspace team-id={openTeamId} new-team-type={newTeamType} onclose={handleClose} oncreated={handleCreated}></c-de-team-workspace>
+    </template>
+    <template lwc:else>
+        <lightning-card title="Distribution Teams" icon-name="standard:team_member">
+            <div slot="actions">
+                <lightning-button-group>
+                    <lightning-button label="New Team" onclick={handleNew}></lightning-button>
+                    <lightning-button label="New Queue to Queue Team" onclick={handleNewQ2Q}></lightning-button>
+                    <lightning-button label="Distribution Viewer" onclick={handleViewer}></lightning-button>
+                    <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" onclick={load}></lightning-button-icon>
+                </lightning-button-group>
+            </div>
+            <div class="slds-p-horizontal_medium">
+                <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                    Teams run top to bottom. Each team distributes one object to its members through its distributors.
+                </p>
+                <template lwc:if={error}>
+                    <p class="slds-text-color_error">{error}</p>
+                </template>
+                <template lwc:if={loading}>
+                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                </template>
+                <lightning-datatable key-field="id" data={rows} columns={columns} hide-checkbox-column onrowaction={handleRowAction}></lightning-datatable>
+                <template lwc:if={showViewer}>
+                    <h3 class="slds-text-heading_small slds-m-top_large slds-m-bottom_x-small">Distribution Viewer: sources → teams → distributors</h3>
+                    <lightning-datatable key-field="key" data={viewer} columns={viewerColumns} hide-checkbox-column></lightning-datatable>
+                </template>
+            </div>
+        </lightning-card>
+    </template>
+</template>

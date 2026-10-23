@@ -1,0 +1,73 @@
+<template>
+    <lightning-card title="Assignment Simulator" icon-name="utility:preview">
+        <div class="slds-p-horizontal_medium">
+            <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                Runs the record through every team and distributor as the engine would. Nothing is saved.
+            </p>
+            <div class="slds-grid slds-wrap slds-gutters_small slds-grid_vertical-align-end">
+                <template lwc:if={showRecordInput}>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <lightning-input label="Record Id" value={inputId} onchange={handleRecord} required></lightning-input>
+                    </div>
+                </template>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-input type="datetime" label="Simulate at (optional)" value={simulateAt} onchange={handleAt}></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-input type="checkbox" label="Ignore caps" checked={ignoreCaps} onchange={handleIgnoreCaps}></lightning-input>
+                    <lightning-input
+                        type="checkbox"
+                        label="Include inactive teams and distributors"
+                        checked={includeInactive}
+                        onchange={handleInactive}
+                    ></lightning-input>
+                    <lightning-input type="checkbox" label="Stop on first assignment" checked={stopOnSuccess} onchange={handleStop}></lightning-input>
+                </div>
+            </div>
+            <lightning-button class="slds-m-top_small" variant="brand" label="Run simulation" onclick={handleRun} disabled={runDisabled}></lightning-button>
+            <template lwc:if={running}>
+                <lightning-spinner alternative-text="Simulating" size="small"></lightning-spinner>
+            </template>
+            <template lwc:if={error}>
+                <div class="slds-text-color_error slds-m-top_small">{error}</div>
+            </template>
+            <template lwc:if={result}>
+                <div class="slds-box slds-m-top_small">
+                    <p><strong>{result.recordName}</strong> ({result.objectName})</p>
+                    <template lwc:if={result.classification}>
+                        <p class="slds-text-body_small">{result.classification}</p>
+                    </template>
+                    <p class="slds-m-top_x-small">
+                        Would assign to:
+                        <strong>
+                            <template lwc:if={result.wouldAssignTo}>{result.wouldAssignTo}</template>
+                            <template lwc:else>nobody (stays at its source)</template>
+                        </strong>
+                    </p>
+                    <template lwc:if={hasWarnings}>
+                        <ul class="slds-list_dotted slds-text-color_error slds-m-top_x-small">
+                            <template for:each={result.warnings} for:item="w">
+                                <li key={w}>{w}</li>
+                            </template>
+                        </ul>
+                    </template>
+                </div>
+                <lightning-accordion allow-multiple-sections-open class="slds-m-top_small">
+                    <template for:each={rows} for:item="r">
+                        <lightning-accordion-section key={r.key} name={r.key} label={r.title}>
+                            <div class="slds-m-bottom_x-small">
+                                <span class={r.sourceClass}>Source: {r.sourceLabel}</span>
+                                <span class={r.filterClass}>Filters: {r.filterLabel}</span>
+                                <span class={r.assignClass}>{r.assignLabel}</span>
+                            </div>
+                            <p class="slds-m-bottom_x-small">{r.message}</p>
+                            <pre class="slds-text-font_monospace slds-text-body_small trace">
+<template for:each={r.traceLines} for:item="t"><span key={t.key}>{t.text}
+</span></template></pre>
+                        </lightning-accordion-section>
+                    </template>
+                </lightning-accordion>
+            </template>
+        </div>
+    </lightning-card>
+</template>

@@ -87,7 +87,9 @@ public without sharing class DE_ConfigTransfer {
                                   ? c.Territory__c
                                   : c.Stamp__c != null
                                         ? c.Stamp__c
-                                        : c.Conversion_Rule__c != null ? c.Conversion_Rule__c : c.Matching_Rule__c != null ? c.Matching_Rule__c : c.Object_Sync__c != null ? c.Object_Sync__c : c.Team__c;
+                                        : c.Conversion_Rule__c != null
+                                              ? c.Conversion_Rule__c
+                                              : c.Matching_Rule__c != null ? c.Matching_Rule__c : c.Object_Sync__c != null ? c.Object_Sync__c : c.Team__c;
             add(condsByParent, parent, portable(c));
         }
         Map<Id, List<Map<String, Object>>> capsByParent = new Map<Id, List<Map<String, Object>>>();
@@ -251,10 +253,16 @@ public without sharing class DE_ConfigTransfer {
         }
         counts.put('shifts', n);
         counts.put('holidays', insertAll('DE_Holiday__c', items(root, 'holidays'), null, null));
-        counts.put('territories', insertWithConditions('DE_Territory__c', items(root, 'territories'), 'Territory__c', new Map<String, Object>{ 'Status__c' => 'Draft' }));
+        counts.put(
+            'territories',
+            insertWithConditions('DE_Territory__c', items(root, 'territories'), 'Territory__c', new Map<String, Object>{ 'Status__c' => 'Draft' })
+        );
         counts.put('matchingRules', insertWithConditions('DE_Matching_Rule__c', items(root, 'matchingRules'), 'Matching_Rule__c', null));
         counts.put('conversionRules', insertWithConditions('DE_Conversion_Rule__c', items(root, 'conversionRules'), 'Conversion_Rule__c', null));
-        counts.put('objectSyncs', insertWithConditions('DE_Object_Sync__c', items(root, 'objectSyncs'), 'Object_Sync__c', new Map<String, Object>{ 'Active__c' => false }));
+        counts.put(
+            'objectSyncs',
+            insertWithConditions('DE_Object_Sync__c', items(root, 'objectSyncs'), 'Object_Sync__c', new Map<String, Object>{ 'Active__c' => false })
+        );
         n = 0;
         for (Object o : items(root, 'stampGroups')) {
             Map<String, Object> m = (Map<String, Object>) o;

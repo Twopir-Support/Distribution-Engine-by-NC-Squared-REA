@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>DE_Assignment_Log__c$Name</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$Record_Name__c</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$Object_API_Name__c</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$Method__c</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$Status__c</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$Assigned_At__c</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$SLA_Status__c</field>
+    </columns>
+    <columns>
+        <field>DE_Assignment_Log__c$SLA_Missed__c</field>
+    </columns>
+    <description>Assignments with an SLA alert or a missed SLA checkpoint.</description>
+    <filter>
+        <criteriaItems>
+            <column>DE_Assignment_Log__c$SLA_Missed__c</column>
+            <columnToView>false</columnToView>
+            <isUnlocked>true</isUnlocked>
+            <operator>greaterThan</operator>
+            <value>0</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>DE_Assignment_Log__c$Team__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>SLA Alerts</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>DE_Assignment_Logs__c</reportType>
+    <scope>organization</scope>
+    <showDetails>false</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>DE_Assignment_Log__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_LAST30</interval>
+    </timeFrameFilter>
+</Report>

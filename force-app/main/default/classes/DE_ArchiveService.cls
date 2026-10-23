@@ -36,7 +36,12 @@ public without sharing class DE_ArchiveService {
             for (DE_Distributor__c d : [
                 SELECT Source_Id__c
                 FROM DE_Distributor__c
-                WHERE Active__c = TRUE AND Type__c IN ('Standard', 'Pull') AND Source_Type__c = 'Queue' AND Team__r.Object_API_Name__c = :obj AND Team__r.Active__c = TRUE
+                WHERE
+                    Active__c = TRUE
+                    AND Type__c IN ('Standard', 'Pull')
+                    AND Source_Type__c = 'Queue'
+                    AND Team__r.Object_API_Name__c = :obj
+                    AND Team__r.Active__c = TRUE
             ]) {
                 Id q = DE_Ids.toId(d.Source_Id__c);
                 if (q != null && q != archiveQueue) {

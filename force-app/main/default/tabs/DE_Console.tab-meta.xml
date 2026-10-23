@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Distribution Console</label>
+    <lwcComponent>deConsole</lwcComponent>
+    <motif>Custom55: Gears</motif>
+</CustomTab>

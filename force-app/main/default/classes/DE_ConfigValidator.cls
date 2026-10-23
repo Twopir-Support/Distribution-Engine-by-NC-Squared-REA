@@ -19,7 +19,13 @@ public without sharing class DE_ConfigValidator {
 
     // ------------------------------------------------------------------ teams
 
-    public static List<String> team(DE_Team__c t, DE_Team__c existing, Boolean hasDistributors, List<DE_Condition__c> filters, List<DE_Condition__c> dynamicConditions) {
+    public static List<String> team(
+        DE_Team__c t,
+        DE_Team__c existing,
+        Boolean hasDistributors,
+        List<DE_Condition__c> filters,
+        List<DE_Condition__c> dynamicConditions
+    ) {
         List<String> errors = new List<String>();
         if (String.isBlank(t.Name)) {
             errors.add('Enter a team name.');

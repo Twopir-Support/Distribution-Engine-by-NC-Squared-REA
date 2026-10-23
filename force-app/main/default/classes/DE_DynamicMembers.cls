@@ -41,7 +41,9 @@ public without sharing class DE_DynamicMembers {
         for (Id u : matching) {
             DE_Team_Member__c m = existing.get(u);
             if (m == null) {
-                upserts.add(new DE_Team_Member__c(Team__c = teamId, User__c = u, Active__c = true, Dynamic__c = true, Weight__c = 1, Unique_Key__c = teamId + '|' + u));
+                upserts.add(
+                    new DE_Team_Member__c(Team__c = teamId, User__c = u, Active__c = true, Dynamic__c = true, Weight__c = 1, Unique_Key__c = teamId + '|' + u)
+                );
                 result.put('added', result.get('added') + 1);
             } else if (m.Dynamic__c && !m.Active__c) {
                 upserts.add(new DE_Team_Member__c(Id = m.Id, Active__c = true));

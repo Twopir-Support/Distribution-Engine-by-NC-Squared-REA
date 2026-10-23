@@ -14,7 +14,13 @@ public without sharing class DE_OwnerResolver {
      * (case-insensitive), filtered by the Lookup Where conditions. Prefers matches owned by team members,
      * then the tie-breaker (default newest LastModifiedDate). Only team members can receive the record.
      */
-    public static Map<Id, Id> lookupOwners(DE_Model.TeamConfig cfg, DE_Model.DistributorConfig dc, List<SObject> records, Set<Id> memberIds, List<String> warnings) {
+    public static Map<Id, Id> lookupOwners(
+        DE_Model.TeamConfig cfg,
+        DE_Model.DistributorConfig dc,
+        List<SObject> records,
+        Set<Id> memberIds,
+        List<String> warnings
+    ) {
         Map<Id, Id> out = new Map<Id, Id>();
         DE_Distributor__c d = dc.dist;
         String target = DE_Schema.objectName(d.Lookup_Object__c);
@@ -170,7 +176,13 @@ public without sharing class DE_OwnerResolver {
                 continue;
             }
             Set<Id> typeIds = byType.get(t);
-            for (SObject s : Database.queryWithBinds('SELECT Id, OwnerId FROM ' + t + ' WHERE Id IN :ids', new Map<String, Object>{ 'ids' => typeIds }, AccessLevel.SYSTEM_MODE)) {
+            for (
+                SObject s : Database.queryWithBinds(
+                    'SELECT Id, OwnerId FROM ' + t + ' WHERE Id IN :ids',
+                    new Map<String, Object>{ 'ids' => typeIds },
+                    AccessLevel.SYSTEM_MODE
+                )
+            ) {
                 out.put(s.Id, (Id) s.get('OwnerId'));
             }
         }

@@ -1,0 +1,379 @@
+<template>
+    <lightning-card title="Distribution Availability" icon-name="standard:shift">
+        <div class="slds-p-horizontal_medium">
+            <template lwc:if={error}><p class="slds-text-color_error">{error}</p></template>
+            <lightning-tabset>
+                <lightning-tab label="Out of Office" value="ooo" onactive={handleTab}>
+                    <lightning-button label="New out of office" icon-name="utility:add" onclick={handleNewOoo}></lightning-button>
+                    <template lwc:if={oooEdit}>
+                        <div class="slds-box slds-m-top_small">
+                            <c-de-record-picker label="User" kind="User" value={oooEdit.User__c} onchange={handleOooUser}></c-de-record-picker>
+                            <div class="slds-grid slds-gutters_small">
+                                <div class="slds-col">
+                                    <lightning-input
+                                        type="datetime"
+                                        label="Start"
+                                        value={oooEdit.Start__c}
+                                        data-field="Start__c"
+                                        onchange={handleOooField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-input
+                                        type="datetime"
+                                        label="End"
+                                        value={oooEdit.End__c}
+                                        data-field="End__c"
+                                        onchange={handleOooField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                            </div>
+                            <lightning-input
+                                type="checkbox"
+                                label="All day"
+                                checked={oooEdit.All_Day__c}
+                                data-field="All_Day__c"
+                                onchange={handleOooField}
+                            ></lightning-input>
+                            <lightning-input
+                                label="Reason"
+                                max-length="80"
+                                value={oooEdit.Reason__c}
+                                data-field="Reason__c"
+                                onchange={handleOooField}
+                            ></lightning-input>
+                            <lightning-button label="Cancel" onclick={handleCancelOoo}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save" onclick={handleSaveOoo}></lightning-button>
+                        </div>
+                    </template>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small">
+                        <thead>
+                            <tr>
+                                <th>User or queue</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Reason</th>
+                                <th>Source</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={ooo} for:item="o">
+                                <tr key={o.Id}>
+                                    <td><a data-id={o.Id} onclick={handleEditOoo}>{o.who}</a></td>
+                                    <td>{o.start}</td>
+                                    <td>{o.end}</td>
+                                    <td>{o.Reason__c}</td>
+                                    <td>{o.Source__c}</td>
+                                    <td>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="Delete"
+                                            data-id={o.Id}
+                                            onclick={handleDeleteOoo}
+                                        ></lightning-button-icon>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </lightning-tab>
+
+                <lightning-tab label="Regional Holidays" value="holidays" onactive={handleTab}>
+                    <lightning-button label="New holiday" icon-name="utility:add" onclick={handleNewHoliday}></lightning-button>
+                    <template lwc:if={holidayEdit}>
+                        <div class="slds-box slds-m-top_small">
+                            <div class="slds-grid slds-wrap slds-gutters_small">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-input
+                                        label="Name"
+                                        value={holidayEdit.Name}
+                                        data-field="Name"
+                                        onchange={handleHolidayField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-input
+                                        label="Region"
+                                        value={holidayEdit.Region__c}
+                                        data-field="Region__c"
+                                        onchange={handleHolidayField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        type="datetime"
+                                        label="Starts"
+                                        value={holidayEdit.Start__c}
+                                        data-field="Start__c"
+                                        onchange={handleHolidayField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        type="datetime"
+                                        label="Ends"
+                                        value={holidayEdit.End__c}
+                                        data-field="End__c"
+                                        onchange={handleHolidayField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-combobox
+                                        label="Timezone"
+                                        options={timezoneOptions}
+                                        value={holidayEdit.Timezone__c}
+                                        data-field="Timezone__c"
+                                        onchange={handleHolidayField}
+                                    ></lightning-combobox>
+                                </div>
+                            </div>
+                            <lightning-input
+                                type="checkbox"
+                                label="All day"
+                                checked={holidayEdit.All_Day__c}
+                                data-field="All_Day__c"
+                                onchange={handleHolidayField}
+                            ></lightning-input>
+                            <lightning-button label="Cancel" onclick={handleCancelHoliday}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save" onclick={handleSaveHoliday}></lightning-button>
+                        </div>
+                    </template>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small">
+                        <thead>
+                            <tr>
+                                <th>Holiday</th>
+                                <th>Region</th>
+                                <th>Starts</th>
+                                <th>Ends</th>
+                                <th>All day</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={holidays} for:item="h">
+                                <tr key={h.Id}>
+                                    <td>
+                                        <a data-id={h.Id} onclick={handleEditHoliday}>{h.Name}</a>
+                                    </td>
+                                    <td>{h.Region__c}</td>
+                                    <td>{h.start}</td>
+                                    <td>{h.end}</td>
+                                    <td>{h.All_Day__c}</td>
+                                    <td>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="Delete"
+                                            data-id={h.Id}
+                                            onclick={handleDeleteHoliday}
+                                        ></lightning-button-icon>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </lightning-tab>
+
+                <lightning-tab label="Regions" value="regions" onactive={handleTab}>
+                    <p class="slds-text-body_small slds-text-color_weak">A holiday in a region stops distribution for every team that uses that region.</p>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small">
+                        <thead>
+                            <tr>
+                                <th>Region</th>
+                                <th>Teams</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={regions} for:item="r"
+                                ><tr key={r.key}>
+                                    <td>{r.name}</td>
+                                    <td>{r.teams}</td>
+                                </tr></template
+                            >
+                        </tbody>
+                    </table>
+                </lightning-tab>
+
+                <lightning-tab label="Shifts" value="shifts" onactive={handleTab}>
+                    <lightning-button label="Add shift" icon-name="utility:add" onclick={handleNewShift}></lightning-button>
+                    <template lwc:if={shiftEdit}>
+                        <div class="slds-box slds-m-top_small">
+                            <div class="slds-grid slds-gutters_small">
+                                <div class="slds-col">
+                                    <lightning-input
+                                        label="Shift name"
+                                        value={shiftEdit.Name}
+                                        data-field="Name"
+                                        onchange={handleShiftField}
+                                        required
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-combobox
+                                        label="Timezone"
+                                        options={timezoneOptions}
+                                        value={shiftEdit.Timezone__c}
+                                        data-field="Timezone__c"
+                                        onchange={handleShiftField}
+                                        required
+                                    ></lightning-combobox>
+                                </div>
+                            </div>
+                            <p class="slds-text-body_small slds-text-color_weak slds-m-vertical_x-small">
+                                Up to three blocks per day. Tick +1 for a block that ends the next day.
+                            </p>
+                            <template for:each={shiftDays} for:item="d">
+                                <div key={d.code} class="slds-grid slds-gutters_x-small slds-grid_vertical-align-end slds-m-bottom_x-small">
+                                    <div class="slds-col slds-size_1-of-12 slds-p-bottom_x-small">{d.label}</div>
+                                    <template for:each={d.blocks} for:item="b">
+                                        <div key={b.key} class="slds-col slds-grid slds-gutters_xx-small">
+                                            <lightning-input
+                                                type="time"
+                                                label="From"
+                                                variant="label-hidden"
+                                                value={b.start}
+                                                data-day={d.code}
+                                                data-index={b.index}
+                                                data-part="start"
+                                                onchange={handleBlock}
+                                            ></lightning-input>
+                                            <lightning-input
+                                                type="time"
+                                                label="To"
+                                                variant="label-hidden"
+                                                value={b.end}
+                                                data-day={d.code}
+                                                data-index={b.index}
+                                                data-part="end"
+                                                onchange={handleBlock}
+                                            ></lightning-input>
+                                            <lightning-input
+                                                type="checkbox"
+                                                label="+1"
+                                                checked={b.overnight}
+                                                data-day={d.code}
+                                                data-index={b.index}
+                                                data-part="overnight"
+                                                onchange={handleBlock}
+                                            ></lightning-input>
+                                        </div>
+                                    </template>
+                                    <div class="slds-col slds-no-flex">
+                                        <lightning-button-icon
+                                            icon-name="utility:copy"
+                                            alternative-text="Copy to all days"
+                                            title="Copy to all days"
+                                            data-day={d.code}
+                                            onclick={handleCopyToAll}
+                                        ></lightning-button-icon>
+                                    </div>
+                                </div>
+                            </template>
+                            <lightning-button label="Cancel" onclick={handleCancelShift}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save shift" onclick={handleSaveShift}></lightning-button>
+                        </div>
+                    </template>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small">
+                        <thead>
+                            <tr>
+                                <th>Shift</th>
+                                <th>Timezone</th>
+                                <th>Schedule</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={shifts} for:item="s">
+                                <tr key={s.Id}>
+                                    <td>
+                                        <a data-id={s.Id} onclick={handleEditShift}>{s.Name}</a>
+                                    </td>
+                                    <td>{s.Timezone__c}</td>
+                                    <td class="slds-cell-wrap slds-text-font_monospace slds-text-body_small">{s.Schedule__c}</td>
+                                    <td>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="Delete"
+                                            data-id={s.Id}
+                                            onclick={handleDeleteShift}
+                                        ></lightning-button-icon>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </lightning-tab>
+
+                <lightning-tab label="Team Roster and Calendar" value="roster" onactive={handleTab}>
+                    <div class="slds-grid slds-gutters_small slds-m-bottom_small">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-combobox
+                                label="Team"
+                                options={teamOptions}
+                                value={teamId}
+                                onchange={handleTeam}
+                                placeholder="All teams"
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input type="date" label="Calendar month (any day in it)" value={monthDate} onchange={handleMonth}></lightning-input>
+                        </div>
+                    </div>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Online</th>
+                                <th>Availability now</th>
+                                <th>Toggle reason</th>
+                                <th>Teams</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={roster} for:item="r">
+                                <tr key={r.userId}>
+                                    <td>{r.name}</td>
+                                    <td>
+                                        <lightning-input
+                                            type="toggle"
+                                            label="Online"
+                                            variant="label-hidden"
+                                            checked={r.online}
+                                            data-id={r.userId}
+                                            onchange={handleRosterToggle}
+                                            message-toggle-active=""
+                                            message-toggle-inactive=""
+                                        ></lightning-input>
+                                    </td>
+                                    <td>
+                                        <span class={r.badge}>{r.availability}</span>
+                                        <span class="slds-text-body_small slds-text-color_weak">{r.since}</span>
+                                    </td>
+                                    <td>{r.reason}</td>
+                                    <td class="slds-cell-wrap">{r.teams}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <template lwc:if={hasCalendar}>
+                        <h3 class="slds-text-heading_small slds-m-top_medium slds-m-bottom_x-small">Availability calendar</h3>
+                        <div class="calendar">
+                            <template for:each={calendar} for:item="c">
+                                <div key={c.key} class={c.cls}>
+                                    <div class="slds-text-title">{c.label}</div>
+                                    <div class="slds-text-body_small">{c.info}</div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </lightning-tab>
+            </lightning-tabset>
+        </div>
+    </lightning-card>
+</template>

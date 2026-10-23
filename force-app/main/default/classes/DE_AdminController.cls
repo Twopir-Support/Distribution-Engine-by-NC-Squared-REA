@@ -184,7 +184,14 @@ public with sharing class DE_AdminController {
         List<DE_Ui.Option> out = new List<DE_Ui.Option>();
         String pattern = '%' + (term == null ? '' : String.escapeSingleQuotes(term.trim())) + '%';
         if (kind != 'Queue') {
-            for (User u : [SELECT Id, Name, Username FROM User WHERE IsActive = TRUE AND UserType = 'Standard' AND Name LIKE :pattern WITH USER_MODE ORDER BY Name LIMIT 20]) {
+            for (User u : [
+                SELECT Id, Name, Username
+                FROM User
+                WHERE IsActive = TRUE AND UserType = 'Standard' AND Name LIKE :pattern
+                WITH USER_MODE
+                ORDER BY Name
+                LIMIT 20
+            ]) {
                 DE_Ui.Option o = new DE_Ui.Option(u.Name + ' · ' + u.Username, u.Id);
                 o.kind = 'User';
                 out.add(o);
@@ -290,7 +297,13 @@ public with sharing class DE_AdminController {
             for (DE_Model.Member m : cfg.members) {
                 memberIds.add(m.memberId);
             }
-            Map<Id, Decimal> today = DE_CapService.logCounts(teamId, false, DE_CapService.windowStart('Daily', null, System.now(), cfg.timezoneSid()), memberIds, null);
+            Map<Id, Decimal> today = DE_CapService.logCounts(
+                teamId,
+                false,
+                DE_CapService.windowStart('Daily', null, System.now(), cfg.timezoneSid()),
+                memberIds,
+                null
+            );
             Map<Id, String> shiftNames = new Map<Id, String>();
             for (DE_Shift__c s : [SELECT Id, Name FROM DE_Shift__c WITH USER_MODE]) {
                 shiftNames.put(s.Id, s.Name);
@@ -304,7 +317,9 @@ public with sharing class DE_AdminController {
                 r.online = m.isOnline();
                 r.toggleReason = m.agent == null ? null : m.agent.Toggle_Reason__c;
                 r.tags = m.agent == null ? null : m.agent.Tags__c;
-                String reason = !m.isActive() ? 'Inactive' : (d.holiday != null ? 'Holiday: ' + d.holiday : availability.unavailableReason(m, false, false, false));
+                String reason = !m.isActive()
+                    ? 'Inactive'
+                    : (d.holiday != null ? 'Holiday: ' + d.holiday : availability.unavailableReason(m, false, false, false));
                 r.availableNow = reason == null;
                 r.availability = reason == null ? 'Available' : reason;
                 r.today = today.containsKey(m.memberId) ? today.get(m.memberId).intValue() : 0;
@@ -337,7 +352,19 @@ public with sharing class DE_AdminController {
                 d.caps.add(capInput(c, cfg.capCriteria.get(c.Id)));
             }
             for (DE_SLA__c s : [
-                SELECT Id, Name, Team__c, Checkpoint__c, Alert_Type__c, Minutes_After_Assignment__c, Check_After_Field__c, Condition_Logic__c, Stamp_Value__c, Notify_Assignee__c, Notify_Manager__c, Active__c
+                SELECT
+                    Id,
+                    Name,
+                    Team__c,
+                    Checkpoint__c,
+                    Alert_Type__c,
+                    Minutes_After_Assignment__c,
+                    Check_After_Field__c,
+                    Condition_Logic__c,
+                    Stamp_Value__c,
+                    Notify_Assignee__c,
+                    Notify_Manager__c,
+                    Active__c
                 FROM DE_SLA__c
                 WHERE Team__c = :teamId
                 WITH USER_MODE
@@ -486,7 +513,13 @@ public with sharing class DE_AdminController {
     }
 
     private static DE_Condition__c cloneCondition(DE_Condition__c c, String parentField, Id parentId) {
-        DE_Condition__c n = new DE_Condition__c(Sequence__c = c.Sequence__c, Field_API_Name__c = c.Field_API_Name__c, Operator__c = c.Operator__c, Value__c = c.Value__c, Purpose__c = c.Purpose__c);
+        DE_Condition__c n = new DE_Condition__c(
+            Sequence__c = c.Sequence__c,
+            Field_API_Name__c = c.Field_API_Name__c,
+            Operator__c = c.Operator__c,
+            Value__c = c.Value__c,
+            Purpose__c = c.Purpose__c
+        );
         n.put(parentField, parentId);
         return n;
     }
@@ -540,7 +573,16 @@ public with sharing class DE_AdminController {
             if (q2q != DE_Ids.isQueue(m)) {
                 throw DE_Ui.error(q2q ? 'Queue to Queue teams can only have queue members.' : 'Only users can be added to this team.');
             }
-            rows.add(new DE_Team_Member__c(Team__c = teamId, User__c = q2q ? null : m, Queue_Id__c = q2q ? String.valueOf(m) : null, Active__c = true, Weight__c = 1, Unique_Key__c = teamId + '|' + m));
+            rows.add(
+                new DE_Team_Member__c(
+                    Team__c = teamId,
+                    User__c = q2q ? null : m,
+                    Queue_Id__c = q2q ? String.valueOf(m) : null,
+                    Active__c = true,
+                    Weight__c = 1,
+                    Unique_Key__c = teamId + '|' + m
+                )
+            );
             if (!q2q) {
                 users.add(m);
             }

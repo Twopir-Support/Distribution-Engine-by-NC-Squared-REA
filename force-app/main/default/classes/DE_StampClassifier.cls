@@ -13,7 +13,13 @@ public without sharing class DE_StampClassifier {
     public static List<GroupConfig> groups(String objectName) {
         List<GroupConfig> out = new List<GroupConfig>();
         List<DE_Stamp_Group__c> groupRows = [
-            SELECT Id, Name, Object_API_Name__c, Group_Type__c, Stamp_Field__c, (SELECT Id, Name, Order__c, Condition_Logic__c FROM Stamps__r ORDER BY Order__c, Name)
+            SELECT
+                Id,
+                Name,
+                Object_API_Name__c,
+                Group_Type__c,
+                Stamp_Field__c,
+                (SELECT Id, Name, Order__c, Condition_Logic__c FROM Stamps__r ORDER BY Order__c, Name)
             FROM DE_Stamp_Group__c
             WHERE Object_API_Name__c = :objectName AND Active__c = TRUE
             ORDER BY Name
@@ -58,7 +64,12 @@ public without sharing class DE_StampClassifier {
         return out;
     }
 
-    public static Map<Id, Map<String, Object>> classify(String objectName, List<SObject> records, Map<Id, DE_Record_Detail__c> details, List<GroupConfig> groups) {
+    public static Map<Id, Map<String, Object>> classify(
+        String objectName,
+        List<SObject> records,
+        Map<Id, DE_Record_Detail__c> details,
+        List<GroupConfig> groups
+    ) {
         Map<Id, Map<String, Object>> stamps = new Map<Id, Map<String, Object>>();
         DE_Conditions.Context ctx = new DE_Conditions.Context();
         ctx.details = details;

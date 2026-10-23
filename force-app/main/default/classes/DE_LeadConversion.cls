@@ -204,7 +204,11 @@ public without sharing class DE_LeadConversion {
             ids.add(details.get(l.Id).Matched_Lead__c);
         }
         Map<Id, SObject> full = new Map<Id, SObject>(
-            Database.queryWithBinds('SELECT Id, ' + String.join(fields, ', ') + ' FROM Lead WHERE Id IN :ids', new Map<String, Object>{ 'ids' => ids }, AccessLevel.SYSTEM_MODE)
+            Database.queryWithBinds(
+                'SELECT Id, ' + String.join(fields, ', ') + ' FROM Lead WHERE Id IN :ids',
+                new Map<String, Object>{ 'ids' => ids },
+                AccessLevel.SYSTEM_MODE
+            )
         );
         for (SObject l : toDedupe.keySet()) {
             DE_Conversion_Rule__c r = toDedupe.get(l);

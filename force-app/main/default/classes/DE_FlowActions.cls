@@ -5,7 +5,10 @@ public without sharing class DE_FlowActions {
     public class DistributeRequest {
         @InvocableVariable(label='Record Id' required=true)
         public Id recordId;
-        @InvocableVariable(label='Run Standard distributors too' description='Also run Standard distributors for the record if no Trigger distributor assigns it.')
+        @InvocableVariable(
+            label='Run Standard distributors too'
+            description='Also run Standard distributors for the record if no Trigger distributor assigns it.'
+        )
         public Boolean includeStandard;
     }
 

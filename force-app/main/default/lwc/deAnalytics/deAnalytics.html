@@ -1,0 +1,174 @@
+<template>
+    <lightning-card title="Distribution Analytics" icon-name="standard:report">
+        <div class="slds-p-horizontal_medium">
+            <div class="slds-grid slds-wrap slds-gutters_x-small slds-grid_vertical-align-end">
+                <div class="slds-col slds-size_1-of-6">
+                    <lightning-input type="date" label="From" value={filter.fromDate} data-field="fromDate" onchange={handleFilter}></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-6">
+                    <lightning-input type="date" label="To" value={filter.toDate} data-field="toDate" onchange={handleFilter}></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-6">
+                    <lightning-combobox
+                        label="Team"
+                        options={teamOptions}
+                        value={filter.teamId}
+                        data-field="teamId"
+                        onchange={handleFilter}
+                    ></lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-6">
+                    <lightning-input
+                        label="Object"
+                        value={filter.objectName}
+                        placeholder="All"
+                        data-field="objectName"
+                        onchange={handleFilter}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-6">
+                    <lightning-combobox
+                        label="Split by"
+                        options={splitOptions}
+                        value={filter.splitBy}
+                        data-field="splitBy"
+                        onchange={handleFilter}
+                    ></lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-6">
+                    <lightning-button variant="brand" label="Apply" onclick={load}></lightning-button>
+                    <lightning-button class="slds-m-left_x-small" label="Table view" onclick={toggleTables}></lightning-button>
+                </div>
+            </div>
+            <template lwc:if={error}><p class="slds-text-color_error slds-m-top_small">{error}</p></template>
+
+            <div class="charts slds-m-top_medium">
+                <template lwc:if={tip}>
+                    <div class="tip" style={tip.style}>{tip.text}</div>
+                </template>
+
+                <h3 class="slds-text-heading_small">Distributions over time</h3>
+                <template lwc:if={overTime}>
+                    <ul class="legend">
+                        <template for:each={overTime.legend} for:item="l">
+                            <li key={l.key}><span class="swatch" style={l.style}></span>{l.name}</li>
+                        </template>
+                    </ul>
+                    <svg viewBox={viewBox} class="chart" role="img" aria-label="Distributions per day">
+                        <template for:each={overTime.ticks} for:item="t">
+                            <g key={t.key}>
+                                <line x1={t.x1} x2={t.x2} y1={t.y} y2={t.y} class="grid"></line>
+                                <text x={t.labelX} y={t.y} class="axis" text-anchor="end" dominant-baseline="middle">{t.text}</text>
+                            </g>
+                        </template>
+                        <template for:each={overTime.marks} for:item="m">
+                            <path key={m.key} d={m.d} fill={m.fill} data-tip={m.tip} onmouseenter={handleEnter} onmouseleave={handleLeave}></path>
+                        </template>
+                        <template for:each={overTime.labels} for:item="l">
+                            <text key={l.key} x={l.x} y={l.y} class="axis" text-anchor="middle">{l.text}</text>
+                        </template>
+                    </svg>
+                    <template lwc:if={showTables}>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-bottom_medium">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Assignments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={overTime.table} for:item="r"
+                                    ><tr key={r.key}>
+                                        <td>{r.day}</td>
+                                        <td>{r.values}</td>
+                                    </tr></template
+                                >
+                            </tbody>
+                        </table>
+                    </template>
+                </template>
+                <template lwc:else><p class="slds-text-color_weak">No assignments in this period.</p></template>
+
+                <h3 class="slds-text-heading_small slds-m-top_large">Hourly trend (your timezone)</h3>
+                <template lwc:if={hourly}>
+                    <svg viewBox={viewBox} class="chart" role="img" aria-label="Assignments by hour of day">
+                        <template for:each={hourly.ticks} for:item="t">
+                            <g key={t.key}>
+                                <line x1={t.x1} x2={t.x2} y1={t.y} y2={t.y} class="grid"></line>
+                                <text x={t.labelX} y={t.y} class="axis" text-anchor="end" dominant-baseline="middle">{t.text}</text>
+                            </g>
+                        </template>
+                        <template for:each={hourly.marks} for:item="m">
+                            <path key={m.key} d={m.d} fill={m.fill} data-tip={m.tip} onmouseenter={handleEnter} onmouseleave={handleLeave}></path>
+                        </template>
+                        <template for:each={hourly.labels} for:item="l">
+                            <text key={l.key} x={l.x} y={l.y} class="axis" text-anchor="middle">{l.text}</text>
+                        </template>
+                    </svg>
+                    <template lwc:if={showTables}>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-bottom_medium">
+                            <thead>
+                                <tr>
+                                    <th>Hour</th>
+                                    <th>Assignments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={hourly.table} for:item="r"
+                                    ><tr key={r.key}>
+                                        <td>{r.hour}</td>
+                                        <td>{r.value}</td>
+                                    </tr></template
+                                >
+                            </tbody>
+                        </table>
+                    </template>
+                </template>
+                <template lwc:else><p class="slds-text-color_weak">No data.</p></template>
+
+                <div class="slds-grid slds-wrap slds-gutters_small slds-m-top_large">
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                        <h3 class="slds-text-heading_small">Average time to action (minutes)</h3>
+                        <template lwc:if={timeToAction}>
+                            <svg viewBox={timeToAction.viewBox} class="chart" role="img" aria-label="Average time to action">
+                                <template for:each={timeToAction.marks} for:item="m">
+                                    <g key={m.key}>
+                                        <text x={m.label.x} y={m.label.y} class="axis" text-anchor="end">{m.label.text}</text>
+                                        <path d={m.d} fill={m.fill} data-tip={m.tip} onmouseenter={handleEnter} onmouseleave={handleLeave}></path>
+                                        <text x={m.value.x} y={m.value.y} class="value">{m.value.text}</text>
+                                    </g>
+                                </template>
+                            </svg>
+                        </template>
+                        <template lwc:else><p class="slds-text-color_weak">No actions tracked.</p></template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                        <h3 class="slds-text-heading_small">User activity: times toggled offline</h3>
+                        <template lwc:if={activity}>
+                            <svg viewBox={activity.viewBox} class="chart" role="img" aria-label="Times toggled offline per user">
+                                <template for:each={activity.marks} for:item="m">
+                                    <g key={m.key}>
+                                        <text x={m.label.x} y={m.label.y} class="axis" text-anchor="end">{m.label.text}</text>
+                                        <path d={m.d} fill={m.fill} data-tip={m.tip} onmouseenter={handleEnter} onmouseleave={handleLeave}></path>
+                                        <text x={m.value.x} y={m.value.y} class="value">{m.value.text}</text>
+                                    </g>
+                                </template>
+                            </svg>
+                        </template>
+                        <template lwc:else><p class="slds-text-color_weak">No availability changes.</p></template>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="slds-text-heading_small slds-m-top_large">Team performance</h3>
+            <template lwc:if={hasTeam}>
+                <template lwc:if={hasPerformance}>
+                    <lightning-button class="slds-m-bottom_x-small" label="Download CSV" icon-name="utility:download" onclick={handleCsv}></lightning-button>
+                    <lightning-datatable key-field="name" data={performance} columns={perfColumns} hide-checkbox-column></lightning-datatable>
+                </template>
+                <template lwc:else><p class="slds-text-color_weak">No assignments for this team in the period.</p></template>
+            </template>
+            <template lwc:else><p class="slds-text-color_weak">Choose a team to see member performance.</p></template>
+        </div>
+    </lightning-card>
+</template>

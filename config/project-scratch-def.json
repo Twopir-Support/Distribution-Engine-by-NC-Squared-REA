@@ -1,7 +1,11 @@
 {
-  "orgName": "Demo company",
-  "edition": "Developer",
-  "features": ["EnableSetPasswordInApi"],
+  "orgName": "Distribution Engine by NC Squared",
+  "edition": "Enterprise",
+  "features": [
+    "EnableSetPasswordInApi",
+    "ServiceCloud",
+    "LightningServiceConsole"
+  ],
   "settings": {
     "lightningExperienceSettings": {
       "enableS1DesktopEnabled": true

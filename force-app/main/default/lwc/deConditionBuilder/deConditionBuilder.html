@@ -1,0 +1,114 @@
+<template>
+    <fieldset class="slds-form-element slds-m-bottom_small">
+        <legend class="slds-form-element__legend slds-form-element__label">{label}</legend>
+        <template lwc:if={helpText}>
+            <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_x-small">{helpText}</p>
+        </template>
+        <template lwc:if={loadError}>
+            <p class="slds-text-color_error">{loadError}</p>
+        </template>
+        <template lwc:if={hasRows}>
+            <template for:each={displayRows} for:item="row">
+                <div key={row.key} class="slds-grid slds-gutters_x-small slds-wrap slds-m-bottom_x-small slds-grid_vertical-align-end">
+                    <div class="slds-col slds-size_1-of-12">
+                        <lightning-input
+                            type="number"
+                            label="#"
+                            value={row.number}
+                            data-key={row.key}
+                            onchange={handleNumber}
+                            disabled={readOnly}
+                        ></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_4-of-12">
+                        <template lwc:if={isMember}>
+                            <lightning-input
+                                label="Member filter"
+                                value={row.field}
+                                placeholder="Tag:Language, DynamicTag:Language, Territory or Stamp:Priority"
+                                data-key={row.key}
+                                onchange={handlePath}
+                                disabled={readOnly}
+                            ></lightning-input>
+                        </template>
+                        <template lwc:else>
+                            <lightning-combobox
+                                label="Field"
+                                options={fieldOptions}
+                                value={row.pickerValue}
+                                data-key={row.key}
+                                onchange={handleFieldPick}
+                                disabled={readOnly}
+                                dropdown-alignment="auto"
+                            ></lightning-combobox>
+                            <template lwc:if={row.custom}>
+                                <lightning-input
+                                    label="Field path"
+                                    variant="label-hidden"
+                                    value={row.field}
+                                    placeholder="e.g. Account.Industry or DE.Territory"
+                                    data-key={row.key}
+                                    onchange={handlePath}
+                                    disabled={readOnly}
+                                ></lightning-input>
+                            </template>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_3-of-12">
+                        <lightning-combobox
+                            label="Operator"
+                            options={operatorOptions}
+                            value={row.operator}
+                            data-key={row.key}
+                            onchange={handleOperator}
+                            disabled={readOnly}
+                        ></lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_3-of-12">
+                        <lightning-input
+                            label="Value"
+                            value={row.value}
+                            placeholder={row.placeholder}
+                            data-key={row.key}
+                            onchange={handleValue}
+                            disabled={row.valueDisabled}
+                        ></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-12">
+                        <template lwc:if={readOnly}></template>
+                        <template lwc:else>
+                            <lightning-button-icon
+                                icon-name="utility:delete"
+                                alternative-text="Remove row"
+                                title="Remove row"
+                                data-key={row.key}
+                                onclick={handleRemove}
+                            ></lightning-button-icon>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </template>
+        <template lwc:else>
+            <p class="slds-text-body_small slds-text-color_weak">No rows. All records match.</p>
+        </template>
+        <div class="slds-grid slds-grid_vertical-align-end slds-gutters_x-small slds-m-top_x-small">
+            <template lwc:if={canAdd}>
+                <div class="slds-col slds-no-flex">
+                    <lightning-button label="Add row" icon-name="utility:add" onclick={handleAdd}></lightning-button>
+                </div>
+            </template>
+            <template lwc:if={showLogic}>
+                <div class="slds-col">
+                    <lightning-input
+                        label="Filter logic (optional)"
+                        value={logicValue}
+                        placeholder="e.g. (1 AND 2) OR 3 — blank means all rows"
+                        onchange={handleLogic}
+                        disabled={readOnly}
+                    ></lightning-input>
+                </div>
+            </template>
+        </div>
+    </fieldset>
+</template>

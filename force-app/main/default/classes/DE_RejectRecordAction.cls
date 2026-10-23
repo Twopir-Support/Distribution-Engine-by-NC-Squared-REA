@@ -18,7 +18,11 @@ public without sharing class DE_RejectRecordAction {
         public String message;
     }
 
-    @InvocableMethod(label='DE Reject Record' description='Rejects Distribution Engine assignments on behalf of the running user.' category='Distribution Engine')
+    @InvocableMethod(
+        label='DE Reject Record'
+        description='Rejects Distribution Engine assignments on behalf of the running user.'
+        category='Distribution Engine'
+    )
     public static List<Result> reject(List<Request> requests) {
         if (requests.size() > MAX_RECORDS) {
             throw new DE_Permissions.AccessException('DE Reject Record accepts at most ' + MAX_RECORDS + ' records per call.');

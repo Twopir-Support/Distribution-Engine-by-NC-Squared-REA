@@ -22,7 +22,14 @@ public without sharing class DE_MaintenanceBatch implements Database.Batchable<S
         Datetime historyCutoff = System.now().addDays(-92);
         List<DE_Availability_Event__c> oldEvents = [SELECT Id FROM DE_Availability_Event__c WHERE Changed_At__c < :historyCutoff LIMIT 9000];
         Database.delete(oldEvents, false, AccessLevel.SYSTEM_MODE);
-        DE_RunLogger.log('Purge', 'Success', purged + oldRuns.size() + oldEvents.size(), 0, 0, purged + ' distribution logs, ' + oldRuns.size() + ' run logs and ' + oldEvents.size() + ' availability events purged.');
+        DE_RunLogger.log(
+            'Purge',
+            'Success',
+            purged + oldRuns.size() + oldEvents.size(),
+            0,
+            0,
+            purged + ' distribution logs, ' + oldRuns.size() + ' run logs and ' + oldEvents.size() + ' availability events purged.'
+        );
         DE_ArchiveService.archive(System.now());
         DE_DynamicMembers.syncAll();
     }

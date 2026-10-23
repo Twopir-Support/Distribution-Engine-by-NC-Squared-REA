@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <baseObject>DE_Availability_Event__c</baseObject>
+    <category>other</category>
+    <deployed>true</deployed>
+    <description>Distribution Engine online/offline history per user.</description>
+    <label>DE Availability Events</label>
+    <sections>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Name</field>
+            <table>DE_Availability_Event__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>CreatedDate</field>
+            <table>DE_Availability_Event__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Changed_At__c</field>
+            <table>DE_Availability_Event__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Changed_By__c</field>
+            <table>DE_Availability_Event__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Online__c</field>
+            <table>DE_Availability_Event__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Reason__c</field>
+            <table>DE_Availability_Event__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Source__c</field>
+            <table>DE_Availability_Event__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>User__c</field>
+            <table>DE_Availability_Event__c</table>
+        </columns>
+        <masterLabel>DE Availability Events</masterLabel>
+    </sections>
+</ReportType>
