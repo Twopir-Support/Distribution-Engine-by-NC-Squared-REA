@@ -28,7 +28,19 @@ private class DE_RoutingTest {
     private static List<DE_Assignment_Log__c> logsFor(Set<Id> recordIds) {
         List<String> recordKeys = keys(recordIds);
         return [
-            SELECT Id, Record_Id__c, Assignee_Id__c, Assigned_User__c, Status__c, Method__c, Type__c, Current__c, Team__c, Distributor__c, Is_Sticky__c, Sticky_Key__c
+            SELECT
+                Id,
+                Record_Id__c,
+                Assignee_Id__c,
+                Assigned_User__c,
+                Status__c,
+                Method__c,
+                Type__c,
+                Current__c,
+                Team__c,
+                Distributor__c,
+                Is_Sticky__c,
+                Sticky_Key__c
             FROM DE_Assignment_Log__c
             WHERE Record_Id__c IN :recordKeys
             ORDER BY Assigned_At__c, Name
@@ -491,7 +503,14 @@ private class DE_RoutingTest {
         DE_TestFactory.Fixture f = DE_TestFactory.leadFixture(2, 'Round Robin');
         f.team.Holiday_Region__c = 'UK';
         update f.team;
-        insert new DE_Holiday__c(Name = 'Bank Holiday', Region__c = 'UK', All_Day__c = true, Start__c = System.now(), End__c = System.now(), Timezone__c = 'GMT');
+        insert new DE_Holiday__c(
+            Name = 'Bank Holiday',
+            Region__c = 'UK',
+            All_Day__c = true,
+            Start__c = System.now(),
+            End__c = System.now(),
+            Timezone__c = 'GMT'
+        );
         List<Lead> leads = DE_TestFactory.insertLeads(2, f.queue.Id);
 
         Test.startTest();
@@ -713,7 +732,11 @@ private class DE_RoutingTest {
         Assert.areEqual(0, first.assigned, 'Nobody to assign to');
         Assert.areEqual(2, first.onHold, 'Both records go on hold after one failure');
         Assert.areEqual(2, countOwnedBy(DE_TestFactory.owners('Lead', ids(leads)), f.queue.Id), 'Records stay in the queue');
-        for (DE_Record_Detail__c d : [SELECT On_Hold_Until__c, Failed_Attempts__c, Last_Error__c FROM DE_Record_Detail__c WHERE Record_Id__c IN :keys(ids(leads))]) {
+        for (DE_Record_Detail__c d : [
+            SELECT On_Hold_Until__c, Failed_Attempts__c, Last_Error__c
+            FROM DE_Record_Detail__c
+            WHERE Record_Id__c IN :keys(ids(leads))
+        ]) {
             Assert.isTrue(d.On_Hold_Until__c > System.now(), 'Hold until is in the future');
             Assert.areEqual(0, d.Failed_Attempts__c, 'Attempts reset after hold');
             Assert.isTrue(d.Last_Error__c.contains('No eligible team member'), 'Reason kept');

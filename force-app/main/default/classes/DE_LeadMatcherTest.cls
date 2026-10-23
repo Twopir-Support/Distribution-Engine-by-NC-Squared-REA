@@ -231,7 +231,10 @@ private class DE_LeadMatcherTest {
         insertQuietly(new List<Lead>{ l });
 
         DE_ClassifierService.classify('Lead', new Set<Id>{ l.Id }, new Set<String>{ 'Match' });
-        Map<Id, DE_Record_Detail__c> details = DE_RecordDetails.load(new Set<Id>{ l.Id }, new Set<String>{ 'Matched_Account__r.Type', 'Matched_Account__r.Industry' });
+        Map<Id, DE_Record_Detail__c> details = DE_RecordDetails.load(
+            new Set<Id>{ l.Id },
+            new Set<String>{ 'Matched_Account__r.Type', 'Matched_Account__r.Industry' }
+        );
         DE_Record_Detail__c d = details.get(l.Id);
 
         Assert.areEqual(a.Id, d.Matched_Account__c, 'Classifier persisted the match');

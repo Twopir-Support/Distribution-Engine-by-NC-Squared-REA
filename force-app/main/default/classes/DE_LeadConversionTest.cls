@@ -138,7 +138,11 @@ private class DE_LeadConversionTest {
         Lead webAfter = reload(web.Id);
         Assert.isTrue(webAfter.IsConverted, 'Lead passing the conversion filter converts: ' + details.get(web.Id).Conversion_Result__c);
         Assert.isNotNull(webAfter.ConvertedAccountId, 'New account created without a match');
-        Assert.areEqual(UserInfo.getUserId(), [SELECT OwnerId FROM Account WHERE Id = :webAfter.ConvertedAccountId].OwnerId, 'Queue-owned leads convert to the running user');
+        Assert.areEqual(
+            UserInfo.getUserId(),
+            [SELECT OwnerId FROM Account WHERE Id = :webAfter.ConvertedAccountId].OwnerId,
+            'Queue-owned leads convert to the running user'
+        );
         Assert.isFalse(reload(phone.Id).IsConverted, 'Lead failing the filter is not converted');
         Assert.isNull(details.get(phone.Id).Conversion_Result__c, 'No rule applied');
     }

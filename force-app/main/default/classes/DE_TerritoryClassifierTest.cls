@@ -99,10 +99,7 @@ private class DE_TerritoryClassifierTest {
     @IsTest
     static void statesAndPostalCodesNarrowTheMatch() {
         DE_TestFactory.settings();
-        insert new List<DE_Territory__c>{
-            territory('West', 1, 'United States', 'CA;WA', null),
-            territory('NY Metro', 2, null, null, '100*;10200..10299')
-        };
+        insert new List<DE_Territory__c>{ territory('West', 1, 'United States', 'CA;WA', null), territory('NY Metro', 2, null, null, '100*;10200..10299') };
         Lead california = lead('California');
         california.Country = 'USA';
         california.State = 'California';
