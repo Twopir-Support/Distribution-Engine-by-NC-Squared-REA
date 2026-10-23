@@ -1,0 +1,36 @@
+<template>
+    <div class="slds-grid slds-wrap slds-gutters_x-small slds-grid_vertical-align-end">
+        <div class="slds-col slds-size_1-of-6">
+            <lightning-combobox label="Log" options={typeOptions} value={filter.logType} onchange={handleType}></lightning-combobox>
+        </div>
+        <div class="slds-col slds-size_1-of-6">
+            <lightning-input type="date" label="From" value={filter.fromDate} data-field="fromDate" onchange={handleFilter}></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-6">
+            <lightning-input type="date" label="To" value={filter.toDate} data-field="toDate" onchange={handleFilter}></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-6">
+            <lightning-input label="Object" value={filter.objectName} placeholder="Lead" data-field="objectName" onchange={handleFilter}></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-6">
+            <lightning-input label="Quick filter" value={filter.search} placeholder="Record name or Id" data-field="search" onchange={handleFilter}></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-6">
+            <lightning-input type="checkbox" label="Errors only" checked={filter.errorsOnly} data-field="errorsOnly" onchange={handleFilter}></lightning-input>
+            <lightning-button variant="brand" label="Search" onclick={load}></lightning-button>
+        </div>
+    </div>
+    <div class="slds-grid slds-grid_align-spread slds-m-vertical_small">
+        <p class="slds-text-body_small slds-text-color_weak">{count} rows (top 500). Records in error are retried on each scheduler run.</p>
+        <template lwc:if={canRetry}>
+            <lightning-button label="Classify selected again" onclick={handleRetry}></lightning-button>
+        </template>
+    </div>
+    <template lwc:if={error}>
+        <p class="slds-text-color_error">{error}</p>
+    </template>
+    <template lwc:if={loading}>
+        <lightning-spinner size="small" alternative-text="Loading"></lightning-spinner>
+    </template>
+    <lightning-datatable key-field="Id" data={rows} columns={columns} onrowselection={handleSelect}></lightning-datatable>
+</template>
