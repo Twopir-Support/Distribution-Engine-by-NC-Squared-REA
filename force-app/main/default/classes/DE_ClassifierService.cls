@@ -71,12 +71,28 @@ public without sharing class DE_ClassifierService {
         }
         List<String> warnings = new List<String>();
         List<SObject> records = DE_RecordQuery.byIds(objectName, paths, recordIds, warnings);
-        Map<Id, DE_Record_Detail__c> details = DE_RecordDetails.load(new Map<Id, SObject>(records).keySet(), null);
+        // Territory and stamp conditions may read DE.Matched*.<Field>: load those relationship fields too.
+        Set<String> detailPaths = new Set<String>();
+        for (DE_Territory__c tr : territories) {
+            detailPaths.addAll(DE_Conditions.detailFields(tr.Conditions__r));
+        }
+        for (DE_StampClassifier.GroupConfig g : groups) {
+            for (List<DE_Condition__c> c : g.conditions.values()) {
+                detailPaths.addAll(DE_Conditions.detailFields(c));
+            }
+        }
+        Set<Id> loadedIds = new Map<Id, SObject>(records).keySet();
+        Map<Id, DE_Record_Detail__c> details = DE_RecordDetails.load(loadedIds, detailPaths);
         Map<Id, Map<String, Object>> fieldStamps = new Map<Id, Map<String, Object>>();
         String status = 'Success';
         try {
             if (isLead && !matchRules.isEmpty()) {
                 DE_LeadMatcher.match(records, details, matchRules);
+                if (hasRelationshipPath(detailPaths)) {
+                    // Persist the new matches and reload so the matched records' fields can be evaluated.
+                    DE_RecordDetails.save(details.values());
+                    details = DE_RecordDetails.load(loadedIds, detailPaths);
+                }
             }
             if (!territories.isEmpty()) {
                 mergeStamps(fieldStamps, DE_TerritoryClassifier.classify(objectName, records, details, territories));
@@ -106,6 +122,15 @@ public without sharing class DE_ClassifierService {
             DE_RunLogger.log('Classifier', status == 'Success' ? 'Warning' : status, records.size(), 0, warnings.size(), String.join(warnings, '\n'));
         }
         return records.size();
+    }
+
+    private static Boolean hasRelationshipPath(Set<String> detailPaths) {
+        for (String p : detailPaths) {
+            if (p.contains('__r.')) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void mergeStamps(Map<Id, Map<String, Object>> target, Map<Id, Map<String, Object>> source) {

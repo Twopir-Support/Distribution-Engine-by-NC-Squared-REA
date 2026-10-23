@@ -355,7 +355,11 @@ public with sharing class DE_AvailabilityController {
     public static Map<String, List<String>> getTagCollections() {
         DE_Permissions.require(DE_Permissions.isTeamManager(), 'view tags');
         Map<String, Set<String>> sets = new Map<String, Set<String>>();
-        for (DE_Agent__c a : [SELECT Tags__c FROM DE_Agent__c WHERE Tags__c != NULL WITH USER_MODE LIMIT 5000]) {
+        // Tags__c is a long text area, which SOQL cannot filter on; blanks are skipped here instead.
+        for (DE_Agent__c a : [SELECT Tags__c FROM DE_Agent__c WITH USER_MODE LIMIT 5000]) {
+            if (String.isBlank(a.Tags__c)) {
+                continue;
+            }
             for (String t : a.Tags__c.split(';')) {
                 if (!t.contains(':')) {
                     continue;

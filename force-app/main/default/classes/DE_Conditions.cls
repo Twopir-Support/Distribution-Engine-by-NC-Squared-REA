@@ -349,6 +349,11 @@ public inherited sharing class DE_Conditions {
         return v instanceof Decimal || v instanceof Integer || v instanceof Long || v instanceof Double;
     }
 
+    /** Apex reports Date values as instanceof Datetime, so tell them apart by their text form. */
+    private static Boolean isDateOnly(Object v) {
+        return v instanceof Date && String.valueOf(v).length() <= 10;
+    }
+
     private static Decimal toDecimal(String s) {
         try {
             return Decimal.valueOf(s.trim());
@@ -370,7 +375,7 @@ public inherited sharing class DE_Conditions {
             Decimal a = Decimal.valueOf(String.valueOf(actual));
             return a < b ? -1 : (a > b ? 1 : 0);
         }
-        if (actual instanceof Datetime) {
+        if (actual instanceof Datetime && !isDateOnly(actual)) {
             Datetime b = parseDatetime(expected, now);
             if (b == null) {
                 return null;
