@@ -192,7 +192,7 @@ public without sharing class DE_RotationService {
             if (assignments > 0) {
                 t.Last_Assigned_At__c = System.now();
             }
-            Database.update(t, AccessLevel.SYSTEM_MODE);
+            Database.update(t, true, AccessLevel.SYSTEM_MODE);
             cfg.team.Rotation_Sequence__c = teamSequence;
             cfg.team.Total_Assignments__c = t.Total_Assignments__c;
         }
