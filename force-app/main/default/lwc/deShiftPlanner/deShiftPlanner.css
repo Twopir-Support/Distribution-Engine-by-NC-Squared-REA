@@ -1,0 +1,42 @@
+.planner th.member {
+    width: 10rem;
+}
+.planner th.week {
+    width: 5.5rem;
+    font-size: 0.75rem;
+    text-align: center;
+}
+.planner th.week.current {
+    border-bottom: 2px solid var(--slds-g-color-brand-base-50, #0176d3);
+}
+.planner td.slot {
+    padding: 2px;
+}
+.cell {
+    width: 100%;
+    min-height: 2rem;
+    border: 1px solid var(--slds-g-color-border-base-1, #c9c9c9);
+    border-radius: 4px;
+    background: var(--slds-g-color-neutral-base-100, #fff);
+    font-size: 0.75rem;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.cell.change {
+    border-color: var(--slds-g-color-brand-base-50, #0176d3);
+    font-weight: 700;
+}
+.cell.pending {
+    border-style: dashed;
+}
+.cell.selected {
+    outline: 2px solid var(--slds-g-color-brand-base-50, #0176d3);
+}
+.cell.past,
+.cell:disabled {
+    cursor: default;
+    color: var(--slds-g-color-neutral-base-50, #747474);
+    background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}

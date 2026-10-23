@@ -1,0 +1,86 @@
+<template>
+    <div class="slds-m-top_medium">
+        <h3 class="slds-text-heading_small">Shift planner</h3>
+        <lightning-input
+            type="toggle"
+            label="Use the shift planner for this team"
+            checked={enabled}
+            onchange={handleToggle}
+            disabled={toggleDisabled}
+            message-toggle-active="On"
+            message-toggle-inactive="Off"
+        ></lightning-input>
+        <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+            Plan member shifts up to 12 weeks ahead. A change applies from its week until the member's next change. Turning the planner off keeps everyone on
+            their current shift and removes future changes. Only system managers can switch it on or off.
+        </p>
+        <template lwc:if={error}>
+            <p class="slds-text-color_error">{error}</p>
+        </template>
+        <template lwc:if={enabled}>
+            <template lwc:if={hasRows}>
+                <div class="planner slds-scrollable_x">
+                    <table class="slds-table slds-table_bordered slds-table_fixed-layout" aria-label="Shift planner">
+                        <thead>
+                            <tr>
+                                <th class="member" scope="col">Member</th>
+                                <template for:each={weeks} for:item="w">
+                                    <th key={w.key} class={w.cls} scope="col" title={w.key}>{w.label}</th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={rows} for:item="r">
+                                <tr key={r.key}>
+                                    <th class="member slds-truncate" scope="row" title={r.name}>{r.name}</th>
+                                    <template for:each={r.cells} for:item="c">
+                                        <td key={c.key} class="slot">
+                                            <button
+                                                class={c.cls}
+                                                title={c.title}
+                                                data-member={r.memberId}
+                                                data-week={c.week}
+                                                data-name={r.name}
+                                                disabled={c.disabled}
+                                                onclick={handleCell}
+                                            >
+                                                {c.label}
+                                            </button>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+            <template lwc:else>
+                <p class="slds-text-body_small">Add team members to plan their shifts.</p>
+            </template>
+            <template lwc:if={selected}>
+                <div class="slds-box slds-m-top_small">
+                    <p class="slds-text-title_bold">{selectedLabel}</p>
+                    <lightning-combobox label="Shift" options={shiftOptions} value={selectedShift} onchange={handleShiftPick}></lightning-combobox>
+                    <div class="slds-m-top_x-small">
+                        <lightning-button label="Cancel" onclick={handleCloseSelector}></lightning-button>
+                        <lightning-button class="slds-m-left_x-small" label="Remove change" onclick={handleRemoveChange}></lightning-button>
+                        <lightning-button class="slds-m-left_x-small" variant="brand" label="Apply" onclick={handleApply}></lightning-button>
+                    </div>
+                </div>
+            </template>
+            <template lwc:if={hasPending}>
+                <p class="slds-text-body_small slds-m-top_small">{pendingCount} unsaved change(s).</p>
+            </template>
+            <div class="slds-m-top_small">
+                <lightning-button label="Discard" onclick={handleDiscard} disabled={saveDisabled}></lightning-button>
+                <lightning-button
+                    class="slds-m-left_x-small"
+                    variant="brand"
+                    label="Save shift planner"
+                    onclick={handleSave}
+                    disabled={saveDisabled}
+                ></lightning-button>
+            </div>
+        </template>
+    </div>
+</template>

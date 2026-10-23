@@ -201,6 +201,32 @@ public inherited sharing class DE_Settings {
         return flag(get().Publish_Platform_Events__c, true);
     }
 
+    public static Integer historyRetentionDays() {
+        return Math.max(1, num(get().History_Retention_Days__c, 90));
+    }
+
+    public static Integer classifierLogRetentionDays() {
+        return Math.max(1, num(get().Classifier_Log_Retention_Days__c, 30));
+    }
+
+    public static List<String> adminAlertEmails() {
+        List<String> out = new List<String>();
+        for (String s : splitList(get().Admin_Alert_Emails__c, '')) {
+            if (s.contains('@')) {
+                out.add(s);
+            }
+        }
+        return out;
+    }
+
+    public static Integer failureAlertThreshold() {
+        return Math.max(1, num(get().Failure_Alert_Threshold__c, 5));
+    }
+
+    public static Boolean usePlatformCache() {
+        return flag(get().Use_Platform_Cache__c, true);
+    }
+
     /** 1 = Monday ... 7 = Sunday. */
     public static Integer weekStartDay() {
         return 'sunday'.equalsIgnoreCase(get().Default_Weekday_Start__c) ? 7 : 1;

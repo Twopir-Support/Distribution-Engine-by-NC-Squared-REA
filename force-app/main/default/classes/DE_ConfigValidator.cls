@@ -76,8 +76,8 @@ public without sharing class DE_ConfigValidator {
             errors.add('Enter the number of rejections allowed per day.');
         }
         add(errors, weights(t.Tag_Weights__c));
-        for (Id m : DE_Ids.parseList(t.Manager_User_Ids__c)) {
-            add(errors, DE_Ids.ownerError(m, false));
+        if (t.Logging_Disabled__c == true && (t.Action_Tracking_Enabled__c == true || t.Object_Sync_Enabled__c == true)) {
+            errors.add('Distribution logging is required for action tracking and object sync.');
         }
         if (filters != null && !filters.isEmpty()) {
             add(errors, prefixed('Team filters: ', DE_Conditions.validate(obj, filters, t.Filter_Logic__c)));
@@ -88,6 +88,15 @@ public without sharing class DE_ConfigValidator {
             } else {
                 add(errors, prefixed('Dynamic members: ', DE_Conditions.validate('User', dynamicConditions, t.Dynamic_Members_Logic__c)));
             }
+        }
+        return errors;
+    }
+
+    /** Team managers must be active users. */
+    public static List<String> managers(List<Id> userIds) {
+        List<String> errors = new List<String>();
+        for (Id m : userIds == null ? new List<Id>() : userIds) {
+            add(errors, DE_Ids.ownerError(m, false));
         }
         return errors;
     }

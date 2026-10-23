@@ -32,12 +32,16 @@ public with sharing class DE_Permissions {
         return isTeamManager() || has('DE_User');
     }
 
-    /** System managers manage every team; team managers only teams that list them as managers. */
+    /** System managers manage every team; team managers only teams with a DE_Team_Manager__c row for them. */
     public static Boolean canManageTeam(DE_Team__c team) {
+        return team != null && canManageTeam(team.Id);
+    }
+
+    public static Boolean canManageTeam(Id teamId) {
         if (isSystemManager()) {
             return true;
         }
-        return isTeamManager() && team != null && DE_Ids.parseList(team.Manager_User_Ids__c).contains(UserInfo.getUserId());
+        return isTeamManager() && DE_TeamManagerService.isManager(teamId, UserInfo.getUserId());
     }
 
     public static void require(Boolean allowed, String action) {

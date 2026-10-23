@@ -203,8 +203,7 @@ private class DE_AdminControllerTest {
     static void teamManagerManagesOnlyOwnTeams() {
         DE_TestFactory.Fixture f = DE_TestFactory.leadFixture(1, 'Round Robin');
         DE_Team__c other = DE_TestFactory.insertTeam('Other', 'Lead');
-        f.team.Manager_User_Ids__c = UserInfo.getUserId();
-        update f.team;
+        DE_TeamManagerService.setManagers(f.team.Id, new List<Id>{ UserInfo.getUserId() });
         List<User> extra = DE_TestFactory.users(1);
         DE_TestFactory.grant(new Set<String>{ 'DE_Team_Manager' });
 

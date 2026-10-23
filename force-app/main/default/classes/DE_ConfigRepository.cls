@@ -23,7 +23,7 @@ public without sharing class DE_ConfigRepository {
             'Balance_Field__c, Active_Status_Field__c, Active_Status_Values__c, Apply_Active_Status_To_SLAs__c, Weighting_Mode__c, ' +
             'Tag_Weights__c, Default_Tag_Weight__c, Respect_Hours_For_Triggers__c, Rejection_Limit__c, Rejections_Per_Day__c, ' +
             'Action_Tracking_Enabled__c, Action_Field__c, Tracked_Actions__c, Action_Respect_Hours__c, Track_Action_From_Any_User__c, ' +
-            'Auto_Action_Activity_Types__c, SLA_Respect_Hours__c, Object_Sync_Enabled__c, Manager_User_Ids__c, ' +
+            'Auto_Action_Activity_Types__c, SLA_Respect_Hours__c, Object_Sync_Enabled__c, Use_Shift_Planner__c, Widget_Active_Only__c, Logging_Disabled__c, ' +
             'Dynamic_Members_Enabled__c, Dynamic_Members_Logic__c, Rotation_Sequence__c, Total_Assignments__c, Last_Assigned_At__c, ' +
             '(SELECT Id, Name, Team__c, User__c, Queue_Id__c, Active__c, Weight__c, Member_Hours__c, Dynamic__c, Unique_Key__c FROM Members__r ORDER BY Name), ' +
             '(SELECT Id, Name, Team__c, Order__c, Active__c, Type__c, Method__c, Source_Type__c, Source_Id__c, Source_Field__c, ' +
@@ -35,7 +35,9 @@ public without sharing class DE_ConfigRepository {
             'Related_Field__c, Related_Secondary_Field__c, Dynamic_Owner_Field__c, Default_Owner_Id__c, Pull_Count__c, ' +
             'Field_Updates__c, Send_Email__c, Send_Notification__c, SLA_Enabled__c, Auto_Reassign__c, Reassign_From_SLA__c, ' +
             'Reassign_To_Id__c, Reassign_Field_Updates__c, Toggle_User_Off__c, Remove_Sticky_On_Reassign__c, Rejection_Enabled__c, ' +
-            'Reject_To_Id__c, Reject_Field_Updates__c, Replace_Rejected__c, Treat_Manual_As_Rejection__c, Description__c ' +
+            'Reject_To_Id__c, Reject_Field_Updates__c, Replace_Rejected__c, Treat_Manual_As_Rejection__c, Description__c, ' +
+            'Salesforce_Team_Enabled__c, Team_Role__c, Team_Access_Level__c, Assign_Default_Team__c, Remove_Sticky_On_Reject__c, ' +
+            'Related_Role__c, Campaign_Ids__c ' +
             'FROM Distributors__r ORDER BY Order__c, Name), ' +
             '(SELECT Id, Name, Team__c, Checkpoint__c, Alert_Type__c, Minutes_After_Assignment__c, Check_After_Field__c, ' +
             'Condition_Logic__c, Stamp_Value__c, Notify_Assignee__c, Notify_Manager__c, Active__c FROM SLAs__r ORDER BY Checkpoint__c) ' +
@@ -97,6 +99,7 @@ public without sharing class DE_ConfigRepository {
                 CONDITION_FIELDS +
                 ' FROM DE_Condition__c WHERE Team__c IN :teamIds OR Distributor__c IN :distIds OR SLA__c IN :slaIds OR Cap__c IN :capIds ORDER BY Sequence__c'
         );
+        Map<Id, Id> plannedShifts = plannedShiftsToday(teams, shiftIds);
         Map<Id, DE_Shift__c> shifts = new Map<Id, DE_Shift__c>([SELECT Id, Name, Timezone__c, Schedule__c FROM DE_Shift__c WHERE Id IN :shiftIds]);
         Map<Id, User> users = new Map<Id, User>([SELECT Id, Name, IsActive, ManagerId, Email, TimeZoneSidKey FROM User WHERE Id IN :userIds]);
         Map<Id, DE_Agent__c> agents = agentsByUser(userIds);
@@ -174,13 +177,61 @@ public without sharing class DE_ConfigRepository {
                 }
                 mem.user = users.get(m.User__c);
                 mem.agent = agents.get(m.User__c);
-                DE_Shift__c own = shifts.get(m.Member_Hours__c);
+                DE_Shift__c own = plannedShifts.containsKey(m.Id) ? shifts.get(plannedShifts.get(m.Id)) : shifts.get(m.Member_Hours__c);
                 mem.calendar = own != null ? DE_ShiftCalendar.fromShift(own) : cfg.teamCalendar;
                 mem.tags = mem.agent == null ? new Set<String>() : DE_Model.parseTags(mem.agent.Tags__c);
                 mem.weight = memberWeight(cfg, m, mem.tags);
                 cfg.members.add(mem);
             }
             out.add(cfg);
+        }
+        return out;
+    }
+
+    /**
+     * For teams using the shift planner: the shift each member works today (team timezone) according to their latest
+     * shift planner block. Adds the shift ids to shiftIds so they are loaded. Members without a block fall back to
+     * member hours, then team hours.
+     */
+    private static Map<Id, Id> plannedShiftsToday(List<DE_Team__c> teams, Set<Id> shiftIds) {
+        Map<Id, Id> out = new Map<Id, Id>();
+        Map<Id, Date> todayByMember = new Map<Id, Date>();
+        Date latest;
+        Map<Id, DE_Shift__c> teamShifts = new Map<Id, DE_Shift__c>();
+        Set<Id> teamHourIds = new Set<Id>();
+        for (DE_Team__c t : teams) {
+            if (t.Use_Shift_Planner__c == true && t.Team_Hours__c != null) {
+                teamHourIds.add(t.Team_Hours__c);
+            }
+        }
+        if (!teamHourIds.isEmpty()) {
+            teamShifts = new Map<Id, DE_Shift__c>([SELECT Id, Timezone__c FROM DE_Shift__c WHERE Id IN :teamHourIds]);
+        }
+        for (DE_Team__c t : teams) {
+            if (t.Use_Shift_Planner__c != true) {
+                continue;
+            }
+            DE_Shift__c th = teamShifts.get(t.Team_Hours__c);
+            Date today = DE_ShiftCalendar.always(th == null ? null : th.Timezone__c).localDate(System.now());
+            latest = latest == null || today > latest ? today : latest;
+            for (DE_Team_Member__c m : t.Members__r) {
+                todayByMember.put(m.Id, today);
+            }
+        }
+        if (todayByMember.isEmpty()) {
+            return out;
+        }
+        Set<Id> memberIds = todayByMember.keySet();
+        for (DE_Shift_Plan_Block__c b : [
+            SELECT Team_Member__c, Start_Date__c, Shift__c
+            FROM DE_Shift_Plan_Block__c
+            WHERE Team_Member__c IN :memberIds AND Start_Date__c <= :latest AND Shift__c != NULL
+            ORDER BY Start_Date__c DESC
+        ]) {
+            if (!out.containsKey(b.Team_Member__c) && b.Start_Date__c <= todayByMember.get(b.Team_Member__c)) {
+                out.put(b.Team_Member__c, b.Shift__c);
+                shiftIds.add(b.Shift__c);
+            }
         }
         return out;
     }

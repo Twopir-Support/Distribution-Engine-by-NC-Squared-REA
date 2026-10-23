@@ -1,7 +1,7 @@
 /**
  * Distribution Teams tab: teams, team members, distributors, caps, SLAs and describe helpers.
- * System Managers (and Admins) edit every team; Team Managers manage members, weights and caps
- * of teams that list them as managers.
+ * System Managers (and Admins) edit every team; Team Managers manage members, weights, caps and the shift
+ * planner of teams they manage (DE_Team_Manager__c).
  */
 public with sharing class DE_AdminController {
     private static final Set<String> STANDARD_OBJECTS = new Set<String>{ 'Lead', 'Case', 'Opportunity', 'Account', 'Contact', 'Task' };
@@ -92,6 +92,12 @@ public with sharing class DE_AdminController {
         public Boolean canManage;
         @AuraEnabled
         public String holiday;
+        @AuraEnabled
+        public List<Id> managerIds = new List<Id>();
+        @AuraEnabled
+        public String holidayRegionName;
+        @AuraEnabled
+        public Boolean canSwitchShiftPlanner;
     }
 
     // ------------------------------------------------------------------ describe helpers
@@ -292,6 +298,13 @@ public with sharing class DE_AdminController {
             d.dynamicConditions = cfg.dynamicMembership;
             DE_AvailabilityService availability = new DE_AvailabilityService(new List<DE_Model.TeamConfig>{ cfg }, System.now());
             d.holiday = availability.holidayFor(cfg);
+            d.managerIds = new List<Id>(DE_TeamManagerService.managersOf(new Set<Id>{ teamId }).get(teamId));
+            d.canSwitchShiftPlanner = DE_Permissions.isSystemManager();
+            if (cfg.team.Holiday_Region__c != null) {
+                for (DE_Holiday_Region__c r : [SELECT Name FROM DE_Holiday_Region__c WHERE Id = :cfg.team.Holiday_Region__c WITH USER_MODE]) {
+                    d.holidayRegionName = r.Name;
+                }
+            }
             Set<Id> memberIds = new Set<Id>();
             Set<Id> ownerIds = new Set<Id>();
             for (DE_Model.Member m : cfg.members) {
@@ -345,7 +358,7 @@ public with sharing class DE_AdminController {
                 }
                 ownerIds.addAll(dc.selectedMembers);
             }
-            ownerIds.addAll(DE_Ids.parseList(cfg.team.Manager_User_Ids__c));
+            ownerIds.addAll(d.managerIds);
             d.ownerNames = DE_Ui.ownerNames(ownerIds);
             d.ownerNames.putAll(names);
             for (DE_Cap__c c : cfg.caps) {
@@ -431,6 +444,66 @@ public with sharing class DE_AdminController {
         }
     }
 
+    /** Replaces the team's managers (users who manage it with the Team Manager permission sets). */
+    @AuraEnabled
+    public static void saveTeamManagers(Id teamId, List<Id> userIds) {
+        DE_Permissions.require(DE_Permissions.isSystemManager(), 'change team managers');
+        List<String> errors = DE_ConfigValidator.managers(userIds);
+        DE_Ui.throwIfErrors(errors);
+        try {
+            DE_TeamManagerService.setManagers(teamId, userIds);
+        } catch (Exception e) {
+            throw DE_Ui.error(e);
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<DE_Ui.Option> getHolidayRegionOptions() {
+        DE_Permissions.require(DE_Permissions.isTeamManager(), 'view holiday regions');
+        List<DE_Ui.Option> out = new List<DE_Ui.Option>();
+        for (DE_Holiday_Region__c r : [SELECT Id, Name FROM DE_Holiday_Region__c WITH USER_MODE ORDER BY Name LIMIT 1000]) {
+            out.add(new DE_Ui.Option(r.Name, r.Id));
+        }
+        return out;
+    }
+
+    // ------------------------------------------------------------------ shift planner
+
+    @AuraEnabled
+    public static DE_ShiftPlannerService.Grid getShiftPlanner(Id teamId) {
+        DE_Permissions.require(DE_Permissions.isTeamManager(), 'view the shift planner');
+        try {
+            return DE_ShiftPlannerService.grid(teamId);
+        } catch (Exception e) {
+            throw DE_Ui.error(e);
+        }
+    }
+
+    @AuraEnabled
+    public static void saveShiftPlanner(Id teamId, List<DE_ShiftPlannerService.Change> changes) {
+        DE_Permissions.require(DE_Permissions.canManageTeam(teamId), 'plan shifts for this team');
+        try {
+            DE_ShiftPlannerService.applyChanges(teamId, changes);
+        } catch (Exception e) {
+            throw DE_Ui.error(e);
+        }
+    }
+
+    /** Switching the shift planner on or off is reserved for system managers (standard team managers cannot). */
+    @AuraEnabled
+    public static void setShiftPlannerEnabled(Id teamId, Boolean enabled) {
+        DE_Permissions.require(DE_Permissions.isSystemManager(), 'switch the shift planner on or off');
+        try {
+            if (enabled == true) {
+                DE_ShiftPlannerService.enable(teamId);
+            } else {
+                DE_ShiftPlannerService.disable(teamId);
+            }
+        } catch (Exception e) {
+            throw DE_Ui.error(e);
+        }
+    }
+
     @AuraEnabled
     public static void saveTeamOrder(List<Id> teamIds) {
         DE_Permissions.require(DE_Permissions.isSystemManager(), 'reorder teams');
@@ -476,7 +549,9 @@ public with sharing class DE_AdminController {
             t.Rotation_Sequence__c = 0;
             t.Total_Assignments__c = 0;
             t.Last_Assigned_At__c = null;
+            t.Use_Shift_Planner__c = false;
             Database.insert(t, true, AccessLevel.USER_MODE);
+            DE_TeamManagerService.copyManagers(teamId, t.Id);
             List<DE_Team_Member__c> members = new List<DE_Team_Member__c>();
             for (DE_Model.Member m : cfg.members) {
                 DE_Team_Member__c c = m.record.clone(false, true, false, false);
@@ -493,7 +568,7 @@ public with sharing class DE_AdminController {
                 conds.add(cloneCondition(c, 'Team__c', t.Id));
             }
             for (DE_Model.DistributorConfig dc : cfg.distributors) {
-                Id newId = cloneDistributorInto(cfg, dc, t.Id, dc.dist.Name);
+                cloneDistributorInto(cfg, dc, t.Id, dc.dist.Name);
             }
             cloneCaps(cfg.caps, cfg.capCriteria, 'Team__c', t.Id);
             for (DE_SLA__c s : cfg.slas) {
@@ -559,7 +634,7 @@ public with sharing class DE_AdminController {
     // ------------------------------------------------------------------ members
 
     private static DE_Team__c teamFor(Id teamId) {
-        return [SELECT Id, Name, Team_Type__c, Manager_User_Ids__c, Object_API_Name__c FROM DE_Team__c WHERE Id = :teamId WITH USER_MODE];
+        return [SELECT Id, Name, Team_Type__c, Object_API_Name__c FROM DE_Team__c WHERE Id = :teamId WITH USER_MODE];
     }
 
     @AuraEnabled
@@ -605,7 +680,7 @@ public with sharing class DE_AdminController {
         for (DE_Team_Member__c m : [SELECT Team__c FROM DE_Team_Member__c WHERE Id IN :ids WITH USER_MODE]) {
             teamIds.add(m.Team__c);
         }
-        for (DE_Team__c t : [SELECT Id, Name, Manager_User_Ids__c FROM DE_Team__c WHERE Id IN :teamIds WITH USER_MODE]) {
+        for (DE_Team__c t : [SELECT Id, Name FROM DE_Team__c WHERE Id IN :teamIds WITH USER_MODE]) {
             DE_Permissions.require(DE_Permissions.canManageTeam(t), 'manage members of ' + t.Name);
         }
         List<DE_Team_Member__c> updates = new List<DE_Team_Member__c>();

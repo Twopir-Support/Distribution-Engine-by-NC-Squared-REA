@@ -22,6 +22,22 @@ public with sharing class DE_SettingsController {
         if (settings.Previous_Assignees_Tracked__c != null && (settings.Previous_Assignees_Tracked__c < 0 || settings.Previous_Assignees_Tracked__c > 50)) {
             errors.add('Previous assignees tracked must be between 0 and 50.');
         }
+        for (Decimal days : new List<Decimal>{ settings.History_Retention_Days__c, settings.Classifier_Log_Retention_Days__c }) {
+            if (days != null && (days < 1 || days > 3650)) {
+                errors.add('Retention periods must be between 1 and 3650 days.');
+                break;
+            }
+        }
+        if (settings.Failure_Alert_Threshold__c != null && (settings.Failure_Alert_Threshold__c < 1 || settings.Failure_Alert_Threshold__c > 100)) {
+            errors.add('Failure alert threshold must be between 1 and 100.');
+        }
+        if (String.isNotBlank(settings.Admin_Alert_Emails__c)) {
+            for (String e : settings.Admin_Alert_Emails__c.split('[,;\\s]+')) {
+                if (String.isNotBlank(e) && !Pattern.matches('[^@\\s]+@[^@\\s]+\\.[^@\\s]+', e.trim())) {
+                    errors.add('"' + e.trim() + '" is not a valid email address.');
+                }
+            }
+        }
         if (settings.Archive_Enabled__c == true) {
             String err = DE_Ids.ownerError(settings.Archive_Queue_Id__c, true);
             if (err != null || !DE_Ids.isQueue(settings.Archive_Queue_Id__c)) {

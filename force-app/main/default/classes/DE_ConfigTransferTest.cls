@@ -6,8 +6,18 @@ private class DE_ConfigTransferTest {
         DE_Shift__c shift = new DE_Shift__c(Name = 'UK Day', Timezone__c = 'Europe/London', Schedule__c = '{"MON":["09:00-17:00"]}');
         insert shift;
         f.team.Team_Hours__c = shift.Id;
-        f.team.Manager_User_Ids__c = f.users[0].Id;
+        DE_Holiday_Region__c region = new DE_Holiday_Region__c(Name = 'UK');
+        insert region;
+        f.team.Holiday_Region__c = region.Id;
         update f.team;
+        DE_TeamManagerService.setManagers(f.team.Id, new List<Id>{ f.users[0].Id });
+        insert new DE_Holiday__c(
+            Name = 'Christmas',
+            Holiday_Region__c = region.Id,
+            All_Day__c = true,
+            Start__c = Datetime.newInstanceGmt(2026, 12, 25, 0, 0, 0),
+            End__c = Datetime.newInstanceGmt(2026, 12, 25, 0, 0, 0)
+        );
         DE_Condition__c teamFilter = DE_TestFactory.condition('Team Filter', 1, 'LeadSource', 'equals', 'Web');
         teamFilter.Team__c = f.team.Id;
         insert teamFilter;
@@ -29,17 +39,21 @@ private class DE_ConfigTransferTest {
         Assert.isFalse(json.contains(String.valueOf(f.queue.Id)), 'Queue Ids are replaced by portable names.');
         Assert.isTrue(json.contains('queue:' + f.queue.DeveloperName), 'Queues are exported by developer name.');
         Assert.isTrue(json.contains('shift:UK Day'), 'Shifts are exported by name.');
+        Assert.isTrue(json.contains('region:UK'), 'Holiday regions are exported by name.');
 
         Assert.areEqual(1, counts.get('teams'), 'One team imported.');
         Assert.areEqual(0, counts.get('shifts'), 'The existing shift is reused.');
+        Assert.areEqual(0, counts.get('holidayRegions'), 'The existing region is reused.');
+        Assert.areEqual(1, counts.get('holidays'), 'The holiday is imported into the existing region.');
         Assert.areEqual(1, counts.get('territories'), 'Territory imported.');
         Assert.areEqual(1, counts.get('stampGroups'), 'Stamp group imported.');
         Assert.areEqual(0, counts.get('unresolvedReferences'), 'Every reference resolves in the same org.');
 
-        DE_Team__c imported = [SELECT Id, Active__c, Team_Hours__c, Manager_User_Ids__c FROM DE_Team__c WHERE Name = 'Inbound Sales (imported)'];
+        DE_Team__c imported = [SELECT Id, Active__c, Team_Hours__c, Holiday_Region__c FROM DE_Team__c WHERE Name = 'Inbound Sales (imported)'];
         Assert.isFalse(imported.Active__c, 'Imported teams are inactive.');
         Assert.areEqual(shift.Id, imported.Team_Hours__c, 'Shift reference resolved.');
-        Assert.areEqual(String.valueOf(f.users[0].Id), imported.Manager_User_Ids__c, 'Manager resolved by username.');
+        Assert.areEqual(region.Id, imported.Holiday_Region__c, 'Holiday region resolved by name.');
+        Assert.isTrue(DE_TeamManagerService.isManager(imported.Id, f.users[0].Id), 'Manager resolved by username.');
         Assert.areEqual(2, [SELECT COUNT() FROM DE_Team_Member__c WHERE Team__c = :imported.Id], 'Members imported.');
         DE_Distributor__c d = [SELECT Id, Source_Id__c FROM DE_Distributor__c WHERE Team__c = :imported.Id];
         Assert.areEqual(String.valueOf(f.queue.Id), d.Source_Id__c, 'Source queue resolved.');
@@ -82,5 +96,22 @@ private class DE_ConfigTransferTest {
         Assert.isFalse(t.Active__c, 'Inactive.');
         Assert.areEqual(0, [SELECT COUNT() FROM DE_Team_Member__c WHERE Team__c = :t.Id], 'Unresolved members are skipped.');
         Assert.isNull([SELECT Source_Id__c FROM DE_Distributor__c WHERE Team__c = :t.Id].Source_Id__c, 'Unresolved source left blank.');
+    }
+
+    @IsTest
+    static void unresolvedRegionsAndManagersAreCounted() {
+        DE_TestFactory.settings();
+        String json =
+            '{"format":"distribution-engine-by-nc-squared","version":1,' +
+            '"holidays":[{"Name":"Lost","Holiday_Region__c":"region:Atlantis","All_Day__c":true,' +
+            '"Start__c":"2026-12-25T00:00:00.000Z","End__c":"2026-12-25T00:00:00.000Z"}],' +
+            '"teams":[{"Name":"Remote","Object_API_Name__c":"Lead","managers":["user:nobody@missing.example.com"]}]}';
+
+        Map<String, Integer> counts = DE_ConfigTransfer.importJson(json);
+
+        Assert.areEqual(0, counts.get('holidays'), 'A holiday whose region is missing is not imported.');
+        Assert.areEqual(2, counts.get('unresolvedReferences'), 'Missing region and manager are reported.');
+        Id teamId = [SELECT Id FROM DE_Team__c WHERE Name = 'Remote'].Id;
+        Assert.areEqual(0, [SELECT COUNT() FROM DE_Team_Manager__c WHERE Team__c = :teamId], 'No manager row for an unknown user.');
     }
 }

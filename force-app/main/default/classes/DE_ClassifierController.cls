@@ -48,6 +48,7 @@ public with sharing class DE_ClassifierController {
                 Postal_Codes__c,
                 Stamp_Field__c,
                 Description__c,
+                Color__c,
                 (SELECT Id, Sequence__c, Field_API_Name__c, Operator__c, Value__c, Purpose__c FROM Conditions__r ORDER BY Sequence__c)
             FROM DE_Territory__c
             WHERE Object_API_Name__c = :objectName
@@ -62,6 +63,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Id saveTerritory(DE_Territory__c territory, List<DE_Condition__c> conditions) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         List<String> errors = new List<String>();
         if (String.isBlank(territory.Name)) {
             errors.add('Enter a territory name.');
@@ -71,6 +73,9 @@ public with sharing class DE_ClassifierController {
         }
         if (territory.Priority__c == null) {
             errors.add('Enter the territory order.');
+        }
+        if (String.isNotBlank(territory.Color__c) && !Pattern.matches('#[0-9a-fA-F]{6}', territory.Color__c.trim())) {
+            errors.add('Colour must be a hex value such as #2a78d6.');
         }
         if (String.isNotBlank(territory.Stamp_Field__c)) {
             Schema.DescribeFieldResult f = DE_Schema.field(territory.Object_API_Name__c, territory.Stamp_Field__c);
@@ -104,6 +109,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void deleteTerritory(Id territoryId) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         try {
             DE_Ui.deleteAll([SELECT Id FROM DE_Condition__c WHERE Territory__c = :territoryId], true, AccessLevel.USER_MODE);
             Database.delete(new DE_Territory__c(Id = territoryId), true, AccessLevel.USER_MODE);
@@ -116,6 +122,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Integer setMapStatus(String objectName, String mapName, String status) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         List<DE_Territory__c> rows = String.isBlank(mapName)
             ? [SELECT Id FROM DE_Territory__c WHERE Object_API_Name__c = :objectName AND Map__c = NULL WITH USER_MODE]
             : [SELECT Id FROM DE_Territory__c WHERE Object_API_Name__c = :objectName AND Map__c = :mapName WITH USER_MODE];
@@ -133,6 +140,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void reorderTerritories(List<Id> territoryIds) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         List<DE_Territory__c> rows = new List<DE_Territory__c>();
         Integer order = 10;
         for (Id i : territoryIds) {
@@ -153,6 +161,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Integer importTerritories(String objectName, String mapName, String text) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         if (!DE_Schema.objectExists(objectName)) {
             throw DE_Ui.error('Choose an object.');
         }
@@ -231,6 +240,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Id saveMatchingRule(DE_Matching_Rule__c rule, List<DE_Condition__c> conditions) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         List<String> errors = new List<String>();
         if (String.isBlank(rule.Name) || rule.Priority__c == null) {
             errors.add('Enter a name and order.');
@@ -270,6 +280,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void deleteMatchingRule(Id ruleId) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         try {
             DE_Ui.deleteAll([SELECT Id FROM DE_Condition__c WHERE Matching_Rule__c = :ruleId], true, AccessLevel.USER_MODE);
             Database.delete(new DE_Matching_Rule__c(Id = ruleId), true, AccessLevel.USER_MODE);
@@ -304,6 +315,12 @@ public with sharing class DE_ClassifierController {
                 Copy_Blank_Fields__c,
                 Survivor_Field_Update__c,
                 Description__c,
+                Account_Record_Type__c,
+                Contact_Record_Type__c,
+                Opportunity_Record_Type__c,
+                Distribute_After__c,
+                Overwrite_Lead_Source__c,
+                Send_Email__c,
                 (SELECT Id, Sequence__c, Field_API_Name__c, Operator__c, Value__c, Purpose__c FROM Conditions__r ORDER BY Sequence__c)
             FROM DE_Conversion_Rule__c
             WITH USER_MODE
@@ -317,6 +334,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Id saveConversionRule(DE_Conversion_Rule__c rule, List<DE_Condition__c> conditions) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         List<String> errors = new List<String>();
         if (String.isBlank(rule.Name) || rule.Order__c == null) {
             errors.add('Enter a name and order.');
@@ -348,6 +366,20 @@ public with sharing class DE_ClassifierController {
             if (err != null) {
                 errors.add(pair[0] + ' field update: ' + err);
             }
+        }
+        for (
+            List<String> pair : new List<List<String>>{
+                new List<String>{ 'Account', rule.Account_Record_Type__c },
+                new List<String>{ 'Contact', rule.Contact_Record_Type__c },
+                new List<String>{ 'Opportunity', rule.Opportunity_Record_Type__c }
+            }
+        ) {
+            if (String.isNotBlank(pair[1]) && DE_LeadConversion.recordTypeId(pair[0], pair[1]) == null) {
+                errors.add(pair[0] + ' record type "' + pair[1] + '" does not exist or is inactive.');
+            }
+        }
+        if (rule.Distribute_After__c == true && rule.Action__c != 'De-Duplicate') {
+            errors.add('Distribute after de-duplication only applies to De-Duplicate rules.');
         }
         List<DE_Condition__c> c = DE_Ui.prepare(conditions, 'Conversion Filter');
         if (c.size() > 5) {
@@ -381,6 +413,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void deleteConversionRule(Id ruleId) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         try {
             DE_Ui.deleteAll([SELECT Id FROM DE_Condition__c WHERE Conversion_Rule__c = :ruleId], true, AccessLevel.USER_MODE);
             Database.delete(new DE_Conversion_Rule__c(Id = ruleId), true, AccessLevel.USER_MODE);
@@ -404,7 +437,7 @@ public with sharing class DE_ClassifierController {
                 Group_Type__c,
                 Stamp_Field__c,
                 Description__c,
-                (SELECT Id, Name, Order__c, Condition_Logic__c, Stamp_Group__c FROM Stamps__r ORDER BY Order__c)
+                (SELECT Id, Name, Order__c, Condition_Logic__c, Stamp_Group__c, Active__c, Is_Default__c FROM Stamps__r ORDER BY Order__c)
             FROM DE_Stamp_Group__c
             WHERE Object_API_Name__c = :objectName
             WITH USER_MODE
@@ -441,6 +474,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Id saveStampGroup(DE_Stamp_Group__c stampGroup) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         List<String> errors = new List<String>();
         if (String.isBlank(stampGroup.Name) || !DE_Schema.objectExists(stampGroup.Object_API_Name__c)) {
             errors.add('Enter a group name and object.');
@@ -466,11 +500,18 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Id saveStamp(DE_Stamp__c stamp, List<DE_Condition__c> conditions) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         DE_Stamp_Group__c g = [SELECT Object_API_Name__c FROM DE_Stamp_Group__c WHERE Id = :stamp.Stamp_Group__c WITH USER_MODE];
         List<DE_Condition__c> c = DE_Ui.prepare(conditions, 'Stamp');
         List<String> errors = new List<String>();
         if (String.isBlank(stamp.Name) || stamp.Order__c == null) {
             errors.add('Enter a stamp value and order.');
+        }
+        if (
+            stamp.Is_Default__c == true &&
+            [SELECT COUNT() FROM DE_Stamp__c WHERE Stamp_Group__c = :stamp.Stamp_Group__c AND Is_Default__c = TRUE AND Id != :stamp.Id WITH USER_MODE] > 0
+        ) {
+            errors.add('A stamp group can have only one default stamp.');
         }
         if (!c.isEmpty()) {
             String err = DE_Conditions.validate(g.Object_API_Name__c, c, stamp.Condition_Logic__c);
@@ -493,6 +534,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void deleteStamp(Id stampId) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         try {
             DE_Ui.deleteAll([SELECT Id FROM DE_Condition__c WHERE Stamp__c = :stampId], true, AccessLevel.USER_MODE);
             Database.delete(new DE_Stamp__c(Id = stampId), true, AccessLevel.USER_MODE);
@@ -504,6 +546,7 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void deleteStampGroup(Id groupId) {
         requireAdmin();
+        DE_Cache.invalidateClassifier();
         try {
             List<DE_Stamp__c> stamps = [SELECT Id FROM DE_Stamp__c WHERE Stamp_Group__c = :groupId];
             DE_Ui.deleteAll([SELECT Id FROM DE_Condition__c WHERE Stamp__c IN :stamps], true, AccessLevel.USER_MODE);
@@ -511,6 +554,25 @@ public with sharing class DE_ClassifierController {
         } catch (Exception e) {
             throw DE_Ui.error(e);
         }
+    }
+
+    // ------------------------------------------------------------------ lead matching domain index
+
+    /** Rebuilds the account domain index used by lead matching (batch). */
+    @AuraEnabled
+    public static Id rebuildDomainIndex() {
+        requireAdmin();
+        try {
+            return Database.executeBatch(new DE_AccountDomainBatch(), 200);
+        } catch (Exception e) {
+            throw DE_Ui.error(e);
+        }
+    }
+
+    @AuraEnabled
+    public static Integer getDomainIndexSize() {
+        requireAdmin();
+        return [SELECT COUNT() FROM DE_Account_Domain__c WHERE Account__c != NULL WITH USER_MODE];
     }
 
     // ------------------------------------------------------------------ backfill

@@ -122,8 +122,9 @@ private class DE_SchedulingTest {
 
     @IsTest
     static void permissionHierarchy() {
-        DE_Team__c managed = new DE_Team__c(Name = 'Mine', Manager_User_Ids__c = UserInfo.getUserId());
-        DE_Team__c other = new DE_Team__c(Name = 'Other');
+        DE_Team__c managed = DE_TestFactory.insertTeam('Mine', 'Lead');
+        DE_Team__c other = DE_TestFactory.insertTeam('Other', 'Lead');
+        DE_TeamManagerService.setManagers(managed.Id, new List<Id>{ UserInfo.getUserId() });
 
         DE_TestFactory.grant(new Set<String>{ 'DE_Admin' });
         Assert.isTrue(DE_Permissions.isUser() && DE_Permissions.isTeamManager() && DE_Permissions.isSystemManager(), 'Admin implies every role.');

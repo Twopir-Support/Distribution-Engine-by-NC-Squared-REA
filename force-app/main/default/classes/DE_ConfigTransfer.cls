@@ -1,7 +1,8 @@
 /**
  * Exports and imports Distribution Engine configuration as JSON so it can move between orgs.
- * Ids are made portable: users by Username ("user:..."), queues by DeveloperName ("queue:...") and
- * shifts by Name ("shift:..."). Imported teams are inactive and imported territories are Draft.
+ * Ids are made portable: users by Username ("user:..."), queues by DeveloperName ("queue:..."),
+ * shifts by Name ("shift:...") and holiday regions by Name ("region:..."). Team managers travel with their team.
+ * Imported teams are inactive (and without a shift planner) and imported territories are Draft.
  */
 public without sharing class DE_ConfigTransfer {
     private static final Set<String> SYSTEM_FIELDS = new Set<String>{
@@ -47,6 +48,14 @@ public without sharing class DE_ConfigTransfer {
         List<DE_SLA__c> slas = Database.query(selectAll('DE_SLA__c') + ' ORDER BY Checkpoint__c');
         List<DE_Shift__c> shifts = Database.query(selectAll('DE_Shift__c'));
         List<DE_Holiday__c> holidays = Database.query(selectAll('DE_Holiday__c'));
+        List<DE_Holiday_Region__c> regions = Database.query(selectAll('DE_Holiday_Region__c') + ' ORDER BY Name');
+        Map<Id, List<Id>> managersByTeam = new Map<Id, List<Id>>();
+        for (DE_Team_Manager__c m : [SELECT Team__c, User__c FROM DE_Team_Manager__c ORDER BY CreatedDate]) {
+            if (!managersByTeam.containsKey(m.Team__c)) {
+                managersByTeam.put(m.Team__c, new List<Id>());
+            }
+            managersByTeam.get(m.Team__c).add(m.User__c);
+        }
         List<DE_Territory__c> territories = Database.query(selectAll('DE_Territory__c') + ' ORDER BY Priority__c');
         List<DE_Stamp_Group__c> groups = Database.query(selectAll('DE_Stamp_Group__c'));
         List<DE_Stamp__c> stamps = Database.query(selectAll('DE_Stamp__c') + ' ORDER BY Order__c');
@@ -55,6 +64,9 @@ public without sharing class DE_ConfigTransfer {
         List<DE_Object_Sync__c> syncs = Database.query(selectAll('DE_Object_Sync__c'));
 
         Set<Id> ids = new Set<Id>();
+        for (List<Id> m : managersByTeam.values()) {
+            ids.addAll(m);
+        }
         List<List<SObject>> all = new List<List<SObject>>{ teams, members, dists, conversion };
         for (List<SObject> rows : all) {
             for (SObject r : rows) {
@@ -73,6 +85,9 @@ public without sharing class DE_ConfigTransfer {
         }
         for (DE_Shift__c s : shifts) {
             refs.put(s.Id, 'shift:' + s.Name);
+        }
+        for (DE_Holiday_Region__c r : regions) {
+            refs.put(r.Id, 'region:' + r.Name);
         }
 
         Map<Id, List<Map<String, Object>>> condsByParent = new Map<Id, List<Map<String, Object>>>();
@@ -123,6 +138,13 @@ public without sharing class DE_ConfigTransfer {
             m.put('distributors', nvl(distsByTeam.get(t.Id)));
             m.put('caps', nvl(capsByParent.get(t.Id)));
             m.put('slas', nvl(slasByTeam.get(t.Id)));
+            List<String> managerRefs = new List<String>();
+            for (Id u : managersByTeam.containsKey(t.Id) ? managersByTeam.get(t.Id) : new List<Id>()) {
+                if (refs.containsKey(u)) {
+                    managerRefs.add(refs.get(u));
+                }
+            }
+            m.put('managers', managerRefs);
             teamOut.add(m);
         }
         Map<Id, List<Map<String, Object>>> stampsByGroup = new Map<Id, List<Map<String, Object>>>();
@@ -142,6 +164,7 @@ public without sharing class DE_ConfigTransfer {
             'version' => 1,
             'exportedAt' => System.now(),
             'shifts' => portableList(shifts, null),
+            'holidayRegions' => portableList(regions, null),
             'holidays' => portableList(holidays, null),
             'territories' => portableList(territories, condsByParent),
             'stampGroups' => groupOut,
@@ -241,6 +264,9 @@ public without sharing class DE_ConfigTransfer {
         for (DE_Shift__c s : [SELECT Id, Name FROM DE_Shift__c]) {
             resolve.put('shift:' + s.Name.toLowerCase(), s.Id);
         }
+        for (DE_Holiday_Region__c r : [SELECT Id, Name FROM DE_Holiday_Region__c]) {
+            resolve.put('region:' + r.Name.toLowerCase(), r.Id);
+        }
         Integer n = 0;
         for (Object o : items(root, 'shifts')) {
             Map<String, Object> m = (Map<String, Object>) o;
@@ -253,7 +279,28 @@ public without sharing class DE_ConfigTransfer {
             }
         }
         counts.put('shifts', n);
-        counts.put('holidays', insertAll('DE_Holiday__c', items(root, 'holidays'), null, null));
+        n = 0;
+        for (Object o : items(root, 'holidayRegions')) {
+            Map<String, Object> m = (Map<String, Object>) o;
+            String key = 'region:' + String.valueOf(m.get('Name')).toLowerCase();
+            if (!resolve.containsKey(key)) {
+                SObject r = build('DE_Holiday_Region__c', m, null);
+                insert r;
+                resolve.put(key, r.Id);
+                n++;
+            }
+        }
+        counts.put('holidayRegions', n);
+        List<SObject> holidays = new List<SObject>();
+        for (Object o : items(root, 'holidays')) {
+            SObject h = build('DE_Holiday__c', (Map<String, Object>) o, null);
+            // A holiday without a resolvable region cannot be stored; convert() already counted the unresolved reference.
+            if (h.get('Holiday_Region__c') != null) {
+                holidays.add(h);
+            }
+        }
+        insert holidays;
+        counts.put('holidays', holidays.size());
         counts.put(
             'territories',
             insertWithConditions('DE_Territory__c', items(root, 'territories'), 'Territory__c', new Map<String, Object>{ 'Status__c' => 'Draft' })
@@ -289,8 +336,18 @@ public without sharing class DE_ConfigTransfer {
             if (existingNames.contains(name.toLowerCase())) {
                 name = (name + ' (imported)').left(80);
             }
-            SObject t = build('DE_Team__c', m, new Map<String, Object>{ 'Name' => name, 'Active__c' => false });
+            SObject t = build('DE_Team__c', m, new Map<String, Object>{ 'Name' => name, 'Active__c' => false, 'Use_Shift_Planner__c' => false });
             insert t;
+            List<Id> managerIds = new List<Id>();
+            for (Object mr : items(m, 'managers')) {
+                Id u = resolve.get(String.valueOf(mr).toLowerCase());
+                if (u == null) {
+                    unresolved++;
+                } else {
+                    managerIds.add(u);
+                }
+            }
+            DE_TeamManagerService.setManagers(t.Id, managerIds);
             insertConditions(items(m, 'conditions'), 'Team__c', t.Id);
             List<SObject> mems = new List<SObject>();
             for (Object mo : items(m, 'members')) {
@@ -328,15 +385,6 @@ public without sharing class DE_ConfigTransfer {
     private static List<Object> items(Map<String, Object> m, String key) {
         Object v = m.get(key);
         return v instanceof List<Object> ? (List<Object>) v : new List<Object>();
-    }
-
-    private static Integer insertAll(String objectName, List<Object> rows, String unused, Map<String, Object> overrides) {
-        List<SObject> out = new List<SObject>();
-        for (Object o : rows) {
-            out.add(build(objectName, (Map<String, Object>) o, overrides));
-        }
-        insert out;
-        return out.size();
     }
 
     private static Integer insertWithConditions(String objectName, List<Object> rows, String conditionParentField, Map<String, Object> overrides) {
@@ -395,7 +443,7 @@ public without sharing class DE_ConfigTransfer {
         }
         if (v instanceof String) {
             String s = (String) v;
-            if (s.startsWith('user:') || s.startsWith('queue:') || s.startsWith('shift:')) {
+            if (s.startsWith('user:') || s.startsWith('queue:') || s.startsWith('shift:') || s.startsWith('region:')) {
                 List<String> ids = new List<String>();
                 for (String part : s.split(',')) {
                     Id i = resolve.get(part.trim().toLowerCase());

@@ -1,20 +1,21 @@
 /**
  * Decides whether teams and members are available at a point in time.
  * Order of evaluation (as documented by the reference): Holidays, Out of Office,
- * Distribution Hours, availability toggle.
+ * Distribution Hours, availability toggle. Holidays belong to a holiday region; each team uses one region.
+ * Member hours come from the member's shift (or the shift planner, see DE_ConfigRepository), else the team's.
  */
 public without sharing class DE_AvailabilityService {
     public Datetime at { get; private set; }
-    private Map<String, List<DE_Holiday__c>> holidaysByRegion = new Map<String, List<DE_Holiday__c>>();
+    private Map<Id, List<DE_Holiday__c>> holidaysByRegion = new Map<Id, List<DE_Holiday__c>>();
     private Map<Id, List<DE_Out_Of_Office__c>> oooByMember = new Map<Id, List<DE_Out_Of_Office__c>>();
 
     public DE_AvailabilityService(List<DE_Model.TeamConfig> teams, Datetime at) {
         this.at = at == null ? System.now() : at;
-        Set<String> regions = new Set<String>();
+        Set<Id> regions = new Set<Id>();
         Set<Id> userIds = new Set<Id>();
         Set<String> queueIds = new Set<String>();
         for (DE_Model.TeamConfig t : teams) {
-            if (String.isNotBlank(t.team.Holiday_Region__c)) {
+            if (t.team.Holiday_Region__c != null) {
                 regions.add(t.team.Holiday_Region__c);
             }
             for (DE_Model.Member m : t.members) {
@@ -44,16 +45,16 @@ public without sharing class DE_AvailabilityService {
         }
     }
 
-    private void loadHolidays(Set<String> regions, Datetime fromAt, Datetime toAt) {
+    private void loadHolidays(Set<Id> regions, Datetime fromAt, Datetime toAt) {
         if (regions.isEmpty()) {
             return;
         }
         for (DE_Holiday__c h : [
-            SELECT Id, Name, Region__c, All_Day__c, Start__c, End__c, Timezone__c
+            SELECT Id, Name, Holiday_Region__c, All_Day__c, Start__c, End__c, Timezone__c
             FROM DE_Holiday__c
-            WHERE Region__c IN :regions AND Start__c <= :toAt AND End__c >= :fromAt
+            WHERE Holiday_Region__c IN :regions AND Start__c <= :toAt AND End__c >= :fromAt
         ]) {
-            String key = h.Region__c.toLowerCase();
+            Id key = h.Holiday_Region__c;
             if (!holidaysByRegion.containsKey(key)) {
                 holidaysByRegion.put(key, new List<DE_Holiday__c>());
             }
@@ -74,10 +75,10 @@ public without sharing class DE_AvailabilityService {
 
     /** Name of the holiday stopping the team right now, or null. */
     public String holidayFor(DE_Model.TeamConfig t) {
-        if (String.isBlank(t.team.Holiday_Region__c)) {
+        if (t.team.Holiday_Region__c == null) {
             return null;
         }
-        List<DE_Holiday__c> hs = holidaysByRegion.get(t.team.Holiday_Region__c.toLowerCase());
+        List<DE_Holiday__c> hs = holidaysByRegion.get(t.team.Holiday_Region__c);
         if (hs == null) {
             return null;
         }
@@ -132,20 +133,20 @@ public without sharing class DE_AvailabilityService {
         return null;
     }
 
-    private static Map<String, List<DE_Holiday__c>> regionHolidayCache = new Map<String, List<DE_Holiday__c>>();
+    private static Map<Id, List<DE_Holiday__c>> regionHolidayCache = new Map<Id, List<DE_Holiday__c>>();
 
     /** Holidays of a region from two days ago to 90 days ahead (cached per transaction). */
-    public static List<DE_Holiday__c> regionHolidays(String region) {
-        String key = region.toLowerCase();
+    public static List<DE_Holiday__c> regionHolidays(Id region) {
+        Id key = region;
         if (!regionHolidayCache.containsKey(key)) {
             Datetime fromAt = System.now().addDays(-2);
             Datetime toAt = System.now().addDays(90);
             regionHolidayCache.put(
                 key,
                 [
-                    SELECT Id, Name, Region__c, All_Day__c, Start__c, End__c, Timezone__c
+                    SELECT Id, Name, Holiday_Region__c, All_Day__c, Start__c, End__c, Timezone__c
                     FROM DE_Holiday__c
-                    WHERE Region__c = :region AND Start__c <= :toAt AND End__c >= :fromAt
+                    WHERE Holiday_Region__c = :region AND Start__c <= :toAt AND End__c >= :fromAt
                 ]
             );
         }
@@ -161,7 +162,7 @@ public without sharing class DE_AvailabilityService {
             return null;
         }
         DE_ShiftCalendar base = (respectHours == 'Team Only' || m == null || m.calendar == null) ? t.teamCalendar : m.calendar;
-        Boolean hasRegion = String.isNotBlank(t.team.Holiday_Region__c);
+        Boolean hasRegion = t.team.Holiday_Region__c != null;
         if (base == null && !hasRegion) {
             return null;
         }

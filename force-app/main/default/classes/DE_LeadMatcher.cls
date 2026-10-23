@@ -5,6 +5,8 @@
  * (personal domains never match), exact normalised company name, fuzzy company name (Jaro-Winkler
  * above the rule threshold), custom field pair. Candidates must pass the rule's Match Filter
  * conditions; ties are broken by the rule's order field (default newest LastModifiedDate).
+ * Domain matches use the DE_Account_Domain__c index when it has been built (DE_AccountDomainService),
+ * otherwise contacts and account websites are searched directly.
  */
 public without sharing class DE_LeadMatcher {
     public static final List<String> LEAD_FIELDS = new List<String>{ 'Email', 'Company', 'Website', 'Phone', 'IsConverted' };
@@ -20,7 +22,36 @@ public without sharing class DE_LeadMatcher {
         }
     }
 
+    /** Which rule matched each lead and with what confidence; written to the matching log. */
+    public class MatchInfo {
+        public Id accountRuleId;
+        public String accountConfidence;
+        public Id leadRuleId;
+        public String leadConfidence;
+    }
+
+    /** Match details of the last match() call in this transaction, by lead Id. */
+    public static Map<Id, MatchInfo> lastMatches = new Map<Id, MatchInfo>();
+
+    private static MatchInfo info(Id leadId) {
+        if (!lastMatches.containsKey(leadId)) {
+            lastMatches.put(leadId, new MatchInfo());
+        }
+        return lastMatches.get(leadId);
+    }
+
     public static List<DE_Matching_Rule__c> rules() {
+        String cacheKey = DE_Cache.classifierKey('matchrules', null);
+        String cached = DE_Cache.get(cacheKey);
+        if (cached != null) {
+            return (List<DE_Matching_Rule__c>) JSON.deserialize(cached, List<DE_Matching_Rule__c>.class);
+        }
+        List<DE_Matching_Rule__c> rows = queryRules();
+        DE_Cache.put(cacheKey, JSON.serialize(rows));
+        return rows;
+    }
+
+    private static List<DE_Matching_Rule__c> queryRules() {
         return [
             SELECT
                 Id,
@@ -55,6 +86,7 @@ public without sharing class DE_LeadMatcher {
 
     public static void match(List<SObject> leads, Map<Id, DE_Record_Detail__c> details, List<DE_Matching_Rule__c> rules) {
         Set<String> personal = DE_Settings.personalDomains();
+        lastMatches = new Map<Id, MatchInfo>();
         for (SObject l : leads) {
             DE_Record_Detail__c d = DE_RecordDetails.ensure(details, l.Id, 'Lead');
             String domain = DE_TextMatch.emailDomain((String) l.get('Email'));
@@ -64,7 +96,6 @@ public without sharing class DE_LeadMatcher {
             d.Domain__c = domain;
             d.Personal_Email__c = domain != null && personal.contains(domain);
         }
-        List<String> confidence = new List<String>();
         for (DE_Matching_Rule__c rule : rules) {
             if (rule.Match_Type__c == 'Lead to Account') {
                 matchAccounts(leads, details, rule, personal);
@@ -169,7 +200,19 @@ public without sharing class DE_LeadMatcher {
         }
         Map<String, Set<Id>> accountsByContactDomain = new Map<String, Set<Id>>();
         Set<Id> accountIds = new Set<Id>();
-        if (!domains.isEmpty()) {
+        Boolean useIndex = !domains.isEmpty() && DE_AccountDomainService.indexAvailable();
+        if (useIndex) {
+            for (DE_Account_Domain__c ad : DE_AccountDomainService.lookup(domains)) {
+                String dm = ad.Name.toLowerCase();
+                if (ad.Domain_Type__c == 'Contact Email') {
+                    if (!accountsByContactDomain.containsKey(dm)) {
+                        accountsByContactDomain.put(dm, new Set<Id>());
+                    }
+                    accountsByContactDomain.get(dm).add(ad.Account__c);
+                }
+                accountIds.add(ad.Account__c);
+            }
+        } else if (!domains.isEmpty()) {
             List<String> emailPatterns = new List<String>();
             for (String dm : domains) {
                 emailPatterns.add('%@' + dm);
@@ -184,8 +227,10 @@ public without sharing class DE_LeadMatcher {
             }
         }
         List<String> websitePatterns = new List<String>();
-        for (String dm : domains) {
-            websitePatterns.add('%' + dm + '%');
+        if (!useIndex) {
+            for (String dm : domains) {
+                websitePatterns.add('%' + dm + '%');
+            }
         }
         String targetField = String.isBlank(rule.Target_Field__c) ? null : DE_Schema.canonicalPath('Account', rule.Target_Field__c);
         List<String> clauses = new List<String>();
@@ -254,6 +299,8 @@ public without sharing class DE_LeadMatcher {
             if (best != null) {
                 d.Matched_Account__c = best.rec.Id;
                 d.Match_Confidence__c = ('Account: ' + best.confidence).left(80);
+                info(l.Id).accountRuleId = rule.Id;
+                info(l.Id).accountConfidence = best.confidence.left(80);
             }
         }
     }
@@ -320,6 +367,8 @@ public without sharing class DE_LeadMatcher {
                     d.Matched_Account__c = (Id) best.rec.get('AccountId');
                 }
                 d.Match_Confidence__c = ('Contact: ' + best.confidence).left(80);
+                info(l.Id).accountRuleId = rule.Id;
+                info(l.Id).accountConfidence = ('Contact: ' + best.confidence).left(80);
             }
         }
     }
@@ -383,6 +432,8 @@ public without sharing class DE_LeadMatcher {
                 if (d.Match_Confidence__c == null) {
                     d.Match_Confidence__c = ('Lead: ' + best.confidence).left(80);
                 }
+                info(l.Id).leadRuleId = rule.Id;
+                info(l.Id).leadConfidence = best.confidence.left(80);
             }
         }
     }

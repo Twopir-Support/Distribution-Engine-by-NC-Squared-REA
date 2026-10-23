@@ -1,10 +1,12 @@
 /**
  * The distribution scheduler: a self-chaining Queueable that runs every 1-10 minutes.
- * Each run: availability housekeeping, Standard distributors, SLA monitor, run log, re-enqueue.
+ * Each run: availability housekeeping, Standard distributors, SLA monitor, classifier retries, run log, re-enqueue.
  * The health checker restarts the chain if it stops.
  */
 public without sharing class DE_SchedulerJob implements Queueable {
     public static final Integer SLA_BATCH = 200;
+    /** Records whose classification failed that are retried per run. */
+    public static final Integer CLASSIFIER_RETRY_BATCH = 50;
     private Id resumeAfterTeamId;
     private Boolean chain = true;
 
@@ -41,6 +43,12 @@ public without sharing class DE_SchedulerJob implements Queueable {
             if (sla.missed > 0) {
                 messages.add(sla.missed + ' SLAs missed, ' + sla.reassigned + ' records reassigned.');
             }
+            if (DE_Settings.classifierEnabled()) {
+                Integer retried = DE_ClassifierLogs.retryFailed(CLASSIFIER_RETRY_BATCH);
+                if (retried > 0) {
+                    messages.add(retried + ' records with failed classification were retried.');
+                }
+            }
             if (summary.errors > 0) {
                 status = 'Warning';
             }
@@ -48,13 +56,13 @@ public without sharing class DE_SchedulerJob implements Queueable {
             status = 'Error';
             messages.add(e.getTypeName() + ': ' + e.getMessage() + '\n' + e.getStackTraceString());
         }
-        insertRunLog(started, status, summary, messages);
+        insertRunLog(started, status, summary, messages, context == null ? null : context.getJobId());
         if (chain && DE_Settings.engineEnabled() && !Test.isRunningTest()) {
             enqueueNext(resume);
         }
     }
 
-    private static void insertRunLog(Datetime started, String status, DE_DistributionRunner.Summary summary, List<String> messages) {
+    private static void insertRunLog(Datetime started, String status, DE_DistributionRunner.Summary summary, List<String> messages, Id jobId) {
         // Zero-assignment runs are only logged when something noteworthy happened, to keep the log readable.
         Boolean noteworthy = status != 'Success' || (summary != null && (summary.processed > 0 || summary.onHold > 0)) || !messages.isEmpty();
         if (!noteworthy) {
@@ -69,7 +77,8 @@ public without sharing class DE_SchedulerJob implements Queueable {
                 summary == null ? (status == 'Error' ? 1 : 0) : summary.errors,
                 messages.isEmpty() ? null : String.join(messages, '\n'),
                 started,
-                System.now().getTime() - started.getTime()
+                System.now().getTime() - started.getTime(),
+                jobId
             ),
             false,
             AccessLevel.SYSTEM_MODE

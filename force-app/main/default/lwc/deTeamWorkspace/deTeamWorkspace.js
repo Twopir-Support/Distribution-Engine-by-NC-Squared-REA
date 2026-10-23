@@ -2,6 +2,8 @@ import { LightningElement, api } from 'lwc';
 import getTeamDetail from '@salesforce/apex/DE_AdminController.getTeamDetail';
 import getObjectOptions from '@salesforce/apex/DE_AdminController.getObjectOptions';
 import getShiftOptions from '@salesforce/apex/DE_AdminController.getShiftOptions';
+import getHolidayRegionOptions from '@salesforce/apex/DE_AdminController.getHolidayRegionOptions';
+import saveTeamManagers from '@salesforce/apex/DE_AdminController.saveTeamManagers';
 import saveTeam from '@salesforce/apex/DE_AdminController.saveTeam';
 import setTeamActive from '@salesforce/apex/DE_AdminController.setTeamActive';
 import addMembers from '@salesforce/apex/DE_AdminController.addMembers';
@@ -53,6 +55,9 @@ export default class DeTeamWorkspace extends LightningElement {
     distributorDraft;
     objectOptions = [];
     shiftOptions = [];
+    regionOptions = [];
+    managerIds = [];
+    managersChanged = false;
     addIds = [];
     preview;
     error;
@@ -76,6 +81,11 @@ export default class DeTeamWorkspace extends LightningElement {
             })
             .catch(() => {});
         this.loadShifts();
+        getHolidayRegionOptions()
+            .then((o) => {
+                this.regionOptions = [{ label: '— none —', value: '' }, ...o];
+            })
+            .catch(() => {});
         if (this.teamId) {
             this.load();
         } else {
@@ -98,6 +108,8 @@ export default class DeTeamWorkspace extends LightningElement {
             this.detail = d;
             this.team = cleanRecord(d.team);
             this.teamLogic = d.team.Filter_Logic__c;
+            this.managerIds = d.managerIds || [];
+            this.managersChanged = false;
             this.teamFilters = clone(d.teamFilters);
             this.dynamicConditions = clone(d.dynamicConditions);
             this.members = d.members.map((m) => ({
@@ -207,10 +219,24 @@ export default class DeTeamWorkspace extends LightningElement {
     }
 
     handleManagers(event) {
-        this.team = {
-            ...this.team,
-            Manager_User_Ids__c: event.detail.values.join(',')
-        };
+        this.managerIds = event.detail.values;
+        this.managersChanged = true;
+    }
+
+    get teamRegion() {
+        return this.team.Holiday_Region__c || '';
+    }
+
+    get holidayRegionName() {
+        return (this.detail && this.detail.holidayRegionName) || '—';
+    }
+
+    get canSwitchShiftPlanner() {
+        return !!(this.detail && this.detail.canSwitchShiftPlanner);
+    }
+
+    async handlePlannerChange() {
+        await this.load();
     }
 
     handleTeamFilters(event) {
@@ -245,6 +271,10 @@ export default class DeTeamWorkspace extends LightningElement {
                 filters: cleanConditions(this.teamFilters),
                 dynamicConditions: cleanConditions(this.dynamicConditions)
             });
+            if (this.managersChanged) {
+                await saveTeamManagers({ teamId: id, userIds: this.managerIds });
+                this.managersChanged = false;
+            }
             toast(this, 'Team saved', record.Name);
             if (this.isNew) {
                 this.dispatchEvent(new CustomEvent('created', { detail: { teamId: id } }));

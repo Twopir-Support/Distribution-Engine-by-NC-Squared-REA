@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <isExposed>false</isExposed>
+    <masterLabel>DE Shift Planner</masterLabel>
+    <description>Distribution Engine by NC Squared: plan member shifts per week up to 12 weeks ahead.</description>
+</LightningComponentBundle>

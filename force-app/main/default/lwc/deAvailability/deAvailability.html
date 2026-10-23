@@ -82,7 +82,22 @@
                 </lightning-tab>
 
                 <lightning-tab label="Regional Holidays" value="holidays" onactive={handleTab}>
-                    <lightning-button label="New holiday" icon-name="utility:add" onclick={handleNewHoliday}></lightning-button>
+                    <div class="slds-grid slds-gutters_small slds-grid_vertical-align-end">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-combobox
+                                label="Region"
+                                options={regionFilterOptions}
+                                value={holidayRegionFilter}
+                                onchange={handleHolidayRegionFilter}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input type="search" label="Search holidays" value={holidaySearch} onchange={handleHolidaySearch}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-no-flex">
+                            <lightning-button label="New holiday" icon-name="utility:add" onclick={handleNewHoliday}></lightning-button>
+                        </div>
+                    </div>
                     <template lwc:if={holidayEdit}>
                         <div class="slds-box slds-m-top_small">
                             <div class="slds-grid slds-wrap slds-gutters_small">
@@ -96,13 +111,15 @@
                                     ></lightning-input>
                                 </div>
                                 <div class="slds-col slds-size_1-of-2">
-                                    <lightning-input
-                                        label="Region"
-                                        value={holidayEdit.Region__c}
-                                        data-field="Region__c"
+                                    <lightning-combobox
+                                        label="Holiday region"
+                                        options={regionOptions}
+                                        value={holidayEdit.Holiday_Region__c}
+                                        data-field="Holiday_Region__c"
                                         onchange={handleHolidayField}
+                                        placeholder="Choose a region"
                                         required
-                                    ></lightning-input>
+                                    ></lightning-combobox>
                                 </div>
                                 <div class="slds-col slds-size_1-of-3">
                                     <lightning-input
@@ -157,12 +174,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <template for:each={holidays} for:item="h">
+                            <template for:each={visibleHolidays} for:item="h">
                                 <tr key={h.Id}>
                                     <td>
                                         <a data-id={h.Id} onclick={handleEditHoliday}>{h.Name}</a>
                                     </td>
-                                    <td>{h.Region__c}</td>
+                                    <td>{h.regionName}</td>
                                     <td>{h.start}</td>
                                     <td>{h.end}</td>
                                     <td>{h.All_Day__c}</td>
@@ -181,21 +198,57 @@
                 </lightning-tab>
 
                 <lightning-tab label="Regions" value="regions" onactive={handleTab}>
-                    <p class="slds-text-body_small slds-text-color_weak">A holiday in a region stops distribution for every team that uses that region.</p>
+                    <p class="slds-text-body_small slds-text-color_weak">
+                        A holiday in a region stops distribution for every team that uses that region. A region can only be deleted when no team or holiday uses
+                        it. Team managers can view regions but not change them.
+                    </p>
+                    <lightning-button class="slds-m-top_x-small" label="New region" icon-name="utility:add" onclick={handleNewRegion}></lightning-button>
+                    <template lwc:if={regionEdit}>
+                        <div class="slds-box slds-m-top_small">
+                            <lightning-input
+                                label="Region name"
+                                value={regionEdit.Name}
+                                data-field="Name"
+                                onchange={handleRegionField}
+                                required
+                            ></lightning-input>
+                            <lightning-textarea
+                                label="Description"
+                                value={regionEdit.Description__c}
+                                data-field="Description__c"
+                                onchange={handleRegionField}
+                            ></lightning-textarea>
+                            <lightning-button label="Cancel" onclick={handleCancelRegion}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" variant="brand" label="Save" onclick={handleSaveRegion}></lightning-button>
+                        </div>
+                    </template>
                     <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small">
                         <thead>
                             <tr>
                                 <th>Region</th>
                                 <th>Teams</th>
+                                <th>Holidays</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <template for:each={regions} for:item="r"
-                                ><tr key={r.key}>
-                                    <td>{r.name}</td>
-                                    <td>{r.teams}</td>
-                                </tr></template
-                            >
+                                ><tr key={r.id}>
+                                    <td>
+                                        <a data-id={r.id} onclick={handleEditRegion}>{r.name}</a>
+                                    </td>
+                                    <td class="slds-cell-wrap">{r.teamList}</td>
+                                    <td>{r.holidays}</td>
+                                    <td>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="Delete region"
+                                            title="Delete region"
+                                            data-id={r.id}
+                                            onclick={handleDeleteRegion}
+                                        ></lightning-button-icon>
+                                    </td></tr
+                            ></template>
                         </tbody>
                     </table>
                 </lightning-tab>

@@ -1,12 +1,18 @@
 /**
  * Health checker (hourly by default): restarts the scheduler chain if it has stopped and records
- * the outcome. Also runs daily maintenance once per day: log purge, auto archive and dynamic team members.
+ * the outcome, and emails administrators about repeated failures (DE_AdminAlerts). Also runs daily
+ * maintenance once per day: log purge, auto archive and dynamic team members.
  */
 public without sharing class DE_HealthChecker implements Schedulable {
     public static final String JOB_NAME = 'Distribution Engine Health Checker';
 
     public void execute(SchedulableContext context) {
         check();
+        try {
+            DE_AdminAlerts.checkAll(System.now());
+        } catch (Exception e) {
+            DE_RunLogger.log('Health Checker', 'Error', 0, 0, 1, 'Admin alerts failed: ' + e.getMessage());
+        }
         if (!dailyMaintenanceRanToday()) {
             Database.executeBatch(new DE_MaintenanceBatch(), 200);
         }
@@ -23,6 +29,7 @@ public without sharing class DE_HealthChecker implements Schedulable {
             DE_SchedulerJob.start();
             message = 'Scheduler was not running and has been restarted.';
             status = 'Warning';
+            DE_AdminAlerts.send(DE_AdminAlerts.SCHEDULER_RESTARTED, 'The Distribution Engine scheduler had stopped. The health checker restarted it at ' + System.now().format() + '.');
         }
         DE_RunLogger.log('Health Checker', status, 0, 0, 0, message);
         return message;

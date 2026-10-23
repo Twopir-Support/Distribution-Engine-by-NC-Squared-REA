@@ -81,7 +81,7 @@
                             <dt class="slds-text-title slds-m-top_x-small">Load balancing</dt>
                             <dd>{team.Load_Balancing_Type__c} · {team.Load_Balancing_Level__c} level · {team.Balance_By__c}</dd>
                             <dt class="slds-text-title slds-m-top_x-small">Holiday region</dt>
-                            <dd>{team.Holiday_Region__c}</dd>
+                            <dd>{holidayRegionName}</dd>
                             <dt class="slds-text-title slds-m-top_x-small">Last assignment</dt>
                             <dd>
                                 <lightning-formatted-date-time
@@ -479,13 +479,15 @@
                         Members without their own hours inherit the team hours. Member hours are set on the Team Members page. Create shifts on the Distribution
                         Availability tab.
                     </p>
-                    <lightning-input
+                    <lightning-combobox
                         label="Holiday region"
-                        value={team.Holiday_Region__c}
+                        options={regionOptions}
+                        value={teamRegion}
                         data-field="Holiday_Region__c"
                         onchange={handleTeamField}
                         disabled={readOnly}
-                    ></lightning-input>
+                        field-level-help="Regional holidays in this region stop distribution for the whole team. Manage regions on the Distribution Availability tab."
+                    ></lightning-combobox>
                     <lightning-input
                         type="checkbox"
                         label="Respect distribution hours for trigger distributors"
@@ -497,6 +499,15 @@
                     <template lwc:if={canEdit}
                         ><lightning-button class="slds-m-top_small" variant="brand" label="Save hours" onclick={handleSaveTeam}></lightning-button
                     ></template>
+                    <template lwc:if={teamId}>
+                        <c-de-shift-planner
+                            team-id={teamId}
+                            can-switch={canSwitchShiftPlanner}
+                            read-only={readOnlyMembers}
+                            onchange={handlePlannerChange}
+                            onsaved={handlePlannerChange}
+                        ></c-de-shift-planner>
+                    </template>
                 </template>
 
                 <!-- ===================== SLAs & TRACKING ===================== -->
@@ -875,13 +886,32 @@
                     </div>
                     <c-de-record-picker
                         class="slds-m-top_small"
-                        label="Team managers (Team Manager permission set)"
+                        label="Team managers (Team Manager and Custom Team Manager permission sets)"
                         kind="User"
                         multiple
-                        value={team.Manager_User_Ids__c}
+                        value={managerIds}
                         onchange={handleManagers}
                         disabled={readOnly}
                     ></c-de-record-picker>
+                    <lightning-input
+                        type="checkbox"
+                        class="slds-m-top_small"
+                        label="Show only active records in the widget"
+                        checked={team.Widget_Active_Only__c}
+                        data-field="Widget_Active_Only__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                        field-level-help="The widget's Assigned to me list only shows this team's records that are in an Active Status value."
+                    ></lightning-input>
+                    <lightning-input
+                        type="checkbox"
+                        label="Disable distribution logging"
+                        checked={team.Logging_Disabled__c}
+                        data-field="Logging_Disabled__c"
+                        onchange={handleTeamField}
+                        disabled={readOnly}
+                        field-level-help="Stops distribution logs and standard email notifications for this team. Not allowed with action tracking or object sync."
+                    ></lightning-input>
                     <lightning-textarea
                         label="Description"
                         value={team.Description__c}

@@ -1,6 +1,7 @@
 /**
  * Custom classification: stamp groups and their ordered stamps. A Single group applies the first
- * matching stamp; a Multiple group applies every matching stamp. Stamps are stored on the details as
+ * matching stamp; a Multiple group applies every matching stamp. A default stamp is awarded only when no
+ * other stamp of the group matches. Inactive stamps are ignored. Stamps are stored on the details as
  * "Group:Value" and optionally written to a field on the record.
  */
 public without sharing class DE_StampClassifier {
@@ -11,6 +12,17 @@ public without sharing class DE_StampClassifier {
     }
 
     public static List<GroupConfig> groups(String objectName) {
+        String cacheKey = DE_Cache.classifierKey('stampgroups', objectName);
+        String cached = DE_Cache.get(cacheKey);
+        if (cached != null) {
+            return (List<GroupConfig>) JSON.deserialize(cached, List<GroupConfig>.class);
+        }
+        List<GroupConfig> out = queryGroups(objectName);
+        DE_Cache.put(cacheKey, JSON.serialize(out));
+        return out;
+    }
+
+    private static List<GroupConfig> queryGroups(String objectName) {
         List<GroupConfig> out = new List<GroupConfig>();
         List<DE_Stamp_Group__c> groupRows = [
             SELECT
@@ -19,7 +31,7 @@ public without sharing class DE_StampClassifier {
                 Object_API_Name__c,
                 Group_Type__c,
                 Stamp_Field__c,
-                (SELECT Id, Name, Order__c, Condition_Logic__c FROM Stamps__r ORDER BY Order__c, Name)
+                (SELECT Id, Name, Order__c, Condition_Logic__c, Is_Default__c FROM Stamps__r WHERE Active__c = TRUE ORDER BY Order__c, Name)
             FROM DE_Stamp_Group__c
             WHERE Object_API_Name__c = :objectName AND Active__c = TRUE
             ORDER BY Name
@@ -78,13 +90,21 @@ public without sharing class DE_StampClassifier {
             List<String> all = new List<String>();
             for (GroupConfig g : groups) {
                 List<String> values = new List<String>();
+                DE_Stamp__c fallback = null;
                 for (DE_Stamp__c s : g.stamps) {
+                    if (s.Is_Default__c == true) {
+                        fallback = fallback == null ? s : fallback;
+                        continue;
+                    }
                     if (DE_Conditions.matches(rec, g.conditions.get(s.Id), s.Condition_Logic__c, ctx, null)) {
                         values.add(s.Name);
                         if (g.grp.Group_Type__c != 'Multiple') {
                             break;
                         }
                     }
+                }
+                if (values.isEmpty() && fallback != null) {
+                    values.add(fallback.Name);
                 }
                 for (String v : values) {
                     all.add(g.grp.Name + ':' + v);

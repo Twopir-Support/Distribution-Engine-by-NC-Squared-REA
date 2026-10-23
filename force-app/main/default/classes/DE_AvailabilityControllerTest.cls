@@ -62,26 +62,51 @@ private class DE_AvailabilityControllerTest {
     @IsTest
     static void managesHolidaysAndRegions() {
         DE_TestFactory.grantAll();
+        Id regionId = DE_AvailabilityController.saveHolidayRegion(new DE_Holiday_Region__c(Name = ' UK '));
         DE_Team__c t = DE_TestFactory.team('UK Support', 'Case');
-        t.Holiday_Region__c = 'UK';
+        t.Holiday_Region__c = regionId;
         insert t;
         Datetime day = Datetime.newInstanceGmt(2026, 12, 25, 0, 0, 0);
 
         Id holidayId = DE_AvailabilityController.saveHoliday(
-            new DE_Holiday__c(Name = 'Christmas', Region__c = 'UK', All_Day__c = true, Start__c = day, End__c = day, Timezone__c = 'Europe/London')
+            new DE_Holiday__c(Name = 'Christmas', Holiday_Region__c = regionId, All_Day__c = true, Start__c = day, End__c = day, Timezone__c = 'Europe/London')
         );
 
         Assert.areEqual(1, DE_AvailabilityController.getHolidays().size(), 'Holiday listed.');
-        Map<String, List<String>> regions = DE_AvailabilityController.getRegions();
-        Assert.areEqual(new List<String>{ 'UK Support' }, regions.get('UK'), 'The region lists the team that uses it.');
+        List<DE_AvailabilityController.RegionRow> regions = DE_AvailabilityController.getHolidayRegions();
+        Assert.areEqual(1, regions.size(), 'One region.');
+        Assert.areEqual('UK', regions[0].name, 'Region name is trimmed.');
+        Assert.areEqual(new List<String>{ 'UK Support' }, regions[0].teams, 'The region lists the team that uses it.');
+        Assert.areEqual(1, regions[0].holidays, 'The region counts its holidays.');
         try {
-            DE_AvailabilityController.saveHoliday(new DE_Holiday__c(Name = 'Bad', Region__c = 'UK', Start__c = day, End__c = day.addDays(-1)));
+            DE_AvailabilityController.saveHolidayRegion(new DE_Holiday_Region__c(Name = 'uk'));
+            Assert.fail('Region names are unique.');
+        } catch (AuraHandledException e) {
+            Assert.isTrue(e.getMessage().contains('already exists'), e.getMessage());
+        }
+        try {
+            DE_AvailabilityController.deleteHolidayRegion(regionId);
+            Assert.fail('A region in use cannot be deleted.');
+        } catch (AuraHandledException e) {
+            Assert.isTrue(e.getMessage().contains('1 team(s) and 1 holiday(s)'), e.getMessage());
+        }
+        try {
+            DE_AvailabilityController.saveHoliday(new DE_Holiday__c(Name = 'No region', Start__c = day, End__c = day));
+            Assert.fail('A holiday needs a region.');
+        } catch (AuraHandledException e) {
+            Assert.isTrue(e.getMessage().contains('Enter a holiday name and region.'), e.getMessage());
+        }
+        try {
+            DE_AvailabilityController.saveHoliday(new DE_Holiday__c(Name = 'Bad', Holiday_Region__c = regionId, Start__c = day, End__c = day.addDays(-1)));
             Assert.fail('Ends before starts is invalid.');
         } catch (AuraHandledException e) {
             Assert.isTrue(e.getMessage().contains('Ends must be on or after Starts.'), e.getMessage());
         }
         DE_AvailabilityController.deleteHoliday(holidayId);
         Assert.areEqual(0, [SELECT COUNT() FROM DE_Holiday__c], 'Holiday deleted.');
+        Id unused = DE_AvailabilityController.saveHolidayRegion(new DE_Holiday_Region__c(Name = 'Unused'));
+        DE_AvailabilityController.deleteHolidayRegion(unused);
+        Assert.areEqual(0, [SELECT COUNT() FROM DE_Holiday_Region__c WHERE Id = :unused], 'An unused region can be deleted.');
     }
 
     @IsTest
@@ -94,6 +119,13 @@ private class DE_AvailabilityControllerTest {
             Assert.areEqual(0, [SELECT COUNT() FROM DE_Shift__c], 'No shift saved.');
         }
         Assert.areEqual(0, DE_AvailabilityController.getShifts().size(), 'Team managers can still view shifts.');
+        try {
+            DE_AvailabilityController.saveHolidayRegion(new DE_Holiday_Region__c(Name = 'UK'));
+            Assert.fail('Holiday regions are read only for team managers.');
+        } catch (DE_Permissions.AccessException e) {
+            Assert.areEqual(0, [SELECT COUNT() FROM DE_Holiday_Region__c], 'No region saved.');
+        }
+        Assert.areEqual(0, DE_AvailabilityController.getHolidayRegions().size(), 'Team managers can view regions.');
     }
 
     @IsTest
@@ -161,11 +193,13 @@ private class DE_AvailabilityControllerTest {
     @IsTest
     static void calendarShowsHolidaysAndOutOfOffice() {
         DE_TestFactory.Fixture f = DE_TestFactory.leadFixture(2, 'Round Robin');
-        f.team.Holiday_Region__c = 'UK';
+        DE_Holiday_Region__c region = new DE_Holiday_Region__c(Name = 'UK');
+        insert region;
+        f.team.Holiday_Region__c = region.Id;
         update f.team;
         insert new DE_Holiday__c(
             Name = 'Bank Holiday',
-            Region__c = 'UK',
+            Holiday_Region__c = region.Id,
             All_Day__c = true,
             Start__c = Datetime.newInstanceGmt(2026, 2, 10, 12, 0, 0),
             End__c = Datetime.newInstanceGmt(2026, 2, 10, 12, 0, 0),

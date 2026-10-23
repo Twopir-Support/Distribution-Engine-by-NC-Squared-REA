@@ -5,7 +5,9 @@ import deleteOutOfOffice from '@salesforce/apex/DE_AvailabilityController.delete
 import getHolidays from '@salesforce/apex/DE_AvailabilityController.getHolidays';
 import saveHoliday from '@salesforce/apex/DE_AvailabilityController.saveHoliday';
 import deleteHoliday from '@salesforce/apex/DE_AvailabilityController.deleteHoliday';
-import getRegions from '@salesforce/apex/DE_AvailabilityController.getRegions';
+import getHolidayRegions from '@salesforce/apex/DE_AvailabilityController.getHolidayRegions';
+import saveHolidayRegion from '@salesforce/apex/DE_AvailabilityController.saveHolidayRegion';
+import deleteHolidayRegion from '@salesforce/apex/DE_AvailabilityController.deleteHolidayRegion';
 import getShifts from '@salesforce/apex/DE_AvailabilityController.getShifts';
 import saveShift from '@salesforce/apex/DE_AvailabilityController.saveShift';
 import deleteShift from '@salesforce/apex/DE_AvailabilityController.deleteShift';
@@ -34,6 +36,9 @@ export default class DeAvailability extends LightningElement {
     holidays = [];
     holidayEdit;
     regions = [];
+    regionEdit;
+    holidayRegionFilter = '';
+    holidaySearch = '';
     shifts = [];
     shiftEdit;
     shiftDays = [];
@@ -68,7 +73,10 @@ export default class DeAvailability extends LightningElement {
         const v = event.target.value;
         const loaders = {
             ooo: () => this.loadOoo(),
-            holidays: () => this.loadHolidays(),
+            holidays: () => {
+                this.loadRegions();
+                this.loadHolidays();
+            },
             regions: () => this.loadRegions(),
             shifts: () => this.loadShifts(),
             roster: () => this.loadRoster()
@@ -114,7 +122,17 @@ export default class DeAvailability extends LightningElement {
 
     handleEditOoo(event) {
         const o = this.ooo.find((x) => x.Id === event.currentTarget.dataset.id);
-        this.oooEdit = cleanRecord(o);
+        // Only the record fields: the display helpers (who, start, end) are not fields of DE_Out_Of_Office__c.
+        this.oooEdit = {
+            Id: o.Id,
+            User__c: o.User__c,
+            Queue_Id__c: o.Queue_Id__c,
+            Start__c: o.Start__c,
+            End__c: o.End__c,
+            All_Day__c: o.All_Day__c,
+            Reason__c: o.Reason__c,
+            Timezone__c: o.Timezone__c
+        };
     }
 
     handleOooField(event) {
@@ -159,6 +177,7 @@ export default class DeAvailability extends LightningElement {
             const rows = await getHolidays();
             this.holidays = rows.map((h) => ({
                 ...h,
+                regionName: h.Holiday_Region__r ? h.Holiday_Region__r.Name : '',
                 start: formatDateTime(h.Start__c),
                 end: formatDateTime(h.End__c)
             }));
@@ -170,7 +189,7 @@ export default class DeAvailability extends LightningElement {
     handleNewHoliday() {
         this.holidayEdit = {
             Name: '',
-            Region__c: '',
+            Holiday_Region__c: this.holidayRegionFilter || null,
             All_Day__c: true,
             Start__c: null,
             End__c: null,
@@ -179,7 +198,17 @@ export default class DeAvailability extends LightningElement {
     }
 
     handleEditHoliday(event) {
-        this.holidayEdit = cleanRecord(this.holidays.find((x) => x.Id === event.currentTarget.dataset.id));
+        const h = this.holidays.find((x) => x.Id === event.currentTarget.dataset.id);
+        // Only the record fields: the display helpers (regionName, start, end) are not fields of DE_Holiday__c.
+        this.holidayEdit = {
+            Id: h.Id,
+            Name: h.Name,
+            Holiday_Region__c: h.Holiday_Region__c,
+            All_Day__c: h.All_Day__c,
+            Start__c: h.Start__c,
+            End__c: h.End__c,
+            Timezone__c: h.Timezone__c
+        };
     }
 
     handleHolidayField(event) {
@@ -212,16 +241,75 @@ export default class DeAvailability extends LightningElement {
         this.holidayEdit = null;
     }
 
+    get regionOptions() {
+        return this.regions.map((r) => ({ label: r.name, value: r.id }));
+    }
+
+    get regionFilterOptions() {
+        return [{ label: 'All regions', value: '' }, ...this.regionOptions];
+    }
+
+    get visibleHolidays() {
+        const term = (this.holidaySearch || '').toLowerCase();
+        return this.holidays.filter(
+            (h) => (!this.holidayRegionFilter || h.Holiday_Region__c === this.holidayRegionFilter) && (!term || (h.Name || '').toLowerCase().includes(term))
+        );
+    }
+
+    handleHolidayRegionFilter(event) {
+        this.holidayRegionFilter = event.detail.value;
+    }
+
+    handleHolidaySearch(event) {
+        this.holidaySearch = event.target.value;
+    }
+
     async loadRegions() {
         try {
-            const r = await getRegions();
-            this.regions = Object.keys(r).map((k) => ({
-                key: k,
-                name: k,
-                teams: r[k].join(', ') || '—'
+            const rows = await getHolidayRegions();
+            this.regions = rows.map((r) => ({
+                ...r,
+                teamList: r.teams.length ? r.teams.join(', ') : '—'
             }));
         } catch (e) {
             this.fail(e);
+        }
+    }
+
+    handleNewRegion() {
+        this.regionEdit = { Name: '', Description__c: '' };
+    }
+
+    handleEditRegion(event) {
+        const r = this.regions.find((x) => x.id === event.currentTarget.dataset.id);
+        this.regionEdit = { Id: r.id, Name: r.name, Description__c: r.description };
+    }
+
+    handleRegionField(event) {
+        this.regionEdit = { ...this.regionEdit, [event.target.dataset.field]: event.target.value };
+    }
+
+    handleCancelRegion() {
+        this.regionEdit = null;
+    }
+
+    async handleSaveRegion() {
+        try {
+            await saveHolidayRegion({ region: this.regionEdit });
+            toast(this, 'Holiday region saved', this.regionEdit.Name);
+            this.regionEdit = null;
+            await this.loadRegions();
+        } catch (e) {
+            toastError(this, e, 'Could not save the region');
+        }
+    }
+
+    async handleDeleteRegion(event) {
+        try {
+            await deleteHolidayRegion({ regionId: event.currentTarget.dataset.id });
+            await this.loadRegions();
+        } catch (e) {
+            toastError(this, e, 'Could not delete the region');
         }
     }
 

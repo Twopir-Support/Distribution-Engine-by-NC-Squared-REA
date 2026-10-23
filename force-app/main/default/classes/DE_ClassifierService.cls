@@ -41,6 +41,7 @@ public without sharing class DE_ClassifierService {
                 );
             }
             DE_RecordDetails.save(waiting);
+            markWaiting(objectName, recordIds);
         }
         Boolean alreadyAsync = System.isBatch() || System.isFuture() || System.isQueueable() || System.isScheduled();
         if (alreadyAsync || Limits.getQueueableJobs() >= Limits.getLimitQueueableJobs()) {
@@ -54,7 +55,6 @@ public without sharing class DE_ClassifierService {
 
     /** Classifies records. types = null means all classification types. */
     public static Integer classify(String objectName, Set<Id> recordIds, Set<String> types) {
-        Datetime started = System.now();
         Set<String> t = types == null ? ALL_TYPES : types;
         Boolean isLead = objectName.equalsIgnoreCase('Lead');
         List<DE_Territory__c> territories = t.contains('Territory') ? DE_TerritoryClassifier.territories(objectName) : new List<DE_Territory__c>();
@@ -63,6 +63,10 @@ public without sharing class DE_ClassifierService {
         List<DE_Conversion_Rule__c> convRules = isLead && t.contains('Conversion') ? DE_LeadConversion.rules() : new List<DE_Conversion_Rule__c>();
 
         Set<String> paths = new Set<String>{ 'Id', 'CreatedDate' };
+        String nameField = DE_Schema.nameField(objectName);
+        if (nameField != null) {
+            paths.add(nameField);
+        }
         paths.addAll(DE_TerritoryClassifier.requiredPaths(objectName, territories));
         paths.addAll(DE_StampClassifier.requiredPaths(groups));
         if (isLead) {
@@ -84,44 +88,96 @@ public without sharing class DE_ClassifierService {
         Set<Id> loadedIds = new Map<Id, SObject>(records).keySet();
         Map<Id, DE_Record_Detail__c> details = DE_RecordDetails.load(loadedIds, detailPaths);
         Map<Id, Map<String, Object>> fieldStamps = new Map<Id, Map<String, Object>>();
-        String status = 'Success';
-        try {
-            if (isLead && !matchRules.isEmpty()) {
+        DE_ClassifierLogs.Run run = new DE_ClassifierLogs.Run();
+        run.objectName = objectName;
+        run.records = records;
+
+        // Each stage runs on its own so one failing stage does not stop the others; failures are logged per stage.
+        if (isLead && !matchRules.isEmpty()) {
+            run.stages.add(DE_ClassifierLogs.MATCH);
+            try {
                 DE_LeadMatcher.match(records, details, matchRules);
+                run.matches = DE_LeadMatcher.lastMatches;
                 if (hasRelationshipPath(detailPaths)) {
                     // Persist the new matches and reload so the matched records' fields can be evaluated.
                     DE_RecordDetails.save(details.values());
                     details = DE_RecordDetails.load(loadedIds, detailPaths);
                 }
+            } catch (Exception e) {
+                stageFailed(run, DE_ClassifierLogs.MATCH, e, warnings);
             }
-            if (!territories.isEmpty()) {
+        }
+        if (!territories.isEmpty()) {
+            run.stages.add(DE_ClassifierLogs.TERRITORY);
+            try {
                 mergeStamps(fieldStamps, DE_TerritoryClassifier.classify(objectName, records, details, territories));
+                run.territory = DE_TerritoryClassifier.lastResults;
+            } catch (Exception e) {
+                stageFailed(run, DE_ClassifierLogs.TERRITORY, e, warnings);
             }
-            if (!groups.isEmpty()) {
+        }
+        if (!groups.isEmpty()) {
+            run.stages.add(DE_ClassifierLogs.STAMPS);
+            try {
                 mergeStamps(fieldStamps, DE_StampClassifier.classify(objectName, records, details, groups));
+            } catch (Exception e) {
+                stageFailed(run, DE_ClassifierLogs.STAMPS, e, warnings);
             }
-        } catch (Exception e) {
-            status = 'Error';
-            warnings.add(e.getMessage());
         }
         for (SObject r : records) {
+            // Details are always released ("Done") so distribution never waits on a failing classifier.
             DE_RecordDetails.ensure(details, r.Id, objectName).Classifier_Status__c = 'Done';
         }
         DE_RecordDetails.save(details.values());
+        // Field stamps and the status mirror are written before conversion: converted leads cannot be updated.
+        mirrorStatus(objectName, records, run, fieldStamps);
         writeStamps(objectName, fieldStamps, warnings);
         if (isLead && !convRules.isEmpty()) {
+            run.stages.add(DE_ClassifierLogs.CONVERSION);
             try {
                 DE_LeadConversion.run(records, details, convRules);
+                run.conversions = DE_LeadConversion.lastResults;
                 DE_RecordDetails.save(details.values());
             } catch (Exception e) {
-                status = 'Warning';
-                warnings.add('Conversion: ' + e.getMessage());
+                stageFailed(run, DE_ClassifierLogs.CONVERSION, e, warnings);
             }
         }
-        if (!warnings.isEmpty() || status != 'Success') {
-            DE_RunLogger.log('Classifier', status == 'Success' ? 'Warning' : status, records.size(), 0, warnings.size(), String.join(warnings, '\n'));
+        run.details = details;
+        DE_ClassifierLogs.write(run);
+        if (!warnings.isEmpty()) {
+            DE_RunLogger.log('Classifier', run.errors.isEmpty() ? 'Warning' : 'Error', records.size(), 0, run.errors.size(), String.join(warnings, '\n'));
         }
         return records.size();
+    }
+
+    private static void stageFailed(DE_ClassifierLogs.Run run, String stage, Exception e, List<String> warnings) {
+        run.errors.put(stage, e.getMessage());
+        warnings.add(stage + ': ' + e.getMessage());
+    }
+
+    /** Adds Done or Error (match, territory and stamp stages) for the record's DE_Classifier_Status__c field, when the object has it. */
+    private static void mirrorStatus(String objectName, List<SObject> records, DE_ClassifierLogs.Run run, Map<Id, Map<String, Object>> fieldStamps) {
+        if (!DE_Schema.hasField(objectName, 'DE_Classifier_Status__c')) {
+            return;
+        }
+        for (SObject r : records) {
+            if (!fieldStamps.containsKey(r.Id)) {
+                fieldStamps.put(r.Id, new Map<String, Object>());
+            }
+            fieldStamps.get(r.Id).put('DE_Classifier_Status__c', run.errors.isEmpty() ? 'Done' : 'Error');
+        }
+    }
+
+    /** Shows "Waiting" on the record while the classifier job runs. */
+    private static void markWaiting(String objectName, Set<Id> recordIds) {
+        if (!DE_Schema.hasField(objectName, 'DE_Classifier_Status__c')) {
+            return;
+        }
+        Map<Id, Map<String, Object>> status = new Map<Id, Map<String, Object>>();
+        for (Id i : recordIds) {
+            status.put(i, new Map<String, Object>{ 'DE_Classifier_Status__c' => 'Waiting' });
+        }
+        writeStamps(objectName, status, new List<String>());
     }
 
     private static Boolean hasRelationshipPath(Set<String> detailPaths) {

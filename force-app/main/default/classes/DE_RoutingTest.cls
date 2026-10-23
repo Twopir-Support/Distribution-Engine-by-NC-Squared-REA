@@ -501,11 +501,13 @@ private class DE_RoutingTest {
     @IsTest
     static void teamHolidaySkipsTheTeam() {
         DE_TestFactory.Fixture f = DE_TestFactory.leadFixture(2, 'Round Robin');
-        f.team.Holiday_Region__c = 'UK';
+        DE_Holiday_Region__c uk = new DE_Holiday_Region__c(Name = 'UK');
+        insert uk;
+        f.team.Holiday_Region__c = uk.Id;
         update f.team;
         insert new DE_Holiday__c(
             Name = 'Bank Holiday',
-            Region__c = 'UK',
+            Holiday_Region__c = uk.Id,
             All_Day__c = true,
             Start__c = System.now(),
             End__c = System.now(),
@@ -525,9 +527,19 @@ private class DE_RoutingTest {
     @IsTest
     static void holidayInAnotherRegionDoesNotApply() {
         DE_TestFactory.Fixture f = DE_TestFactory.leadFixture(1, 'Round Robin');
-        f.team.Holiday_Region__c = 'UK';
+        DE_Holiday_Region__c uk = new DE_Holiday_Region__c(Name = 'UK');
+        DE_Holiday_Region__c us = new DE_Holiday_Region__c(Name = 'US');
+        insert new List<DE_Holiday_Region__c>{ uk, us };
+        f.team.Holiday_Region__c = uk.Id;
         update f.team;
-        insert new DE_Holiday__c(Name = 'Other', Region__c = 'US', All_Day__c = true, Start__c = System.now(), End__c = System.now(), Timezone__c = 'GMT');
+        insert new DE_Holiday__c(
+            Name = 'Other',
+            Holiday_Region__c = us.Id,
+            All_Day__c = true,
+            Start__c = System.now(),
+            End__c = System.now(),
+            Timezone__c = 'GMT'
+        );
         DE_TestFactory.insertLeads(1, f.queue.Id);
 
         Test.startTest();

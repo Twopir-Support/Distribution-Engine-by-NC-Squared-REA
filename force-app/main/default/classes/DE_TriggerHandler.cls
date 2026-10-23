@@ -17,13 +17,24 @@ public without sharing class DE_TriggerHandler {
         }
         try {
             switch on Trigger.operationType {
+                when BEFORE_INSERT {
+                    stampDomains(objectName, Trigger.new);
+                }
                 when BEFORE_UPDATE {
+                    stampDomains(objectName, Trigger.new);
                     DE_ArchiveService.restoreOnEdit(objectName, Trigger.new, Trigger.oldMap);
                     DE_ActionTracking.beforeUpdate(objectName, Trigger.new, Trigger.oldMap);
                     DE_TriggerDistribution.beforeUpdate(objectName, Trigger.new, Trigger.oldMap);
                 }
                 when AFTER_INSERT {
+                    indexDomains(objectName, Trigger.new, null);
                     DE_ClassifierService.onInsert(objectName, Trigger.newMap.keySet());
+                }
+                when AFTER_UPDATE {
+                    indexDomains(objectName, Trigger.new, Trigger.oldMap);
+                }
+                when AFTER_DELETE {
+                    indexDomains(objectName, null, Trigger.oldMap);
                 }
                 when else {
                     return;
@@ -44,5 +55,29 @@ public without sharing class DE_TriggerHandler {
         if (activityObject == 'Event') {
             DE_CalendarSync.createOutOfOffice(Trigger.new);
         }
+    }
+
+    /** Contact email domains used by lead matching. */
+    private static void stampDomains(String objectName, List<SObject> rows) {
+        if (objectName == 'Contact') {
+            DE_AccountDomainService.stampContactDomains(rows);
+        }
+    }
+
+    /** Keeps the lead-matching domain index current for accounts and contacts. */
+    private static void indexDomains(String objectName, List<SObject> newRows, Map<Id, SObject> oldMap) {
+        if (objectName == 'Account') {
+            DE_AccountDomainService.onAccountsChanged(newRows, oldMap);
+        } else if (objectName == 'Contact') {
+            DE_AccountDomainService.onContactsChanged(newRows, oldMap);
+        }
+    }
+
+    /** Config object triggers (teams, members, distributors, availability): change history. */
+    public static void handleHistory(String objectName) {
+        if (!Trigger.isExecuting || DE_HistoryService.disabled) {
+            return;
+        }
+        DE_HistoryService.record(objectName, Trigger.operationType, Trigger.new, Trigger.oldMap);
     }
 }

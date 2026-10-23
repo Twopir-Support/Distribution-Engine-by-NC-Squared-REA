@@ -10,6 +10,16 @@ public without sharing class DE_TerritoryClassifier {
         public String postal;
     }
 
+    /** Outcome of classifying one record, used for the territory classification log. */
+    public class Result {
+        public Location location;
+        public DE_Territory__c territory;
+        public String matchLevel = 'None';
+    }
+
+    /** Results of the last classify() call in this transaction, by record Id. */
+    public static Map<Id, Result> lastResults = new Map<Id, Result>();
+
     public static final Map<String, List<String>> LOCATION_FIELDS = new Map<String, List<String>>{
         'lead' => new List<String>{ 'Country', 'State', 'PostalCode', 'Phone', 'Email', 'Website' },
         'account' => new List<String>{ 'BillingCountry', 'BillingState', 'BillingPostalCode', 'Phone', null, 'Website' },
@@ -33,6 +43,17 @@ public without sharing class DE_TerritoryClassifier {
     };
 
     public static List<DE_Territory__c> territories(String objectName) {
+        String cacheKey = DE_Cache.classifierKey('territories', objectName);
+        String cached = DE_Cache.get(cacheKey);
+        if (cached != null) {
+            return (List<DE_Territory__c>) JSON.deserialize(cached, List<DE_Territory__c>.class);
+        }
+        List<DE_Territory__c> rows = queryTerritories(objectName);
+        DE_Cache.put(cacheKey, JSON.serialize(rows));
+        return rows;
+    }
+
+    private static List<DE_Territory__c> queryTerritories(String objectName) {
         return [
             SELECT
                 Id,
@@ -46,6 +67,7 @@ public without sharing class DE_TerritoryClassifier {
                 States__c,
                 Postal_Codes__c,
                 Stamp_Field__c,
+                Color__c,
                 (SELECT Id, Sequence__c, Field_API_Name__c, Operator__c, Value__c, Purpose__c FROM Conditions__r ORDER BY Sequence__c)
             FROM DE_Territory__c
             WHERE Object_API_Name__c = :objectName AND Status__c = 'Active'
@@ -152,6 +174,7 @@ public without sharing class DE_TerritoryClassifier {
         List<DE_Territory__c> territories
     ) {
         Map<Id, Map<String, Object>> stamps = new Map<Id, Map<String, Object>>();
+        lastResults = new Map<Id, Result>();
         DE_Conditions.Context ctx = new DE_Conditions.Context();
         ctx.details = details;
         Boolean defaultField = DE_Schema.hasField(objectName, 'DE_Territory__c');
@@ -165,6 +188,11 @@ public without sharing class DE_TerritoryClassifier {
                     break;
                 }
             }
+            Result res = new Result();
+            res.location = l;
+            res.territory = found;
+            res.matchLevel = matchLevel(found);
+            lastResults.put(rec.Id, res);
             d.Territory__c = found == null ? null : found.Id;
             d.Territory_Name__c = found == null ? null : found.Name.left(80);
             String field = found != null && String.isNotBlank(found.Stamp_Field__c) ? found.Stamp_Field__c : (defaultField ? 'DE_Territory__c' : null);
@@ -176,5 +204,22 @@ public without sharing class DE_TerritoryClassifier {
             }
         }
         return stamps;
+    }
+
+    /** The most specific address level the territory matched on (Conditions when it has no address lists). */
+    public static String matchLevel(DE_Territory__c t) {
+        if (t == null) {
+            return 'None';
+        }
+        if (!DE_Conditions.splitValues(t.Postal_Codes__c).isEmpty()) {
+            return 'Postal Code';
+        }
+        if (!DE_Conditions.splitValues(t.States__c).isEmpty()) {
+            return 'State';
+        }
+        if (!DE_Conditions.splitValues(t.Countries__c).isEmpty()) {
+            return 'Country';
+        }
+        return 'Conditions';
     }
 }

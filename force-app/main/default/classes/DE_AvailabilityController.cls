@@ -54,7 +54,7 @@ public with sharing class DE_AvailabilityController {
         Datetime fromAt = fromDate == null ? System.now().addDays(-7) : Datetime.newInstance(fromDate, Time.newInstance(0, 0, 0, 0));
         Datetime toAt = toDate == null ? System.now().addDays(90) : Datetime.newInstance(toDate.addDays(1), Time.newInstance(0, 0, 0, 0));
         Id only = DE_Permissions.isTeamManager() ? userId : UserInfo.getUserId();
-        String soql = 'SELECT Id, Name, User__c, User__r.Name, Queue_Id__c, Start__c, End__c, All_Day__c, Reason__c, Source__c FROM DE_Out_Of_Office__c WHERE End__c >= :fromAt AND Start__c <= :toAt';
+        String soql = 'SELECT Id, Name, User__c, User__r.Name, Queue_Id__c, Start__c, End__c, All_Day__c, Reason__c, Source__c, Timezone__c, Activity_Id__c FROM DE_Out_Of_Office__c WHERE End__c >= :fromAt AND Start__c <= :toAt';
         if (only != null) {
             soql += ' AND User__c = :only';
         }
@@ -77,8 +77,13 @@ public with sharing class DE_AvailabilityController {
             errors.add('Reason is limited to 80 characters.');
         }
         DE_Ui.throwIfErrors(errors);
+        if (String.isBlank(ooo.Timezone__c)) {
+            List<User> owner = ooo.User__c == null ? new List<User>() : [SELECT TimeZoneSidKey FROM User WHERE Id = :ooo.User__c];
+            ooo.Timezone__c = owner.isEmpty() ? UserInfo.getTimeZone().getID() : owner[0].TimeZoneSidKey;
+        }
         if (ooo.All_Day__c == true) {
-            DE_ShiftCalendar cal = DE_ShiftCalendar.always(UserInfo.getTimeZone().getID());
+            // All-day entries cover whole days in the entry's timezone (the user's own timezone by default).
+            DE_ShiftCalendar cal = DE_ShiftCalendar.always(ooo.Timezone__c);
             ooo.Start__c = Datetime.newInstance(cal.utcMs(cal.localDate(ooo.Start__c), 0));
             ooo.End__c = Datetime.newInstance(cal.utcMs(cal.localDate(ooo.End__c).addDays(1), 0));
         }
@@ -109,14 +114,20 @@ public with sharing class DE_AvailabilityController {
     @AuraEnabled
     public static List<DE_Holiday__c> getHolidays() {
         DE_Permissions.require(DE_Permissions.isTeamManager(), 'view holidays');
-        return [SELECT Id, Name, Region__c, All_Day__c, Start__c, End__c, Timezone__c FROM DE_Holiday__c WITH USER_MODE ORDER BY Start__c DESC LIMIT 1000];
+        return [
+            SELECT Id, Name, Holiday_Region__c, Holiday_Region__r.Name, All_Day__c, Start__c, End__c, Timezone__c
+            FROM DE_Holiday__c
+            WITH USER_MODE
+            ORDER BY Start__c DESC
+            LIMIT 1000
+        ];
     }
 
     @AuraEnabled
     public static Id saveHoliday(DE_Holiday__c holiday) {
         DE_Permissions.require(DE_Permissions.isSystemManager(), 'edit holidays');
         List<String> errors = new List<String>();
-        if (String.isBlank(holiday.Name) || String.isBlank(holiday.Region__c)) {
+        if (String.isBlank(holiday.Name) || holiday.Holiday_Region__c == null) {
             errors.add('Enter a holiday name and region.');
         }
         if (holiday.Start__c == null || holiday.End__c == null || holiday.End__c < holiday.Start__c) {
@@ -141,21 +152,80 @@ public with sharing class DE_AvailabilityController {
         }
     }
 
-    /** Region -> teams using it. */
+    public class RegionRow {
+        @AuraEnabled
+        public Id id;
+        @AuraEnabled
+        public String name;
+        @AuraEnabled
+        public String description;
+        @AuraEnabled
+        public List<String> teams = new List<String>();
+        @AuraEnabled
+        public Integer holidays = 0;
+    }
+
+    /** Holiday regions with the teams that use them and their number of holidays. */
     @AuraEnabled
-    public static Map<String, List<String>> getRegions() {
-        DE_Permissions.require(DE_Permissions.isTeamManager(), 'view regions');
-        Map<String, List<String>> out = new Map<String, List<String>>();
-        for (DE_Holiday__c h : [SELECT Region__c FROM DE_Holiday__c WITH USER_MODE]) {
-            out.put(h.Region__c, new List<String>());
+    public static List<RegionRow> getHolidayRegions() {
+        DE_Permissions.require(DE_Permissions.isTeamManager(), 'view holiday regions');
+        Map<Id, RegionRow> rows = new Map<Id, RegionRow>();
+        for (DE_Holiday_Region__c r : [SELECT Id, Name, Description__c FROM DE_Holiday_Region__c WITH USER_MODE ORDER BY Name LIMIT 1000]) {
+            RegionRow row = new RegionRow();
+            row.id = r.Id;
+            row.name = r.Name;
+            row.description = r.Description__c;
+            rows.put(r.Id, row);
         }
-        for (DE_Team__c t : [SELECT Name, Holiday_Region__c FROM DE_Team__c WHERE Holiday_Region__c != NULL WITH USER_MODE]) {
-            if (!out.containsKey(t.Holiday_Region__c)) {
-                out.put(t.Holiday_Region__c, new List<String>());
-            }
-            out.get(t.Holiday_Region__c).add(t.Name);
+        for (DE_Team__c t : [SELECT Name, Holiday_Region__c FROM DE_Team__c WHERE Holiday_Region__c IN :rows.keySet() WITH USER_MODE ORDER BY Name]) {
+            rows.get(t.Holiday_Region__c).teams.add(t.Name);
         }
-        return out;
+        for (AggregateResult ar : [
+            SELECT Holiday_Region__c r, COUNT(Id) c
+            FROM DE_Holiday__c
+            WHERE Holiday_Region__c IN :rows.keySet()
+            WITH USER_MODE
+            GROUP BY Holiday_Region__c
+        ]) {
+            rows.get((Id) ar.get('r')).holidays = Integer.valueOf(ar.get('c'));
+        }
+        return rows.values();
+    }
+
+    @AuraEnabled
+    public static Id saveHolidayRegion(DE_Holiday_Region__c region) {
+        DE_Permissions.require(DE_Permissions.isSystemManager(), 'edit holiday regions');
+        if (region == null || String.isBlank(region.Name)) {
+            throw DE_Ui.error('Enter a region name.');
+        }
+        String name = region.Name.trim();
+        Id selfId = region.Id;
+        if ([SELECT COUNT() FROM DE_Holiday_Region__c WHERE Name = :name AND Id != :selfId WITH USER_MODE] > 0) {
+            throw DE_Ui.error('A holiday region named ' + name + ' already exists.');
+        }
+        region.Name = name;
+        try {
+            Database.upsert(region, true, AccessLevel.USER_MODE);
+            return region.Id;
+        } catch (Exception e) {
+            throw DE_Ui.error(e);
+        }
+    }
+
+    /** Regions can only be deleted when no team or holiday uses them. */
+    @AuraEnabled
+    public static void deleteHolidayRegion(Id regionId) {
+        DE_Permissions.require(DE_Permissions.isSystemManager(), 'delete holiday regions');
+        Integer teams = [SELECT COUNT() FROM DE_Team__c WHERE Holiday_Region__c = :regionId];
+        Integer holidays = [SELECT COUNT() FROM DE_Holiday__c WHERE Holiday_Region__c = :regionId];
+        if (teams > 0 || holidays > 0) {
+            throw DE_Ui.error('This region is used by ' + teams + ' team(s) and ' + holidays + ' holiday(s). Move them to another region before deleting it.');
+        }
+        try {
+            Database.delete(new DE_Holiday_Region__c(Id = regionId), true, AccessLevel.USER_MODE);
+        } catch (Exception e) {
+            throw DE_Ui.error(e);
+        }
     }
 
     // ------------------------------------------------------------------ shifts
@@ -182,9 +252,11 @@ public with sharing class DE_AvailabilityController {
     public static void deleteShift(Id shiftId) {
         DE_Permissions.require(DE_Permissions.isSystemManager(), 'delete shifts');
         Integer used =
-            [SELECT COUNT() FROM DE_Team__c WHERE Team_Hours__c = :shiftId] + [SELECT COUNT() FROM DE_Team_Member__c WHERE Member_Hours__c = :shiftId];
+            [SELECT COUNT() FROM DE_Team__c WHERE Team_Hours__c = :shiftId] +
+            [SELECT COUNT() FROM DE_Team_Member__c WHERE Member_Hours__c = :shiftId] +
+            [SELECT COUNT() FROM DE_Shift_Plan_Block__c WHERE Shift__c = :shiftId];
         if (used > 0) {
-            throw DE_Ui.error('This shift is used by ' + used + ' teams or members. Assign other hours first.');
+            throw DE_Ui.error('This shift is used by ' + used + ' teams, members or shift planner changes. Assign other hours first.');
         }
         try {
             Database.delete(new DE_Shift__c(Id = shiftId), true, AccessLevel.USER_MODE);
@@ -283,12 +355,12 @@ public with sharing class DE_AvailabilityController {
             WHERE User__c IN :userIds AND Start__c <= :toAt AND End__c >= :fromAt
             WITH USER_MODE
         ];
-        List<DE_Holiday__c> holidays = String.isBlank(cfg.team.Holiday_Region__c)
+        List<DE_Holiday__c> holidays = cfg.team.Holiday_Region__c == null
             ? new List<DE_Holiday__c>()
             : [
-                  SELECT Name, All_Day__c, Start__c, End__c, Timezone__c, Region__c
+                  SELECT Name, All_Day__c, Start__c, End__c, Timezone__c, Holiday_Region__c
                   FROM DE_Holiday__c
-                  WHERE Region__c = :cfg.team.Holiday_Region__c AND Start__c <= :toAt AND End__c >= :fromAt
+                  WHERE Holiday_Region__c = :cfg.team.Holiday_Region__c AND Start__c <= :toAt AND End__c >= :fromAt
                   WITH USER_MODE
               ];
         DE_ShiftCalendar tzCal = DE_ShiftCalendar.always(cfg.timezoneSid());

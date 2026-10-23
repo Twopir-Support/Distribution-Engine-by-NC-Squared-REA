@@ -1,0 +1,28 @@
+<template>
+    <div>
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-end slds-m-bottom_small">
+            <div>
+                <h3 class="slds-text-heading_small">{title}</h3>
+                <p class="slds-text-body_small slds-text-color_weak">The last 100 changes within the change history retention period.</p>
+            </div>
+            <div class="slds-grid slds-grid_vertical-align-end">
+                <template lwc:if={showObjectFilter}>
+                    <lightning-combobox label="Object" options={objectOptions} value={objectName} onchange={handleObject}></lightning-combobox>
+                </template>
+                <lightning-button-icon class="slds-m-left_x-small" icon-name="utility:refresh" alternative-text="Refresh" onclick={load}></lightning-button-icon>
+            </div>
+        </div>
+        <template lwc:if={error}>
+            <p class="slds-text-color_error">{error}</p>
+        </template>
+        <template lwc:if={loading}>
+            <lightning-spinner size="small" alternative-text="Loading"></lightning-spinner>
+        </template>
+        <template lwc:if={hasRows}>
+            <lightning-datatable key-field="Id" data={rows} columns={columns} hide-checkbox-column></lightning-datatable>
+        </template>
+        <template lwc:else>
+            <p class="slds-text-body_small slds-text-color_weak">No changes recorded.</p>
+        </template>
+    </div>
+</template>

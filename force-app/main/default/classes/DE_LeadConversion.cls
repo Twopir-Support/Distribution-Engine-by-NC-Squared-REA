@@ -4,9 +4,25 @@
  *  - Auto Convert: converts into the matched account/contact (or new ones), optional opportunity.
  *  - De-Duplicate (Lead Only Match): merges the new lead into the existing lead. Not reversible.
  *  - Do Not Convert: stops rule evaluation.
+ * Rules can set record types on the records conversion creates, copy the lead source onto the contact and
+ * opportunity, email the new owner, and distribute the surviving lead again after a merge.
  */
 public without sharing class DE_LeadConversion {
+    /** Conversion log rows of the last run() call in this transaction, by lead Id. */
+    public static Map<Id, DE_Conversion_Log__c> lastResults = new Map<Id, DE_Conversion_Log__c>();
+
     public static List<DE_Conversion_Rule__c> rules() {
+        String cacheKey = DE_Cache.classifierKey('conversionrules', null);
+        String cached = DE_Cache.get(cacheKey);
+        if (cached != null) {
+            return (List<DE_Conversion_Rule__c>) JSON.deserialize(cached, List<DE_Conversion_Rule__c>.class);
+        }
+        List<DE_Conversion_Rule__c> rows = queryRules();
+        DE_Cache.put(cacheKey, JSON.serialize(rows));
+        return rows;
+    }
+
+    private static List<DE_Conversion_Rule__c> queryRules() {
         return [
             SELECT
                 Id,
@@ -25,6 +41,12 @@ public without sharing class DE_LeadConversion {
                 Opportunity_Field_Update__c,
                 Copy_Blank_Fields__c,
                 Survivor_Field_Update__c,
+                Account_Record_Type__c,
+                Contact_Record_Type__c,
+                Opportunity_Record_Type__c,
+                Distribute_After__c,
+                Overwrite_Lead_Source__c,
+                Send_Email__c,
                 (SELECT Id, Sequence__c, Field_API_Name__c, Operator__c, Value__c, Purpose__c FROM Conditions__r ORDER BY Sequence__c)
             FROM DE_Conversion_Rule__c
             WHERE Active__c = TRUE
@@ -33,7 +55,7 @@ public without sharing class DE_LeadConversion {
     }
 
     public static Set<String> requiredPaths(List<DE_Conversion_Rule__c> rules) {
-        Set<String> out = new Set<String>{ 'OwnerId', 'IsConverted' };
+        Set<String> out = new Set<String>{ 'OwnerId', 'IsConverted', 'LeadSource' };
         for (DE_Conversion_Rule__c r : rules) {
             out.addAll(DE_Conditions.recordPaths(r.Conditions__r));
         }
@@ -67,6 +89,7 @@ public without sharing class DE_LeadConversion {
         if (rules.isEmpty()) {
             return;
         }
+        lastResults = new Map<Id, DE_Conversion_Log__c>();
         DE_Conditions.Context ctx = new DE_Conditions.Context();
         ctx.details = details;
         Map<SObject, DE_Conversion_Rule__c> toConvert = new Map<SObject, DE_Conversion_Rule__c>();
@@ -86,6 +109,7 @@ public without sharing class DE_LeadConversion {
                     toDedupe.put(l, r);
                 } else {
                     d.Conversion_Result__c = ('Not converted (rule ' + r.Name + ')').left(255);
+                    lastResults.put(l.Id, new DE_Conversion_Log__c(Result__c = 'Not Converted', Conversion_Rule__c = r.Id));
                 }
                 break;
             }
@@ -160,32 +184,120 @@ public without sharing class DE_LeadConversion {
         }
         List<Database.LeadConvertResult> results = Database.convertLead(converts, false);
         List<SObject> postUpdates = new List<SObject>();
+        List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
         for (Integer i = 0; i < results.size(); i++) {
             DE_Record_Detail__c d = details.get(order[i].Id);
             DE_Conversion_Rule__c r = toConvert.get(order[i]);
             if (!results[i].isSuccess()) {
-                d.Conversion_Result__c = ('Failed: ' + results[i].getErrors()[0].getMessage()).left(255);
+                String error = results[i].getErrors()[0].getMessage();
+                d.Conversion_Result__c = ('Failed: ' + error).left(255);
+                lastResults.put(
+                    order[i].Id,
+                    new DE_Conversion_Log__c(Result__c = 'Not Converted', Conversion_Rule__c = r.Id, Error_Message__c = error.left(255))
+                );
                 continue;
             }
             d.Conversion_Result__c = ('Converted (rule ' + r.Name + ')').left(255);
-            addUpdate(postUpdates, 'Account', results[i].getAccountId(), r.Account_Field_Update__c);
-            addUpdate(postUpdates, 'Contact', results[i].getContactId(), r.Contact_Field_Update__c);
-            addUpdate(postUpdates, 'Opportunity', results[i].getOpportunityId(), r.Opportunity_Field_Update__c);
+            Database.LeadConvertResult res = results[i];
+            Id owner = converts[i].getOwnerId() != null ? converts[i].getOwnerId() : (Id) order[i].get('OwnerId');
+            lastResults.put(
+                order[i].Id,
+                new DE_Conversion_Log__c(
+                    Result__c = 'Converted',
+                    Conversion_Rule__c = r.Id,
+                    Account_Id__c = res.getAccountId(),
+                    Contact_Id__c = res.getContactId(),
+                    Opportunity_Id__c = res.getOpportunityId(),
+                    Owner_Id__c = owner
+                )
+            );
+            Boolean newAccount = d.Matched_Account__c == null && d.Matched_Contact__c == null;
+            Boolean newContact = d.Matched_Contact__c == null;
+            String leadSource = r.Overwrite_Lead_Source__c == true ? (String) order[i].get('LeadSource') : null;
+            postUpdates.add(post('Account', res.getAccountId(), r.Account_Field_Update__c, newAccount ? r.Account_Record_Type__c : null, null));
+            postUpdates.add(post('Contact', res.getContactId(), r.Contact_Field_Update__c, newContact ? r.Contact_Record_Type__c : null, leadSource));
+            postUpdates.add(post('Opportunity', res.getOpportunityId(), r.Opportunity_Field_Update__c, r.Opportunity_Record_Type__c, leadSource));
+            if (r.Send_Email__c == true && owner != null && owner.getSobjectType() == User.SObjectType) {
+                emails.add(conversionEmail(owner, order[i], res));
+            }
         }
-        if (!postUpdates.isEmpty()) {
-            postUpdates.sort();
-            Database.update(postUpdates, false, AccessLevel.SYSTEM_MODE);
+        List<SObject> nonEmpty = new List<SObject>();
+        for (SObject s : postUpdates) {
+            if (s != null) {
+                nonEmpty.add(s);
+            }
+        }
+        if (!nonEmpty.isEmpty()) {
+            nonEmpty.sort();
+            Database.update(nonEmpty, false, AccessLevel.SYSTEM_MODE);
+        }
+        sendEmails(emails);
+    }
+
+    /** Post-conversion update for a record: field updates, record type for records the conversion created, lead source. */
+    private static SObject post(String objectName, Id recordId, String spec, String recordType, String leadSource) {
+        if (recordId == null) {
+            return null;
+        }
+        SObject s = DE_Schema.sobjectType(objectName).newSObject(recordId);
+        Boolean changed = false;
+        if (String.isNotBlank(spec)) {
+            DE_FieldUpdates.apply(s, objectName, spec, null);
+            changed = true;
+        }
+        Id rt = recordTypeId(objectName, recordType);
+        if (rt != null) {
+            s.put('RecordTypeId', rt);
+            changed = true;
+        }
+        if (String.isNotBlank(leadSource) && DE_Schema.hasField(objectName, 'LeadSource')) {
+            s.put('LeadSource', leadSource);
+            changed = true;
+        }
+        return changed ? s : null;
+    }
+
+    /** Record type Id by developer name or label, or null when the object has no such active record type. */
+    public static Id recordTypeId(String objectName, String recordType) {
+        if (String.isBlank(recordType)) {
+            return null;
+        }
+        Schema.DescribeSObjectResult d = DE_Schema.describe(objectName);
+        Schema.RecordTypeInfo info = d.getRecordTypeInfosByDeveloperName().get(recordType.trim());
+        if (info == null) {
+            info = d.getRecordTypeInfosByName().get(recordType.trim());
+        }
+        return info == null || !info.isActive() || info.isMaster() ? null : info.getRecordTypeId();
+    }
+
+    private static Messaging.SingleEmailMessage conversionEmail(Id owner, SObject lead, Database.LeadConvertResult res) {
+        String base = Url.getOrgDomainUrl().toExternalForm() + '/';
+        List<String> lines = new List<String>{ 'A lead was converted by Distribution Engine and the records are assigned to you.' };
+        lines.add('Account: ' + base + res.getAccountId());
+        lines.add('Contact: ' + base + res.getContactId());
+        if (res.getOpportunityId() != null) {
+            lines.add('Opportunity: ' + base + res.getOpportunityId());
+        }
+        Messaging.SingleEmailMessage m = new Messaging.SingleEmailMessage();
+        m.setTargetObjectId(owner);
+        m.setSaveAsActivity(false);
+        m.setSubject('Lead converted by Distribution Engine (' + lead.Id + ')');
+        m.setPlainTextBody(String.join(lines, '\n'));
+        return m;
+    }
+
+    private static void sendEmails(List<Messaging.SingleEmailMessage> emails) {
+        if (emails.isEmpty() || Limits.getEmailInvocations() >= Limits.getLimitEmailInvocations()) {
+            return;
+        }
+        try {
+            Messaging.sendEmail(emails, false);
+        } catch (Exception e) {
+            // Email deliverability off or daily limit reached: conversion itself has succeeded.
+            System.debug(LoggingLevel.WARN, 'Conversion emails not sent: ' + e.getMessage());
         }
     }
 
-    private static void addUpdate(List<SObject> updates, String objectName, Id recordId, String spec) {
-        if (recordId == null || String.isBlank(spec)) {
-            return;
-        }
-        SObject s = DE_Schema.sobjectType(objectName).newSObject(recordId);
-        DE_FieldUpdates.apply(s, objectName, spec, null);
-        updates.add(s);
-    }
 
     private static void dedupe(Map<SObject, DE_Conversion_Rule__c> toDedupe, Map<Id, DE_Record_Detail__c> details) {
         if (toDedupe.isEmpty()) {
@@ -210,6 +322,7 @@ public without sharing class DE_LeadConversion {
                 AccessLevel.SYSTEM_MODE
             )
         );
+        Set<Id> redistribute = new Set<Id>();
         for (SObject l : toDedupe.keySet()) {
             DE_Conversion_Rule__c r = toDedupe.get(l);
             DE_Record_Detail__c d = details.get(l.Id);
@@ -218,6 +331,12 @@ public without sharing class DE_LeadConversion {
             if (survivor == null || incoming == null) {
                 continue;
             }
+            DE_Conversion_Log__c log = new DE_Conversion_Log__c(
+                Result__c = 'De-duplicated',
+                Conversion_Rule__c = r.Id,
+                Matched_Lead_Id__c = survivor.Id,
+                Owner_Id__c = (Id) survivor.get('OwnerId')
+            );
             Lead master = new Lead(Id = survivor.Id);
             if (r.Copy_Blank_Fields__c != false) {
                 for (String f : fields) {
@@ -236,10 +355,23 @@ public without sharing class DE_LeadConversion {
                 d.Conversion_Result__c = mr.isSuccess()
                     ? ('De-duplicated into ' + survivor.Id + ' (rule ' + r.Name + ')').left(255)
                     : ('Failed: ' + mr.getErrors()[0].getMessage()).left(255);
+                if (!mr.isSuccess()) {
+                    log.Result__c = 'Not Converted';
+                    log.Error_Message__c = mr.getErrors()[0].getMessage().left(255);
+                } else if (r.Distribute_After__c == true) {
+                    redistribute.add(survivor.Id);
+                }
             } catch (Exception e) {
                 Database.rollback(sp);
                 d.Conversion_Result__c = ('Failed: ' + e.getMessage()).left(255);
+                log.Result__c = 'Not Converted';
+                log.Error_Message__c = e.getMessage().left(255);
             }
+            lastResults.put(l.Id, log);
+        }
+        if (!redistribute.isEmpty() && DE_Settings.engineEnabled()) {
+            // The surviving lead goes through the Standard distributors again (it is only picked up while it sits at a source).
+            DE_DistributionRunner.runStandard(redistribute, null);
         }
     }
 }

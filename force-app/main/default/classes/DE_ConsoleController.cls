@@ -490,6 +490,193 @@ public with sharing class DE_ConsoleController {
         ];
     }
 
+    // ------------------------------------------------------------------ classifier and object sync logs
+
+    public class ClassifierLogFilter {
+        @AuraEnabled
+        public String logType { get; set; }
+        @AuraEnabled
+        public Date fromDate { get; set; }
+        @AuraEnabled
+        public Date toDate { get; set; }
+        @AuraEnabled
+        public String objectName { get; set; }
+        @AuraEnabled
+        public Boolean errorsOnly { get; set; }
+        @AuraEnabled
+        public String search { get; set; }
+    }
+
+    public static final String OBJECT_SYNC_LOG = 'Object Sync';
+
+    private static final Map<String, String> CLASSIFIER_LOG_FIELDS = new Map<String, String>{
+        DE_ClassifierLogs.TERRITORY => 'Territory__c, Territory__r.Name, Territory__r.Map__c, Match_Level__c, Clean_Country__c, Clean_State__c, Clean_Postal_Code__c',
+        DE_ClassifierLogs.MATCH => 'Matched_Account__c, Matched_Account__r.Name, Matched_Account__r.Type, Matched_Contact__c, Matched_Contact__r.Name, ' +
+        'Matched_Lead__c, Matched_Lead__r.Name, Account_Rule__r.Name, Account_Confidence__c, Lead_Rule__r.Name, Lead_Confidence__c',
+        DE_ClassifierLogs.CONVERSION => 'Result__c, Conversion_Rule__r.Name, Account_Id__c, Contact_Id__c, Opportunity_Id__c, Owner_Id__c, Matched_Lead_Id__c',
+        DE_ClassifierLogs.STAMPS => 'Stamps__c',
+        OBJECT_SYNC_LOG => 'Team__c, Team__r.Name, Assignee_Id__c, Status__c, Actions_Performed__c, Synced_Records__c, Errors__c'
+    };
+
+    /** Territory, Lead Matching, Auto Conversion, Custom Classification and Object Sync logs (top 500), flattened for the UI. */
+    @AuraEnabled
+    public static List<Map<String, Object>> getClassifierLogs(ClassifierLogFilter filter) {
+        requireView();
+        ClassifierLogFilter f = filter == null ? new ClassifierLogFilter() : filter;
+        String type = String.isBlank(f.logType) ? DE_ClassifierLogs.TERRITORY : f.logType;
+        if (!CLASSIFIER_LOG_FIELDS.containsKey(type)) {
+            throw DE_Ui.error('Unknown log type ' + type + '.');
+        }
+        Boolean sync = type == OBJECT_SYNC_LOG;
+        String logObject = sync ? 'DE_Object_Sync_Log__c' : DE_ClassifierLogs.LOG_OBJECT.get(type);
+        Datetime fromAt = Datetime.newInstance(f.fromDate == null ? Date.today().addDays(-7) : f.fromDate, Time.newInstance(0, 0, 0, 0));
+        Datetime toAt = Datetime.newInstance((f.toDate == null ? Date.today() : f.toDate).addDays(1), Time.newInstance(0, 0, 0, 0));
+        Map<String, Object> binds = new Map<String, Object>{ 'fromAt' => fromAt, 'toAt' => toAt };
+        String soql =
+            'SELECT Id, Name, Record_Id__c, Record_Name__c, Object_API_Name__c, Error_Message__c, Processed_At__c, ' +
+            (sync ? '' : 'In_Error__c, Attempts__c, ') +
+            CLASSIFIER_LOG_FIELDS.get(type) +
+            ' FROM ' +
+            logObject +
+            ' WHERE Processed_At__c >= :fromAt AND Processed_At__c < :toAt';
+        if (f.errorsOnly == true) {
+            soql += sync ? ' AND Status__c = \'Error\'' : ' AND In_Error__c = TRUE';
+        }
+        if (String.isNotBlank(f.objectName)) {
+            soql += ' AND Object_API_Name__c = :obj';
+            binds.put('obj', f.objectName.trim());
+        }
+        if (String.isNotBlank(f.search)) {
+            soql += ' AND (Record_Name__c LIKE :search OR Record_Id__c = :exact)';
+            binds.put('search', '%' + f.search.trim() + '%');
+            binds.put('exact', f.search.trim());
+        }
+        soql += ' ORDER BY Processed_At__c DESC LIMIT 500';
+        List<SObject> rows = Database.queryWithBinds(soql, binds, AccessLevel.USER_MODE);
+        Map<Id, String> userNames = userNames(rows, new List<String>{ 'Owner_Id__c', 'Assignee_Id__c' });
+        List<Map<String, Object>> out = new List<Map<String, Object>>();
+        for (SObject r : rows) {
+            out.add(flattenLog(type, r, userNames));
+        }
+        return out;
+    }
+
+    private static Map<Id, String> userNames(List<SObject> rows, List<String> fields) {
+        Set<Id> ids = new Set<Id>();
+        for (SObject r : rows) {
+            for (String f : fields) {
+                if (r.getPopulatedFieldsAsMap().containsKey(f)) {
+                    Id i = DE_Ids.toId((String) r.get(f));
+                    if (i != null && i.getSobjectType() == User.SObjectType) {
+                        ids.add(i);
+                    }
+                }
+            }
+        }
+        Map<Id, String> out = new Map<Id, String>();
+        for (User u : [SELECT Id, Name FROM User WHERE Id IN :ids WITH USER_MODE]) {
+            out.put(u.Id, u.Name);
+        }
+        return out;
+    }
+
+    private static Object related(SObject r, String relationship, String field) {
+        SObject parent = r.getSObject(relationship);
+        return parent == null ? null : parent.get(field);
+    }
+
+    private static Map<String, Object> flattenLog(String type, SObject r, Map<Id, String> userNames) {
+        Map<String, Object> m = new Map<String, Object>{
+            'Id' => r.Id,
+            'name' => r.get('Name'),
+            'recordId' => r.get('Record_Id__c'),
+            'recordName' => r.get('Record_Name__c'),
+            'objectName' => r.get('Object_API_Name__c'),
+            'processedAt' => r.get('Processed_At__c'),
+            'error' => r.get('Error_Message__c')
+        };
+        if (type == OBJECT_SYNC_LOG) {
+            m.put('status', r.get('Status__c'));
+            m.put('teamName', related(r, 'Team__r', 'Name'));
+            m.put('assignee', userNames.get(DE_Ids.toId((String) r.get('Assignee_Id__c'))));
+            m.put('actions', r.get('Actions_Performed__c'));
+            m.put('synced', r.get('Synced_Records__c'));
+            m.put('errors', r.get('Errors__c'));
+            Integer actions = r.get('Actions_Performed__c') == null ? 0 : ((String) r.get('Actions_Performed__c')).split('\n').size();
+            m.put('actionCount', actions);
+            return m;
+        }
+        m.put('status', r.get('In_Error__c') == true ? 'Error' : 'Success');
+        m.put('attempts', r.get('Attempts__c'));
+        if (type == DE_ClassifierLogs.TERRITORY) {
+            Object mapName = related(r, 'Territory__r', 'Map__c');
+            Object territory = related(r, 'Territory__r', 'Name');
+            m.put('territory', territory == null ? null : (mapName == null ? '' : mapName + '.') + territory);
+            m.put('matchLevel', r.get('Match_Level__c'));
+            m.put('cleaned', String.join(nonBlank(new List<Object>{ r.get('Clean_Country__c'), r.get('Clean_State__c'), r.get('Clean_Postal_Code__c') }), ', '));
+        } else if (type == DE_ClassifierLogs.MATCH) {
+            Object accountName = related(r, 'Matched_Account__r', 'Name');
+            Object accountType = related(r, 'Matched_Account__r', 'Type');
+            m.put('matchedAccount', accountName == null ? null : accountName + (accountType == null ? '' : ' (' + accountType + ')'));
+            m.put('matchedContact', related(r, 'Matched_Contact__r', 'Name'));
+            m.put('matchedLead', related(r, 'Matched_Lead__r', 'Name'));
+            m.put('accountRule', related(r, 'Account_Rule__r', 'Name'));
+            m.put('accountConfidence', r.get('Account_Confidence__c'));
+            m.put('leadRule', related(r, 'Lead_Rule__r', 'Name'));
+            m.put('leadConfidence', r.get('Lead_Confidence__c'));
+        } else if (type == DE_ClassifierLogs.CONVERSION) {
+            m.put('result', r.get('Result__c'));
+            m.put('rule', related(r, 'Conversion_Rule__r', 'Name'));
+            m.put('opportunityCreated', r.get('Opportunity_Id__c') != null);
+            m.put('assignee', userNames.get(DE_Ids.toId((String) r.get('Owner_Id__c'))));
+            m.put('targets', String.join(nonBlank(new List<Object>{ r.get('Account_Id__c'), r.get('Contact_Id__c'), r.get('Opportunity_Id__c'), r.get('Matched_Lead_Id__c') }), ', '));
+        } else {
+            String stamps = (String) r.get('Stamps__c');
+            m.put('stamps', stamps == null ? null : stamps.replace('\n', '; '));
+        }
+        return m;
+    }
+
+    private static List<String> nonBlank(List<Object> values) {
+        List<String> out = new List<String>();
+        for (Object v : values) {
+            if (v != null && String.isNotBlank(String.valueOf(v))) {
+                out.add(String.valueOf(v));
+            }
+        }
+        return out;
+    }
+
+    /** Re-runs one classification type for the selected records now. Returns records processed. */
+    @AuraEnabled
+    public static Integer retryClassification(List<String> recordIds, String logType) {
+        DE_Permissions.require(DE_Permissions.isTeamManager(), 'retry classification');
+        if (!DE_ClassifierLogs.LOG_OBJECT.containsKey(logType)) {
+            throw DE_Ui.error('Only classifier logs can be retried.');
+        }
+        try {
+            Map<String, Set<Id>> byObject = new Map<String, Set<Id>>();
+            for (String s : recordIds == null ? new List<String>() : recordIds) {
+                Id i = DE_Ids.toId(s);
+                if (i == null) {
+                    continue;
+                }
+                String obj = i.getSobjectType().getDescribe().getName();
+                if (!byObject.containsKey(obj)) {
+                    byObject.put(obj, new Set<Id>());
+                }
+                byObject.get(obj).add(i);
+            }
+            Integer n = 0;
+            for (String obj : byObject.keySet()) {
+                n += DE_ClassifierService.classify(obj, byObject.get(obj), new Set<String>{ logType });
+            }
+            return n;
+        } catch (Exception e) {
+            throw DE_Ui.error(e);
+        }
+    }
+
     // ------------------------------------------------------------------ analytics and performance
 
     @AuraEnabled
