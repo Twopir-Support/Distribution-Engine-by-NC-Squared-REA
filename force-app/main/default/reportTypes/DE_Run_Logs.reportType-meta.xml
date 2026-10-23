@@ -33,6 +33,16 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
+            <field>Heap_Used__c</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Job_Id__c</field>
+            <table>DE_Run_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
             <field>Message__c</field>
             <table>DE_Run_Log__c</table>
         </columns>

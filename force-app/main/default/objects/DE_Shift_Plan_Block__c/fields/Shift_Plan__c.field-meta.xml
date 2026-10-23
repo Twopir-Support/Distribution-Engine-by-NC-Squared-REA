@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Shift_Plan__c</fullName>
+    <label>Team Shift Planner</label>
+    <referenceTo>DE_Shift_Plan__c</referenceTo>
+    <relationshipLabel>Blocks</relationshipLabel>
+    <relationshipName>Blocks</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    <type>MasterDetail</type>
+</CustomField>

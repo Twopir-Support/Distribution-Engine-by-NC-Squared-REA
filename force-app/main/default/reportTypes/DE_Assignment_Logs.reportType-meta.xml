@@ -18,7 +18,17 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
+            <field>Account__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
             <field>Action_At__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Actions_Complete__c</field>
             <table>DE_Assignment_Log__c</table>
         </columns>
         <columns>
@@ -38,7 +48,22 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
+            <field>Assignee_Name__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
             <field>Balance_Value__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Case__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Contact__c</field>
             <table>DE_Assignment_Log__c</table>
         </columns>
         <columns>
@@ -68,7 +93,17 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
+            <field>Last_Action_At__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
             <field>Last_SLA_Checkpoint__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Lead__c</field>
             <table>DE_Assignment_Log__c</table>
         </columns>
         <columns>
@@ -93,7 +128,22 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
+            <field>Opportunity__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
             <field>Previous_Owner_Id__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Reassign_Attempts__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Reassign_Error_At__c</field>
             <table>DE_Assignment_Log__c</table>
         </columns>
         <columns>
@@ -118,6 +168,11 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
+            <field>Reject_Request__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
             <field>Rejected_At__c</field>
             <table>DE_Assignment_Log__c</table>
         </columns>
@@ -138,7 +193,17 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
+            <field>Send_Email__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
             <field>Speed_To_Assign_Seconds__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Status_On_Assignment__c</field>
             <table>DE_Assignment_Log__c</table>
         </columns>
         <columns>
@@ -149,6 +214,16 @@
         <columns>
             <checkedByDefault>false</checkedByDefault>
             <field>Sticky_Key__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Team_Member_Record_Id__c</field>
+            <table>DE_Assignment_Log__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Team_Role__c</field>
             <table>DE_Assignment_Log__c</table>
         </columns>
         <columns>

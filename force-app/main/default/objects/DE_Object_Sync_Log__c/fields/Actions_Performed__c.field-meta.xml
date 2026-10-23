@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Actions_Performed__c</fullName>
+    <inlineHelpText>One line per related object: Object=records synced.</inlineHelpText>
+    <label>Actions Performed</label>
+    <length>4000</length>
+    <visibleLines>3</visibleLines>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+</CustomField>

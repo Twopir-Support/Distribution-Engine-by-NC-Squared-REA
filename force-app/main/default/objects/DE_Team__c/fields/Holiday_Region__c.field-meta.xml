@@ -3,8 +3,12 @@
     <fullName>Holiday_Region__c</fullName>
     <inlineHelpText>Regional holidays in this region stop distribution for the whole team.</inlineHelpText>
     <label>Holiday Region</label>
-    <length>80</length>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <referenceTo>DE_Holiday_Region__c</referenceTo>
+    <relationshipLabel>Teams</relationshipLabel>
+    <relationshipName>Teams</relationshipName>
     <required>false</required>
+    <trackHistory>true</trackHistory>
     <trackTrending>false</trackTrending>
-    <type>Text</type>
+    <type>Lookup</type>
 </CustomField>

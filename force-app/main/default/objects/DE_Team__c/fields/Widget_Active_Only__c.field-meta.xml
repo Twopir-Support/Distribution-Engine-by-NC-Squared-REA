@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Widget_Active_Only__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>The widget's Assigned to me list only shows records in an active status (Active Status Field / Values).</inlineHelpText>
+    <label>Show Only Active Records in Widget</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

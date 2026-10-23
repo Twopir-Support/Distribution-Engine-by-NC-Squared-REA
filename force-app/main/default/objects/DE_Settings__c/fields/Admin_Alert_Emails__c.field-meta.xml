@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Admin_Alert_Emails__c</fullName>
+    <inlineHelpText>Comma-separated addresses for failure alerts (classifier, distribution, reassignment, health checker). Blank = no alert emails.</inlineHelpText>
+    <label>Admin Alert Emails</label>
+    <length>255</length>
+    <type>Text</type>
+</CustomField>

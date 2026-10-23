@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>Name</fields>
+    <fields>Object_API_Name__c</fields>
+    <fields>Classifier_Status__c</fields>
+    <fields>Territory_Name__c</fields>
+    <fields>Matched_Account__c</fields>
+    <fields>On_Hold_Until__c</fields>
+    <label>Distribution Engine Details</label>
+</CompactLayout>

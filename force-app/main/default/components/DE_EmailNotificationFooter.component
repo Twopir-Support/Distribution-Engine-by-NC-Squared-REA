@@ -1,0 +1,7 @@
+<apex:component access="global">
+    <apex:attribute name="teamName" type="String" required="false" description="Team that assigned the record" />
+    <p style="color:#706e6b;font-size:12px;margin-top:24px">
+        You received this email because Distribution Engine by NC Squared assigned a record to you<apex:outputText value=" through the {!teamName} team" rendered="{!NOT(ISBLANK(teamName))}" />.
+        Your administrator can turn these emails off per distributor (Post assignment: Send standard email notifications).
+    </p>
+</apex:component>

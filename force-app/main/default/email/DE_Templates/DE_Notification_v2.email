@@ -1,0 +1,10 @@
+<messaging:emailTemplate subject="SLA alert: {!relatedTo.Record_Name__c}" recipientType="User" relatedToType="DE_Assignment_Log__c">
+    <messaging:htmlEmailBody>
+        <c:DE_EmailNotification log="{!relatedTo}" headline="An SLA checkpoint was missed on a {!relatedTo.Object_API_Name__c} assigned to you. Please action it as soon as possible." />
+    </messaging:htmlEmailBody>
+    <messaging:plainTextEmailBody>
+An SLA checkpoint was missed on a {!relatedTo.Object_API_Name__c} assigned to you. Please action it as soon as possible.
+{!relatedTo.Record_Name__c}
+{!LEFT($Api.Partner_Server_URL_660, FIND('/services', $Api.Partner_Server_URL_660))}{!relatedTo.Record_Id__c}
+    </messaging:plainTextEmailBody>
+</messaging:emailTemplate>

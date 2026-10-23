@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Logging_Required_For_Tracking</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(Logging_Disabled__c, OR(Action_Tracking_Enabled__c, Object_Sync_Enabled__c))</errorConditionFormula>
+    <errorDisplayField>Logging_Disabled__c</errorDisplayField>
+    <errorMessage>Distribution logging is required for action tracking and object sync.</errorMessage>
+</ValidationRule>

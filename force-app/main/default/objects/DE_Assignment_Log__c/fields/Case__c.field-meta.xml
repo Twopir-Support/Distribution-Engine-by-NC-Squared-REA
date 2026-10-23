@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Case__c</fullName>
+    <inlineHelpText>Set when the routed record is a Case; used by email templates, reports and related lists.</inlineHelpText>
+    <label>Case</label>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <referenceTo>Case</referenceTo>
+    <relationshipLabel>Distribution Logs</relationshipLabel>
+    <relationshipName>DE_Distribution_Logs</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

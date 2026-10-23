@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Team manager whose access to each page and feature is set by their persona.</description>
+    <isLicensed>false</isLicensed>
+    <label>DE Custom Team Manager</label>
+</CustomPermission>

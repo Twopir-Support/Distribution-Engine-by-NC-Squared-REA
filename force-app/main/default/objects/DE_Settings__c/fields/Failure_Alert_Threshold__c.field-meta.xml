@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Failure_Alert_Threshold__c</fullName>
+    <inlineHelpText>Alert after a record fails this many times in a row.</inlineHelpText>
+    <label>Failure Alert Threshold</label>
+    <precision>3</precision>
+    <scale>0</scale>
+    <defaultValue>5</defaultValue>
+    <type>Number</type>
+</CustomField>

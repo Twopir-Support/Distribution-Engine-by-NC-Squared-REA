@@ -60,7 +60,7 @@ teams = dict(api='DE_Team__c', label='Distribution Team', plural='Distribution T
         F('Assignment_Field__c', 'Assignment Field', 'Text', length=120, help='User lookup field written by this team. Defaults to OwnerId. Can only be changed while the team has no distributors.', track=True),
         F('Filter_Logic__c', 'Team Filter Logic', 'Text', length=255, help='Optional logic for team filters, e.g. (1 AND 2) OR 3. Team filters apply to every distributor.'),
         F('Team_Hours__c', 'Team Hours', 'Lookup', ref='DE_Shift__c', rname='Teams', rlabel='Teams Using This Shift', help='Distribution hours for the team. Members without their own shift inherit these hours.'),
-        F('Holiday_Region__c', 'Holiday Region', 'Text', length=80, help='Regional holidays in this region stop distribution for the whole team.'),
+        F('Holiday_Region__c', 'Holiday Region', 'Lookup', ref='DE_Holiday_Region__c', rname='Teams', rlabel='Teams', delete='Restrict', help='Regional holidays in this region stop distribution for the whole team.', track=True),
         F('Round_Robin_Level__c', 'Round Robin Level', 'Picklist', picklist=pick(['Team', 'Distributor'], 'Team'), help='Team: one rotation shared by all distributors. Distributor: each distributor rotates independently.'),
         F('Load_Balancing_Level__c', 'Load Balancing Level', 'Picklist', picklist=pick(['Team', 'Distributor'], 'Team')),
         F('Load_Balancing_Type__c', 'Load Balancing Type', 'Picklist', picklist=pick(['Daily', 'Weekly', 'Monthly', 'Active'], 'Daily'), help='Daily, Weekly and Monthly balance Distribution Engine assignments. Active balances all owned records in Active Status (or all owned records when no Active Status is set).'),
@@ -83,7 +83,6 @@ teams = dict(api='DE_Team__c', label='Distribution Team', plural='Distribution T
         F('Auto_Action_Activity_Types__c', 'Auto Action Activity Types', 'Text', length=255, help='Semicolon-separated Task/Event Type values that set the action automatically, e.g. Call;Email.'),
         F('SLA_Respect_Hours__c', 'SLA Hours', 'Picklist', picklist=pick(RESPECT_HOURS, 'Team and Member')),
         F('Object_Sync_Enabled__c', 'Object Sync', 'Checkbox', default=False, help='Run active Object Sync actions for this object after assignment.'),
-        F('Manager_User_Ids__c', 'Team Managers', 'TextArea', help='Comma-separated User Ids allowed to manage this team with the Team Manager permission set.'),
         F('Dynamic_Members_Enabled__c', 'Dynamic Team Members', 'Checkbox', default=False, help='Keep membership in sync with Dynamic Membership conditions on User fields.'),
         F('Dynamic_Members_Logic__c', 'Dynamic Member Logic', 'Text', length=255),
         F('Rotation_Sequence__c', 'Rotation Sequence', 'Number', precision=18, default=0, help='Internal counter. Do not edit.'),
@@ -236,7 +235,7 @@ shift = dict(api='DE_Shift__c', label='Shift', plural='Shifts', name_label='Shif
 holiday = dict(api='DE_Holiday__c', label='Regional Holiday', plural='Regional Holidays', name_label='Holiday Name', history=True,
     desc='A holiday in a holiday region. Teams in the region do not distribute during it.',
     fields=[
-        F('Region__c', 'Region', 'Text', length=80, required=True),
+        F('Holiday_Region__c', 'Holiday Region', 'Lookup', ref='DE_Holiday_Region__c', rname='Holidays', rlabel='Regional Holidays', delete='Restrict', required=True, track=True),
         F('All_Day__c', 'All Day', 'Checkbox', default=True),
         F('Start__c', 'Starts', 'DateTime', required=True),
         F('End__c', 'Ends', 'DateTime', required=True),
@@ -527,4 +526,5 @@ write_vr('DE_SLA__c', 'DE_Monitor_Max', 'AND(ISPICKVAL(Alert_Type__c, "Continuou
 write_vr('DE_Holiday__c', 'DE_Holiday_End_After_Start', 'End__c < Start__c', 'Ends must be after Starts.', 'End__c')
 write_vr('DE_Out_Of_Office__c', 'DE_OOO_End_After_Start', 'End__c < Start__c', 'End must be after Start.', 'End__c')
 write_vr('DE_Out_Of_Office__c', 'DE_OOO_Reason_Length', 'LEN(Reason__c) > 80', 'Reason is limited to 80 characters.', 'Reason__c')
+import genmeta_csv  # noqa: E402,F401  (objects and fields added for the reference CSV inventory)
 print('ok')

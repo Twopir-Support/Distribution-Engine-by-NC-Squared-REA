@@ -41,7 +41,7 @@
         <type>Default</type>
     </actionOverrides>
     <allowInChatterGroups>false</allowInChatterGroups>
-    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <compactLayoutAssignment>DE_Record_Detail</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <description>Classifier output and distribution state for one routed record.</description>
     <enableActivities>false</enableActivities>

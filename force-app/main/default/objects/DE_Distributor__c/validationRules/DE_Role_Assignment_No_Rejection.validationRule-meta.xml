@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Role_Assignment_No_Rejection</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(Salesforce_Team_Enabled__c, OR(Rejection_Enabled__c, SLA_Enabled__c))</errorConditionFormula>
+    <errorMessage>Rejection and SLAs are not available for role assignment distributors.</errorMessage>
+</ValidationRule>

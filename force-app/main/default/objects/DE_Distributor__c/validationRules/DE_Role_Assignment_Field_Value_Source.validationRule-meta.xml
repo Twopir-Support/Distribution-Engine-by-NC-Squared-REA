@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Role_Assignment_Field_Value_Source</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(Salesforce_Team_Enabled__c, NOT(ISPICKVAL(Source_Type__c, "Field Value")))</errorConditionFormula>
+    <errorDisplayField>Source_Type__c</errorDisplayField>
+    <errorMessage>Role assignment distributors must use a Field Value source.</errorMessage>
+</ValidationRule>

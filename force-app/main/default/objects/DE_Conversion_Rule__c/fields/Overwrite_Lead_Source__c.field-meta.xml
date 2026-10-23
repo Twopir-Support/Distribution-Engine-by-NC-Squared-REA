@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Overwrite_Lead_Source__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>Copy the converted lead's Lead Source onto the contact and opportunity.</inlineHelpText>
+    <label>Overwrite Lead Source</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

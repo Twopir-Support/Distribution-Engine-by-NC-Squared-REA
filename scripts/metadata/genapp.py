@@ -27,6 +27,7 @@ PERMS = [
     ('DE_System_Manager', 'DE System Manager', 'Manage every team, distributor, SLA, cap, availability and tag in Distribution Engine.'),
     ('DE_Team_Manager', 'DE Team Manager', 'Manage the teams that list the user as a manager, and their members\' availability.'),
     ('DE_User', 'DE User', 'Use the Distribution Engine widget, toggle own availability, pull work and reject records.'),
+    ('DE_Custom_Team_Manager', 'DE Custom Team Manager', 'Team manager whose access to each page and feature is set by their persona.'),
 ]
 for name, label, desc in PERMS:
     write('customPermissions/%s.customPermission-meta.xml' % name, '''
@@ -49,8 +50,8 @@ write('notificationtypes/DE_Assignment.notiftype-meta.xml', '''
 # ------------------------------------------------------------------ tabs
 LWC_TABS = [
     ('DE_Console', 'Distribution Console', 'deConsole', 'Custom55: Gears'),
-    ('DE_Classifier', 'Distribution Classifier', 'deClassifier', 'Custom27: Laptop'),
-    ('DE_Teams', 'Distribution Teams', 'deTeams', 'Custom15: People'),
+    ('DE_Classifier', 'Record Classification', 'deClassifier', 'Custom27: Laptop'),
+    ('DE_Teams', 'Distribution Team', 'deTeams', 'Custom15: People'),
     ('DE_Tags', 'Distribution Tags', 'deTags', 'Custom59: Ribbon'),
     ('DE_Sync', 'Distribution Sync', 'deObjectSync', 'Custom62: Link'),
     ('DE_Availability', 'Distribution Availability', 'deAvailability', 'Custom95: Clock'),
@@ -167,7 +168,10 @@ STANDARD = ['Account', 'Case', 'Contact', 'Lead', 'Opportunity']
 
 CONFIG = ['DE_Team__c', 'DE_Team_Member__c', 'DE_Distributor__c', 'DE_Condition__c', 'DE_SLA__c', 'DE_Cap__c',
           'DE_Shift__c', 'DE_Holiday__c', 'DE_Territory__c', 'DE_Matching_Rule__c', 'DE_Conversion_Rule__c',
-          'DE_Stamp_Group__c', 'DE_Stamp__c', 'DE_Object_Sync__c']
+          'DE_Stamp_Group__c', 'DE_Stamp__c', 'DE_Object_Sync__c', 'DE_Holiday_Region__c', 'DE_Shift_Plan__c',
+          'DE_Shift_Plan_Block__c', 'DE_Team_Manager__c', 'DE_Persona__c', 'DE_User_Persona__c']
+LOGS = ['DE_Reject_Request__c', 'DE_Log_Action__c', 'DE_History__c', 'DE_Object_Sync_Log__c', 'DE_Territory_Log__c', 'DE_Matching_Log__c',
+        'DE_Conversion_Log__c', 'DE_Classification_Log__c', 'DE_Account_Domain__c']
 
 FULL = 'CREDVM'
 # object -> access letters (C create, R read, E edit, D delete, V view all, M modify all)
@@ -190,16 +194,26 @@ ACCESS = {
             'DE_Record_Detail__c': 'RV',
             'DE_Rotation_State__c': 'RV',
             'DE_Run_Log__c': 'RV',
-        }),
+            'DE_Shift_Plan__c': 'CREDV',
+            'DE_Shift_Plan_Block__c': 'CREDV',
+        },
+        **{o: 'RV' for o in LOGS}),
     'DE_User': {
         'DE_Team__c': 'R', 'DE_Team_Member__c': 'R', 'DE_Distributor__c': 'R', 'DE_Condition__c': 'R',
         'DE_SLA__c': 'R', 'DE_Cap__c': 'R', 'DE_Shift__c': 'R', 'DE_Holiday__c': 'R', 'DE_Territory__c': 'R',
         'DE_Stamp_Group__c': 'R', 'DE_Stamp__c': 'R',
         'DE_Out_Of_Office__c': 'CRED', 'DE_Agent__c': 'CRE', 'DE_Availability_Event__c': 'CR',
         'DE_Assignment_Log__c': 'RE', 'DE_Record_Detail__c': 'R',
+        'DE_Holiday_Region__c': 'R', 'DE_Shift_Plan__c': 'R', 'DE_Shift_Plan_Block__c': 'R', 'DE_Team_Manager__c': 'R',
+        'DE_Reject_Request__c': 'R', 'DE_Log_Action__c': 'R',
     },
 }
-STANDARD_EDIT = {'DE_Admin': True, 'DE_System_Manager': True, 'DE_Team_Manager': False, 'DE_User': False}
+ACCESS['DE_Custom_Team_Manager'] = dict(ACCESS['DE_Team_Manager'])
+ACCESS['DE_Community_User'] = dict(ACCESS['DE_User'])
+# permission set -> custom permission it grants
+CUSTOM_PERMISSION = {'DE_Admin': 'DE_Admin', 'DE_System_Manager': 'DE_System_Manager', 'DE_Team_Manager': 'DE_Team_Manager',
+                     'DE_User': 'DE_User', 'DE_Custom_Team_Manager': 'DE_Custom_Team_Manager', 'DE_Community_User': 'DE_User'}
+STANDARD_EDIT = {'DE_Admin': True, 'DE_System_Manager': True, 'DE_Team_Manager': False, 'DE_User': False, 'DE_Custom_Team_Manager': False, 'DE_Community_User': False}
 USER_EDITABLE_STANDARD = {'DE_Trigger_Distribution__c'}
 
 TAB_ACCESS = {
@@ -209,9 +223,11 @@ TAB_ACCESS = {
                         'DE_Assignment_Log__c'],
     'DE_User': ['DE_Availability'],
 }
-CONTROLLERS = ['DE_AdminController', 'DE_AvailabilityController', 'DE_ClassifierController', 'DE_ConsoleController',
-               'DE_RecordDetailController', 'DE_SettingsController', 'DE_WidgetController', 'DE_Simulator',
-               'DE_FlowActions', 'DE_ToggleUsersAction', 'DE_RejectRecordAction']
+TAB_ACCESS['DE_Custom_Team_Manager'] = TAB_ACCESS['DE_Team_Manager']
+TAB_ACCESS['DE_Community_User'] = []
+CLASS_DIR = os.path.join(ROOT, 'classes')
+CONTROLLERS = sorted(c[:-4] for c in os.listdir(CLASS_DIR) if c.endswith('Controller.cls')) + [
+    'DE_Simulator', 'DE_FlowActions', 'DE_ToggleUsersAction', 'DE_RejectRecordAction']
 CLASS_ACCESS = {
     'DE_Admin': CONTROLLERS + ['DE_Api'],
     'DE_System_Manager': CONTROLLERS + ['DE_Api'],
@@ -219,11 +235,15 @@ CLASS_ACCESS = {
     'DE_User': ['DE_WidgetController', 'DE_RecordDetailController', 'DE_AvailabilityController', 'DE_FlowActions',
                 'DE_ToggleUsersAction', 'DE_RejectRecordAction'],
 }
+CLASS_ACCESS['DE_Custom_Team_Manager'] = CONTROLLERS
+CLASS_ACCESS['DE_Community_User'] = CLASS_ACCESS['DE_User']
 LABELS = {
     'DE_Admin': ('Distribution Engine Admin', 'Everything in Distribution Engine, including global settings, classifier configuration and data maintenance.'),
     'DE_System_Manager': ('Distribution Engine System Manager', 'Manage all teams, distributors, SLAs, caps, availability, tags and logs.'),
     'DE_Team_Manager': ('Distribution Engine Team Manager', 'Manage the teams you are listed on as manager and your team members\' availability.'),
     'DE_User': ('Distribution Engine User', 'Widget, own availability and out of office, pull work, reject records and view distribution details.'),
+    'DE_Custom_Team_Manager': ('Distribution Engine Custom Team Manager', 'Team manager whose access to each page and feature comes from their persona.'),
+    'DE_Community_User': ('Distribution Engine Community User', 'Experience Cloud users who receive assignments: widget, own availability and out of office.'),
 }
 
 for ps, (label, desc) in LABELS.items():
@@ -240,7 +260,7 @@ for ps, (label, desc) in LABELS.items():
     parts.append('''    <customPermissions>
         <enabled>true</enabled>
         <name>%s</name>
-    </customPermissions>''' % ps)
+    </customPermissions>''' % CUSTOM_PERMISSION[ps])
     if ps in ('DE_Admin', 'DE_System_Manager'):
         parts.append('''    <customSettingAccesses>
         <enabled>true</enabled>
@@ -312,6 +332,7 @@ def report_type(name, base, label, desc):
 report_type('DE_Assignment_Logs', 'DE_Assignment_Log__c', 'DE Assignment Logs', 'Distribution Engine assignment, SLA, reassignment and rejection history.')
 report_type('DE_Availability_Events', 'DE_Availability_Event__c', 'DE Availability Events', 'Distribution Engine online/offline history per user.')
 report_type('DE_Run_Logs', 'DE_Run_Log__c', 'DE Run Logs', 'Distribution Engine scheduler, classifier and maintenance runs.')
+report_type('DE_Rejected_Assignments', 'DE_Reject_Request__c', 'DE Rejected Assignments', 'Rejection requests: who rejected which record, when and why.')
 
 write('reports/DE_Reports.reportFolder-meta.xml', '''
 <ReportFolder xmlns="%s">

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Sent to the assignee when an SLA checkpoint on their assignment is missed.</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Distribution Engine Notification v2</name>
+    <style>none</style>
+    <subject>SLA alert: {!relatedTo.Record_Name__c}</subject>
+    <type>visualforce</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

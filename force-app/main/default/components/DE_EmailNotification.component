@@ -1,0 +1,36 @@
+<apex:component access="global">
+    <apex:attribute name="log" type="DE_Assignment_Log__c" required="true" description="Distribution log the email is about" />
+    <apex:attribute name="headline" type="String" required="true" description="First line of the email" />
+    <div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#181818">
+        <p>{!headline}</p>
+        <table cellpadding="4" style="border-collapse:collapse">
+            <apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(log.Lead__c))}">
+                <tr><td><b>Name</b></td><td><c:DE_EmailNotificationLink recordId="{!log.Lead__c}" label="{!log.Lead__r.Name}" /></td></tr>
+                <tr><td><b>Lead Source</b></td><td>{!log.Lead__r.LeadSource}</td></tr>
+                <tr><td><b>Company</b></td><td>{!log.Lead__r.Company}</td></tr>
+                <tr><td><b>Rating</b></td><td>{!log.Lead__r.Rating}</td></tr>
+                <tr><td><b>Status</b></td><td>{!log.Lead__r.Status}</td></tr>
+            </apex:outputPanel>
+            <apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(log.Opportunity__c))}">
+                <tr><td><b>Name</b></td><td><c:DE_EmailNotificationLink recordId="{!log.Opportunity__c}" label="{!log.Opportunity__r.Name}" /></td></tr>
+                <tr><td><b>Lead Source</b></td><td>{!log.Opportunity__r.LeadSource}</td></tr>
+                <tr><td><b>Type</b></td><td>{!log.Opportunity__r.Type}</td></tr>
+                <tr><td><b>Stage</b></td><td>{!log.Opportunity__r.StageName}</td></tr>
+            </apex:outputPanel>
+            <apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(log.Case__c))}">
+                <tr><td><b>Case Number</b></td><td><c:DE_EmailNotificationLink recordId="{!log.Case__c}" label="{!log.Case__r.CaseNumber}" /></td></tr>
+                <tr><td><b>Subject</b></td><td>{!log.Case__r.Subject}</td></tr>
+                <tr><td><b>Priority</b></td><td>{!log.Case__r.Priority}</td></tr>
+                <tr><td><b>Type</b></td><td>{!log.Case__r.Type}</td></tr>
+                <tr><td><b>Account</b></td><td>{!log.Case__r.Account.Name}</td></tr>
+                <tr><td><b>Contact</b></td><td>{!log.Case__r.Contact.Name}</td></tr>
+                <tr><td><b>Status</b></td><td>{!log.Case__r.Status}</td></tr>
+            </apex:outputPanel>
+            <apex:outputPanel layout="none" rendered="{!AND(ISBLANK(log.Lead__c), ISBLANK(log.Opportunity__c), ISBLANK(log.Case__c))}">
+                <tr><td><b>Record</b></td><td><c:DE_EmailNotificationLink recordId="{!log.Record_Id__c}" label="{!log.Record_Name__c}" /></td></tr>
+                <tr><td><b>Object</b></td><td>{!log.Object_API_Name__c}</td></tr>
+            </apex:outputPanel>
+        </table>
+        <c:DE_EmailNotificationFooter teamName="{!log.Team__r.Name}" />
+    </div>
+</apex:component>

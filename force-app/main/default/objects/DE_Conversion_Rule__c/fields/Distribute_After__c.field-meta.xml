@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Distribute_After__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>After a merge, distribute the surviving lead again.</inlineHelpText>
+    <label>Distribute After De-duplication</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

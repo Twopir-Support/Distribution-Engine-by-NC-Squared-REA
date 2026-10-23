@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DE_Role_Assignment_Role_Required</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(Salesforce_Team_Enabled__c, ISBLANK(Team_Role__c), NOT(Assign_Default_Team__c))</errorConditionFormula>
+    <errorDisplayField>Team_Role__c</errorDisplayField>
+    <errorMessage>Choose a team role or add the default team.</errorMessage>
+</ValidationRule>

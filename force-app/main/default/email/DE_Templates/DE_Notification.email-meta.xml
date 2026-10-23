@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Sent to the assignee when a record is assigned to them.</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Distribution Engine Notification</name>
+    <style>none</style>
+    <subject>{!relatedTo.Object_API_Name__c} assigned to you: {!relatedTo.Record_Name__c}</subject>
+    <type>visualforce</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>
