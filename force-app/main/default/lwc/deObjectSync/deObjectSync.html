@@ -47,6 +47,24 @@
                                 onchange={handleField}
                             ></lightning-input>
                         </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                label="Execution order"
+                                value={editing.Order__c}
+                                data-field="Order__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-combobox
+                                label="Action type"
+                                options={actionTypeOptions}
+                                value={editing.Action_Type__c}
+                                data-field="Action_Type__c"
+                                onchange={handleField}
+                            ></lightning-combobox>
+                        </div>
                     </div>
                     <c-de-condition-builder
                         label="Only related records matching"
@@ -64,7 +82,9 @@
                 <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-top_small">
                     <thead>
                         <tr>
+                            <th>Order</th>
                             <th>Action</th>
+                            <th>Type</th>
                             <th>Distribution object</th>
                             <th>Related object</th>
                             <th>Lookup</th>
@@ -75,9 +95,11 @@
                     <tbody>
                         <template for:each={actions} for:item="a">
                             <tr key={a.key}>
+                                <td>{a.rec.Order__c}</td>
                                 <td>
                                     <a data-id={a.key} onclick={handleEdit}>{a.rec.Name}</a>
                                 </td>
+                                <td>{a.actionType}</td>
                                 <td>{a.rec.Parent_Object__c}</td>
                                 <td>{a.rec.Child_Object__c}</td>
                                 <td>{a.rec.Lookup_Field__c}</td>

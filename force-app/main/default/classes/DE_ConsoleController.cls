@@ -613,7 +613,10 @@ public with sharing class DE_ConsoleController {
             Object territory = related(r, 'Territory__r', 'Name');
             m.put('territory', territory == null ? null : (mapName == null ? '' : mapName + '.') + territory);
             m.put('matchLevel', r.get('Match_Level__c'));
-            m.put('cleaned', String.join(nonBlank(new List<Object>{ r.get('Clean_Country__c'), r.get('Clean_State__c'), r.get('Clean_Postal_Code__c') }), ', '));
+            m.put(
+                'cleaned',
+                String.join(nonBlank(new List<Object>{ r.get('Clean_Country__c'), r.get('Clean_State__c'), r.get('Clean_Postal_Code__c') }), ', ')
+            );
         } else if (type == DE_ClassifierLogs.MATCH) {
             Object accountName = related(r, 'Matched_Account__r', 'Name');
             Object accountType = related(r, 'Matched_Account__r', 'Type');
@@ -629,7 +632,13 @@ public with sharing class DE_ConsoleController {
             m.put('rule', related(r, 'Conversion_Rule__r', 'Name'));
             m.put('opportunityCreated', r.get('Opportunity_Id__c') != null);
             m.put('assignee', userNames.get(DE_Ids.toId((String) r.get('Owner_Id__c'))));
-            m.put('targets', String.join(nonBlank(new List<Object>{ r.get('Account_Id__c'), r.get('Contact_Id__c'), r.get('Opportunity_Id__c'), r.get('Matched_Lead_Id__c') }), ', '));
+            m.put(
+                'targets',
+                String.join(
+                    nonBlank(new List<Object>{ r.get('Account_Id__c'), r.get('Contact_Id__c'), r.get('Opportunity_Id__c'), r.get('Matched_Lead_Id__c') }),
+                    ', '
+                )
+            );
         } else {
             String stamps = (String) r.get('Stamps__c');
             m.put('stamps', stamps == null ? null : stamps.replace('\n', '; '));
@@ -864,10 +873,12 @@ public with sharing class DE_ConsoleController {
                 Lookup_Field__c,
                 Filter_Logic__c,
                 Active__c,
+                Order__c,
+                Action_Type__c,
                 (SELECT Id, Sequence__c, Field_API_Name__c, Operator__c, Value__c, Purpose__c FROM Conditions__r ORDER BY Sequence__c)
             FROM DE_Object_Sync__c
             WITH USER_MODE
-            ORDER BY Name
+            ORDER BY Parent_Object__c, Order__c NULLS LAST, Name
         ]) {
             DE_ClassifierController.ConditionalRecord cr = new DE_ClassifierController.ConditionalRecord();
             cr.record = a;
@@ -881,7 +892,14 @@ public with sharing class DE_ConsoleController {
     public static Id saveSyncAction(DE_Object_Sync__c action, List<DE_Condition__c> conditions) {
         DE_Permissions.require(DE_Permissions.isSystemManager(), 'edit object sync');
         List<DE_Condition__c> c = DE_Ui.prepare(conditions, 'Sync Filter');
-        DE_Ui.throwIfErrors(DE_ConfigValidator.objectSync(action, c));
+        if (String.isBlank(action.Action_Type__c)) {
+            action.Action_Type__c = DE_ObjectSyncService.CHANGE_OWNER;
+        }
+        List<String> errors = DE_ConfigValidator.objectSync(action, c);
+        if (action.Order__c != null && (action.Order__c < 0 || action.Order__c > 9999)) {
+            errors.add('Execution order must be between 0 and 9999.');
+        }
+        DE_Ui.throwIfErrors(errors);
         Savepoint sp = Database.setSavepoint();
         try {
             Database.upsert(action, true, AccessLevel.USER_MODE);

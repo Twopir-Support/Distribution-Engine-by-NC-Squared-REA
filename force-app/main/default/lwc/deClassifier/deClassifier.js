@@ -17,6 +17,8 @@ import saveStamp from '@salesforce/apex/DE_ClassifierController.saveStamp';
 import deleteStamp from '@salesforce/apex/DE_ClassifierController.deleteStamp';
 import deleteStampGroup from '@salesforce/apex/DE_ClassifierController.deleteStampGroup';
 import runBackfill from '@salesforce/apex/DE_ClassifierController.runBackfill';
+import rebuildDomainIndex from '@salesforce/apex/DE_ClassifierController.rebuildDomainIndex';
+import getDomainIndexSize from '@salesforce/apex/DE_ClassifierController.getDomainIndexSize';
 import getObjectOptions from '@salesforce/apex/DE_AdminController.getObjectOptions';
 import { reduceErrors, toast, toastError, cleanRecord, cleanConditions, clone, options, eventValue } from 'c/deUtils';
 
@@ -109,6 +111,7 @@ export default class DeClassifier extends LightningElement {
                 key: r.record.Id,
                 rec: r.record,
                 mapName: r.record.Map__c || 'Default map',
+                swatch: 'background:' + (r.record.Color__c || '#8a8986'),
                 badge: r.record.Status__c === 'Active' ? 'slds-badge slds-theme_success' : 'slds-badge'
             }));
             this.error = undefined;
@@ -232,6 +235,24 @@ export default class DeClassifier extends LightningElement {
 
     // ---------------------------------------------------------------- matching
 
+    domainIndexSize;
+
+    get domainIndexLabel() {
+        if (this.domainIndexSize === undefined || this.domainIndexSize === null) {
+            return 'not loaded';
+        }
+        return this.domainIndexSize ? this.domainIndexSize + ' domains' : 'empty (matching searches contacts and websites directly)';
+    }
+
+    async handleRebuildIndex() {
+        try {
+            await rebuildDomainIndex();
+            toast(this, 'Domain index rebuild started', 'Lead matching uses the index once the batch finishes. See Distribution Logs > Engine Runs.');
+        } catch (e) {
+            toastError(this, e, 'Could not start the rebuild');
+        }
+    }
+
     async loadMatching() {
         try {
             const rows = await getMatchingRules();
@@ -240,6 +261,7 @@ export default class DeClassifier extends LightningElement {
                 key: r.record.Id,
                 rec: r.record
             }));
+            this.domainIndexSize = await getDomainIndexSize();
         } catch (e) {
             this.fail(e);
         }
@@ -413,7 +435,8 @@ export default class DeClassifier extends LightningElement {
                     key: s.record.Id,
                     rec: s.record,
                     conditions: s.conditions,
-                    count: s.conditions.length
+                    count: s.conditions.length,
+                    inactive: s.record.Active__c === false
                 }))
             }));
         } catch (e) {
@@ -465,7 +488,9 @@ export default class DeClassifier extends LightningElement {
         this.stampEdit = {
             Name: '',
             Stamp_Group__c: g.key,
-            Order__c: (g.stamps.length + 1) * 10
+            Order__c: (g.stamps.length + 1) * 10,
+            Active__c: true,
+            Is_Default__c: false
         };
         this.stampConditions = [];
     }

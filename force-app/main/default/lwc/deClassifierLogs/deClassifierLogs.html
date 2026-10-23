@@ -13,7 +13,13 @@
             <lightning-input label="Object" value={filter.objectName} placeholder="Lead" data-field="objectName" onchange={handleFilter}></lightning-input>
         </div>
         <div class="slds-col slds-size_1-of-6">
-            <lightning-input label="Quick filter" value={filter.search} placeholder="Record name or Id" data-field="search" onchange={handleFilter}></lightning-input>
+            <lightning-input
+                label="Quick filter"
+                value={filter.search}
+                placeholder="Record name or Id"
+                data-field="search"
+                onchange={handleFilter}
+            ></lightning-input>
         </div>
         <div class="slds-col slds-size_1-of-6">
             <lightning-input type="checkbox" label="Errors only" checked={filter.errorsOnly} data-field="errorsOnly" onchange={handleFilter}></lightning-input>

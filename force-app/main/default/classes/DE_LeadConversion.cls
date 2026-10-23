@@ -298,7 +298,6 @@ public without sharing class DE_LeadConversion {
         }
     }
 
-
     private static void dedupe(Map<SObject, DE_Conversion_Rule__c> toDedupe, Map<Id, DE_Record_Detail__c> details) {
         if (toDedupe.isEmpty()) {
             return;

@@ -29,7 +29,11 @@ public without sharing class DE_AdminAlerts {
             }
             alerts += send(
                     CLASSIFIER_FAILURES,
-                    'Records failed classification ' + threshold + ' or more times in a row:\n' + String.join(lines, '\n') + '\n\nSee Distribution Logs > Classifier and Sync Logs.'
+                    'Records failed classification ' +
+                        threshold +
+                        ' or more times in a row:\n' +
+                        String.join(lines, '\n') +
+                        '\n\nSee Distribution Logs > Classifier and Sync Logs.'
                 )
                 ? 1
                 : 0;
@@ -38,7 +42,10 @@ public without sharing class DE_AdminAlerts {
         if (held > 0) {
             alerts += send(
                     DISTRIBUTION_FAILURES,
-                    held + ' records failed distribution ' + threshold + ' or more times in a row or are on hold.\n\nSee Distribution Logs (status On Hold) and use Retry.'
+                    held +
+                        ' records failed distribution ' +
+                        threshold +
+                        ' or more times in a row or are on hold.\n\nSee Distribution Logs (status On Hold) and use Retry.'
                 )
                 ? 1
                 : 0;

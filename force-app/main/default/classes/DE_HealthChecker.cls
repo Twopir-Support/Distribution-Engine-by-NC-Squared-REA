@@ -29,7 +29,10 @@ public without sharing class DE_HealthChecker implements Schedulable {
             DE_SchedulerJob.start();
             message = 'Scheduler was not running and has been restarted.';
             status = 'Warning';
-            DE_AdminAlerts.send(DE_AdminAlerts.SCHEDULER_RESTARTED, 'The Distribution Engine scheduler had stopped. The health checker restarted it at ' + System.now().format() + '.');
+            DE_AdminAlerts.send(
+                DE_AdminAlerts.SCHEDULER_RESTARTED,
+                'The Distribution Engine scheduler had stopped. The health checker restarted it at ' + System.now().format() + '.'
+            );
         }
         DE_RunLogger.log('Health Checker', status, 0, 0, 0, message);
         return message;

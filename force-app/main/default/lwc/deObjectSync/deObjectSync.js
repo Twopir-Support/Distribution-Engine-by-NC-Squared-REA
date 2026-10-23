@@ -22,13 +22,16 @@ export default class DeObjectSync extends LightningElement {
                 ...r,
                 key: r.record.Id,
                 rec: r.record,
-                status: r.record.Active__c ? 'Active' : 'Inactive'
+                status: r.record.Active__c ? 'Active' : 'Inactive',
+                actionType: r.record.Action_Type__c || 'Change Owner'
             }));
             this.error = undefined;
         } catch (e) {
             this.error = reduceErrors(e);
         }
     }
+
+    actionTypeOptions = [{ label: 'Change owner of related records', value: 'Change Owner' }];
 
     get hasActions() {
         return this.actions.length > 0;
@@ -40,7 +43,9 @@ export default class DeObjectSync extends LightningElement {
             Parent_Object__c: 'Lead',
             Child_Object__c: 'Task',
             Lookup_Field__c: 'WhoId',
-            Active__c: false
+            Active__c: false,
+            Order__c: (this.actions.length + 1) * 10,
+            Action_Type__c: 'Change Owner'
         };
         this.conditions = [];
     }

@@ -73,6 +73,16 @@
                                         onchange={handleTerritoryField}
                                     ></lightning-input>
                                 </div>
+                                <div class="slds-col slds-size_1-of-6">
+                                    <lightning-input
+                                        label="Colour"
+                                        value={territoryEdit.Color__c}
+                                        placeholder="#2a78d6"
+                                        max-length="7"
+                                        data-field="Color__c"
+                                        onchange={handleTerritoryField}
+                                    ></lightning-input>
+                                </div>
                                 <div class="slds-col slds-size_1-of-3">
                                     <lightning-textarea
                                         label="Countries (separated by ;)"
@@ -131,6 +141,7 @@
                                 <tr key={t.key}>
                                     <td>{t.rec.Priority__c}</td>
                                     <td>
+                                        <span class="swatch" style={t.swatch}></span>
                                         <a data-id={t.key} onclick={handleEditTerritory}>{t.rec.Name}</a>
                                     </td>
                                     <td>{t.mapName}</td>
@@ -183,7 +194,13 @@
 
                 <!-- Lead matching -->
                 <lightning-tab label="Lead Matching" value="matching" onactive={handleTab}>
-                    <lightning-button label="New matching rule" icon-name="utility:add" onclick={handleNewMatch}></lightning-button>
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_small">
+                        <lightning-button label="New matching rule" icon-name="utility:add" onclick={handleNewMatch}></lightning-button>
+                        <div class="slds-text-align_right">
+                            <p class="slds-text-body_small slds-text-color_weak">Domain index: {domainIndexLabel}</p>
+                            <lightning-button label="Rebuild domain index" onclick={handleRebuildIndex}></lightning-button>
+                        </div>
+                    </div>
                     <template lwc:if={matchEdit}>
                         <div class="slds-box slds-m-top_small">
                             <div class="slds-grid slds-wrap slds-gutters_small">
@@ -457,6 +474,48 @@
                                         onchange={handleConvField}
                                     ></lightning-input>
                                 </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Account record type (new accounts)"
+                                        value={convEdit.Account_Record_Type__c}
+                                        data-field="Account_Record_Type__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Contact record type (new contacts)"
+                                        value={convEdit.Contact_Record_Type__c}
+                                        data-field="Contact_Record_Type__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        label="Opportunity record type"
+                                        value={convEdit.Opportunity_Record_Type__c}
+                                        data-field="Opportunity_Record_Type__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        type="checkbox"
+                                        label="Overwrite lead source on contact and opportunity"
+                                        checked={convEdit.Overwrite_Lead_Source__c}
+                                        data-field="Overwrite_Lead_Source__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input
+                                        type="checkbox"
+                                        label="Email the owner of the converted records"
+                                        checked={convEdit.Send_Email__c}
+                                        data-field="Send_Email__c"
+                                        onchange={handleConvField}
+                                    ></lightning-input>
+                                </div>
                             </div>
                             <template lwc:if={isDedupe}>
                                 <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
@@ -473,6 +532,13 @@
                                     label="Surviving lead field update (Field__c=Value)"
                                     value={convEdit.Survivor_Field_Update__c}
                                     data-field="Survivor_Field_Update__c"
+                                    onchange={handleConvField}
+                                ></lightning-input>
+                                <lightning-input
+                                    type="checkbox"
+                                    label="Distribute the surviving lead after de-duplication"
+                                    checked={convEdit.Distribute_After__c}
+                                    data-field="Distribute_After__c"
                                     onchange={handleConvField}
                                 ></lightning-input>
                             </template>
@@ -591,6 +657,24 @@
                                         onchange={handleStampField}
                                     ></lightning-input>
                                 </div>
+                                <div class="slds-col">
+                                    <lightning-input
+                                        type="toggle"
+                                        label="Active"
+                                        checked={stampEdit.Active__c}
+                                        data-field="Active__c"
+                                        onchange={handleStampField}
+                                    ></lightning-input>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-input
+                                        type="checkbox"
+                                        label="Default stamp (when no other stamp matches)"
+                                        checked={stampEdit.Is_Default__c}
+                                        data-field="Is_Default__c"
+                                        onchange={handleStampField}
+                                    ></lightning-input>
+                                </div>
                             </div>
                             <c-de-condition-builder
                                 label="Stamp records matching"
@@ -627,6 +711,8 @@
                                     <li key={s.key}>
                                         <a data-group={g.key} data-id={s.key} onclick={handleEditStamp}>{s.rec.Order__c}. {s.rec.Name}</a>
                                         ({s.count} conditions)
+                                        <template lwc:if={s.rec.Is_Default__c}><span class="slds-badge slds-m-left_xx-small">Default</span></template>
+                                        <template lwc:if={s.inactive}><span class="slds-badge slds-m-left_xx-small">Inactive</span></template>
                                         <lightning-button-icon
                                             icon-name="utility:delete"
                                             size="small"

@@ -271,6 +271,62 @@
                         </div>
                     </div>
 
+                    <h3 class="slds-section-title_divider slds-m-top_medium">Monitoring and alerts</h3>
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                label="Maintain change history logs (days)"
+                                value={s.History_Retention_Days__c}
+                                min="1"
+                                max="3650"
+                                data-field="History_Retention_Days__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                label="Classifier and object sync log retention (days)"
+                                value={s.Classifier_Log_Retention_Days__c}
+                                min="1"
+                                max="3650"
+                                data-field="Classifier_Log_Retention_Days__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="checkbox"
+                                label="Use platform cache (partition DE)"
+                                checked={s.Use_Platform_Cache__c}
+                                data-field="Use_Platform_Cache__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_2-of-3">
+                            <lightning-input
+                                label="Admin alert emails (comma-separated)"
+                                value={s.Admin_Alert_Emails__c}
+                                placeholder="ops@example.com"
+                                field-level-help="Emailed when records keep failing classification or distribution, automatic reassignments fail, or the scheduler had to be restarted. At most one email per alert type per hour."
+                                data-field="Admin_Alert_Emails__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="number"
+                                label="Alert after failures in a row"
+                                value={s.Failure_Alert_Threshold__c}
+                                min="1"
+                                max="100"
+                                data-field="Failure_Alert_Threshold__c"
+                                onchange={handleField}
+                            ></lightning-input>
+                        </div>
+                    </div>
+
                     <h3 class="slds-section-title_divider slds-m-top_medium">Auto archive (Leads and Cases)</h3>
                     <div class="slds-grid slds-wrap slds-gutters_small">
                         <div class="slds-col slds-size_1-of-3">

@@ -30,7 +30,11 @@ const DEFAULTS = {
     Count_Lookup_In_Balance__c: true,
     Archive_After_Days__c: 90,
     Publish_Platform_Events__c: true,
-    Default_Weekday_Start__c: 'Monday'
+    Default_Weekday_Start__c: 'Monday',
+    History_Retention_Days__c: 90,
+    Classifier_Log_Retention_Days__c: 30,
+    Failure_Alert_Threshold__c: 5,
+    Use_Platform_Cache__c: true
 };
 
 /** Distribution Settings tab. */

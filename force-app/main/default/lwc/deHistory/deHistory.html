@@ -9,7 +9,12 @@
                 <template lwc:if={showObjectFilter}>
                     <lightning-combobox label="Object" options={objectOptions} value={objectName} onchange={handleObject}></lightning-combobox>
                 </template>
-                <lightning-button-icon class="slds-m-left_x-small" icon-name="utility:refresh" alternative-text="Refresh" onclick={load}></lightning-button-icon>
+                <lightning-button-icon
+                    class="slds-m-left_x-small"
+                    icon-name="utility:refresh"
+                    alternative-text="Refresh"
+                    onclick={load}
+                ></lightning-button-icon>
             </div>
         </div>
         <template lwc:if={error}>

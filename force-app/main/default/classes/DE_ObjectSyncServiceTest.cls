@@ -86,4 +86,51 @@ private class DE_ObjectSyncServiceTest {
 
         Assert.areEqual(0, changed, 'Nothing to change when the owner already matches');
     }
+
+    @IsTest
+    static void eachSyncedRecordGetsAnObjectSyncLog() {
+        Setup s = setup(true);
+
+        Test.startTest();
+        DE_ObjectSyncService.sync(s.cfg, new List<DE_Model.Decision>{ decision(s.account, s.owner.Id, 'Assigned') });
+        DE_ObjectSyncService.sync(s.cfg, new List<DE_Model.Decision>{ decision(s.account, s.owner.Id, 'Assigned') });
+        Test.stopTest();
+
+        List<DE_Object_Sync_Log__c> logs = [
+            SELECT Record_Id__c, Record_Name__c, Object_API_Name__c, Team__c, Assignee_Id__c, Status__c, Actions_Performed__c, Synced_Records__c, Errors__c
+            FROM DE_Object_Sync_Log__c
+            ORDER BY Name
+        ];
+        Assert.areEqual(2, logs.size(), 'One log per synced parent per run');
+        Assert.areEqual('Success', logs[0].Status__c, 'First run changed the buyer contact');
+        Assert.areEqual('Contact=1', logs[0].Actions_Performed__c, 'Actions performed per related object');
+        Assert.areEqual(1, logs[0].Synced_Records__c, 'Records synced');
+        Assert.areEqual(0, logs[0].Errors__c, 'No errors');
+        Assert.areEqual(s.account.Id, logs[0].Record_Id__c, 'Parent record');
+        Assert.areEqual('Acme', logs[0].Record_Name__c, 'Parent name');
+        Assert.areEqual(s.cfg.team.Id, logs[0].Team__c, 'Team');
+        Assert.areEqual(s.owner.Id, logs[0].Assignee_Id__c, 'Assignee');
+        Assert.areEqual('Skipped', logs[1].Status__c, 'Second run had nothing left to change');
+    }
+
+    @IsTest
+    static void misconfiguredActionsAreLoggedAsErrors() {
+        Setup s = setup(true);
+        DE_Object_Sync__c broken = new DE_Object_Sync__c(
+            Name = 'Broken',
+            Active__c = true,
+            Parent_Object__c = 'Account',
+            Child_Object__c = 'Contact',
+            Lookup_Field__c = 'Not_A_Lookup__c',
+            Order__c = 1
+        );
+        insert broken;
+
+        DE_ObjectSyncService.sync(s.cfg, new List<DE_Model.Decision>{ decision(s.account, s.owner.Id, 'Assigned') });
+
+        DE_Object_Sync_Log__c log = [SELECT Status__c, Errors__c, Error_Message__c, Synced_Records__c FROM DE_Object_Sync_Log__c];
+        Assert.areEqual('Error', log.Status__c, 'The broken action is reported');
+        Assert.isTrue(log.Error_Message__c.startsWith('Broken:'), log.Error_Message__c);
+        Assert.areEqual(1, log.Synced_Records__c, 'The valid action still ran');
+    }
 }

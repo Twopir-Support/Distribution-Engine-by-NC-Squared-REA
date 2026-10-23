@@ -63,7 +63,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Id saveTerritory(DE_Territory__c territory, List<DE_Condition__c> conditions) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         List<String> errors = new List<String>();
         if (String.isBlank(territory.Name)) {
             errors.add('Enter a territory name.');
@@ -109,7 +108,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void deleteTerritory(Id territoryId) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         try {
             DE_Ui.deleteAll([SELECT Id FROM DE_Condition__c WHERE Territory__c = :territoryId], true, AccessLevel.USER_MODE);
             Database.delete(new DE_Territory__c(Id = territoryId), true, AccessLevel.USER_MODE);
@@ -122,7 +120,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Integer setMapStatus(String objectName, String mapName, String status) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         List<DE_Territory__c> rows = String.isBlank(mapName)
             ? [SELECT Id FROM DE_Territory__c WHERE Object_API_Name__c = :objectName AND Map__c = NULL WITH USER_MODE]
             : [SELECT Id FROM DE_Territory__c WHERE Object_API_Name__c = :objectName AND Map__c = :mapName WITH USER_MODE];
@@ -140,7 +137,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void reorderTerritories(List<Id> territoryIds) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         List<DE_Territory__c> rows = new List<DE_Territory__c>();
         Integer order = 10;
         for (Id i : territoryIds) {
@@ -161,7 +157,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Integer importTerritories(String objectName, String mapName, String text) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         if (!DE_Schema.objectExists(objectName)) {
             throw DE_Ui.error('Choose an object.');
         }
@@ -240,7 +235,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Id saveMatchingRule(DE_Matching_Rule__c rule, List<DE_Condition__c> conditions) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         List<String> errors = new List<String>();
         if (String.isBlank(rule.Name) || rule.Priority__c == null) {
             errors.add('Enter a name and order.');
@@ -280,7 +274,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void deleteMatchingRule(Id ruleId) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         try {
             DE_Ui.deleteAll([SELECT Id FROM DE_Condition__c WHERE Matching_Rule__c = :ruleId], true, AccessLevel.USER_MODE);
             Database.delete(new DE_Matching_Rule__c(Id = ruleId), true, AccessLevel.USER_MODE);
@@ -334,7 +327,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Id saveConversionRule(DE_Conversion_Rule__c rule, List<DE_Condition__c> conditions) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         List<String> errors = new List<String>();
         if (String.isBlank(rule.Name) || rule.Order__c == null) {
             errors.add('Enter a name and order.');
@@ -413,7 +405,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void deleteConversionRule(Id ruleId) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         try {
             DE_Ui.deleteAll([SELECT Id FROM DE_Condition__c WHERE Conversion_Rule__c = :ruleId], true, AccessLevel.USER_MODE);
             Database.delete(new DE_Conversion_Rule__c(Id = ruleId), true, AccessLevel.USER_MODE);
@@ -474,7 +465,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Id saveStampGroup(DE_Stamp_Group__c stampGroup) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         List<String> errors = new List<String>();
         if (String.isBlank(stampGroup.Name) || !DE_Schema.objectExists(stampGroup.Object_API_Name__c)) {
             errors.add('Enter a group name and object.');
@@ -500,7 +490,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static Id saveStamp(DE_Stamp__c stamp, List<DE_Condition__c> conditions) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         DE_Stamp_Group__c g = [SELECT Object_API_Name__c FROM DE_Stamp_Group__c WHERE Id = :stamp.Stamp_Group__c WITH USER_MODE];
         List<DE_Condition__c> c = DE_Ui.prepare(conditions, 'Stamp');
         List<String> errors = new List<String>();
@@ -534,7 +523,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void deleteStamp(Id stampId) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         try {
             DE_Ui.deleteAll([SELECT Id FROM DE_Condition__c WHERE Stamp__c = :stampId], true, AccessLevel.USER_MODE);
             Database.delete(new DE_Stamp__c(Id = stampId), true, AccessLevel.USER_MODE);
@@ -546,7 +534,6 @@ public with sharing class DE_ClassifierController {
     @AuraEnabled
     public static void deleteStampGroup(Id groupId) {
         requireAdmin();
-        DE_Cache.invalidateClassifier();
         try {
             List<DE_Stamp__c> stamps = [SELECT Id FROM DE_Stamp__c WHERE Stamp_Group__c = :groupId];
             DE_Ui.deleteAll([SELECT Id FROM DE_Condition__c WHERE Stamp__c IN :stamps], true, AccessLevel.USER_MODE);

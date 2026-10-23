@@ -157,8 +157,10 @@ public without sharing class DE_ClassifierLogs {
             Map<String, Set<Id>> byObject = new Map<String, Set<Id>>();
             for (
                 SObject row : Database.query(
-                    'SELECT Record_Id__c, Object_API_Name__c FROM ' + LOG_OBJECT.get(stage) + ' WHERE In_Error__c = TRUE ORDER BY Processed_At__c LIMIT ' +
-                    (maxRecords - retried)
+                    'SELECT Record_Id__c, Object_API_Name__c FROM ' +
+                        LOG_OBJECT.get(stage) +
+                        ' WHERE In_Error__c = TRUE ORDER BY Processed_At__c LIMIT ' +
+                        (maxRecords - retried)
                 )
             ) {
                 Id recordId = DE_Ids.toId((String) row.get('Record_Id__c'));
