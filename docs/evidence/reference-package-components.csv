@@ -1,0 +1,2598 @@
+Component Name,Parent Object,Type
+Distribution Engine Widget,,Home Page Component
+Distribution Engine,,Home Page Component
+EmailNotification,,Visualforce Component
+EmailNotificationLink,,Visualforce Component
+HistoryTable,,Visualforce Component
+InlineLogs,,Visualforce Component
+InlineLogs2,,Visualforce Component
+LogsContext,,Visualforce Component
+PageContext,,Visualforce Component
+PageHead,,Visualforce Component
+Team_TeamBase,,Visualforce Component
+APVHead,,Visualforce Component
+CommonHeader,,Visualforce Component
+CommonHelp,,Visualforce Component
+CommonInlineHelp,,Visualforce Component
+CommonMask,,Visualforce Component
+CommonSavedMask,,Visualforce Component
+EmailNotificationFooter,,Visualforce Component
+EmailNotificationLogo,,Visualforce Component
+GetPageReference,,Visualforce Component
+WidgetMask,,Visualforce Component
+ApplicationContext,,Visualforce Component
+AssignmentReject,,Visualforce Component
+All,Distribution Team,List View
+Distribution Engine - Email Notification Team Role,Distribution log,Workflow Email Alert
+Distribution Engine - Email Notification v2,Distribution log,Workflow Email Alert
+Distribution Engine - Email Notification,Distribution log,Workflow Email Alert
+apv,,Static Resource
+delogosvg,,Static Resource
+dejs,,Static Resource
+DEResources,,Static Resource
+DistributionEngineSF1Widget,,Static Resource
+DistributionEngineSF1Console,,Static Resource
+Active,Classifier Auto conversion rule,Custom Field
+Field updates,Classifier Auto conversion rule,Custom Field
+Filters,Classifier Auto conversion rule,Custom Field
+Default owner,Classifier Auto conversion rule,Custom Field
+Execution order,Classifier Auto conversion rule,Custom Field
+Create opportunity,Classifier Auto conversion rule,Custom Field
+De-duplication field updates,Classifier Auto conversion rule,Custom Field
+Assignee strategy,Classifier Auto conversion rule,Custom Field
+Contact record type,Classifier Auto conversion rule,Custom Field
+Account record type,Classifier Auto conversion rule,Custom Field
+Action,Classifier Auto conversion rule,Custom Field
+Record id,Classifier Auto conversion log,Custom Field
+Record name,Classifier Auto conversion log,Custom Field
+Post processing error message,Classifier Auto conversion log,Custom Field
+Post processing error status code,Classifier Auto conversion log,Custom Field
+Owner,Classifier Auto conversion log,Custom Field
+Owner name,Classifier Auto conversion log,Custom Field
+Object Name,Classifier custom classification log,Custom Field
+Opportunity,Classifier Auto conversion log,Custom Field
+Opportunity name,Classifier Auto conversion log,Custom Field
+Lead,Classifier custom classification log,Custom Field
+Matched lead name,Classifier Auto conversion log,Custom Field
+Number of attempts,Classifier Auto conversion log,Custom Field
+Number of attempts,Classifier custom classification log,Custom Field
+In error,Classifier custom classification log,Custom Field
+Matched contact name,Classifier Auto conversion log,Custom Field
+Last processed datetime,Classifier custom classification log,Custom Field
+Matched lead,Classifier Auto conversion log,Custom Field
+Stamp group 5 name,Classifier custom classification log,Custom Field
+Stamp Group 5 stamps,Classifier custom classification log,Custom Field
+Stamp Group 4 stamps,Classifier custom classification log,Custom Field
+Stamp group 5,Classifier custom classification log,Custom Field
+Stamp group 4,Classifier custom classification log,Custom Field
+Stamp group 4 name,Classifier custom classification log,Custom Field
+Stamp Group 3 stamps,Classifier custom classification log,Custom Field
+Stamp group 3,Classifier custom classification log,Custom Field
+Stamp group 3 name,Classifier custom classification log,Custom Field
+Stamp group 2 name,Classifier custom classification log,Custom Field
+Stamp Group 2 stamps,Classifier custom classification log,Custom Field
+Stamp Group 1 stamps,Classifier custom classification log,Custom Field
+Stamp group 2,Classifier custom classification log,Custom Field
+Stamp group 1,Classifier custom classification log,Custom Field
+Stamp group 1 name,Classifier custom classification log,Custom Field
+Stamp group 0 stamps,Classifier custom classification log,Custom Field
+User,User permission set assignment,Custom Field
+Profile,User profile,Custom Field
+Permission set name,User permission set assignment,Custom Field
+User,Team manager,Custom Field
+Filter sequence,Team filter stamp,Custom Field
+Team,Team manager,Custom Field
+Execution Order,Distribution Team,Custom Field
+Permission set id,User permission set assignment,Custom Field
+Permission set assignment datetime,User permission set assignment,Custom Field
+Weighting type,Distribution Team,Custom Field
+Snoozed until,User messaging record,Custom Field
+Total actions tracked,Distribution Team,Custom Field
+Track actions from any user,Distribution Team,Custom Field
+User,User messaging record,Custom Field
+Message version,User messaging record,Custom Field
+Team level caps enabled,Distribution Team,Custom Field
+Number of interactions,User messaging record,Custom Field
+Team runtime,Distribution Team,Custom Field
+Distribution tag weighting pattern,Distribution Team,Custom Field
+Message key,User messaging record,Custom Field
+Message and user tag,User messaging record,Custom Field
+Task types to auto-action,Distribution Team,Custom Field
+First interaction datetime,User messaging record,Custom Field
+SLAs respect active status,Distribution Team,Custom Field
+Team,Team shift planner,Custom Field
+Last viewed datetime,User messaging record,Custom Field
+Show only active records in widget,Distribution Team,Custom Field
+Clone in progress?,Team shift planner,Custom Field
+Rejection request limit,Distribution Team,Custom Field
+Ready for deletion,Team shift planner,Custom Field
+Team rejection stamp group,Distribution Team,Custom Field
+Load balanced by,Team runtime,Custom Field
+Team performance page settings,Distribution Team,Custom Field
+Load balancing duration,Team runtime,Custom Field
+Ready for deletion,Distribution Team,Custom Field
+Team filter soql,Distribution Team,Custom Field
+Weekly assignment count,Team member runtime,Custom Field
+Last load balance reset,Team runtime,Custom Field
+Team filter ui config,Distribution Team,Custom Field
+Active status values,Distribution Team,Custom Field
+Monthly assignment count,Team member runtime,Custom Field
+Object,Distribution Team,Custom Field
+Round robin failure count,Team member runtime,Custom Field
+Action to track,Distribution Team,Custom Field
+Last count reset date,Team member runtime,Custom Field
+Active status field,Distribution Team,Custom Field
+Load balanced count,Team member runtime,Custom Field
+Half hour assignment count,Team member runtime,Custom Field
+Load balancing type,Distribution Team,Custom Field
+Action field,Distribution Team,Custom Field
+Hourly assignment count,Team member runtime,Custom Field
+Error message,Classifier custom classification log,Custom Field
+Matched account name,Classifier Auto conversion log,Custom Field
+Error status code,Classifier custom classification log,Custom Field
+Matched contact,Classifier Auto conversion log,Custom Field
+Case,Classifier custom classification log,Custom Field
+Contact,Classifier custom classification log,Custom Field
+Matched account,Classifier Auto conversion log,Custom Field
+Display criteria satisfied?,User messaging record,Custom Field
+Last processed datetime,Classifier Auto conversion log,Custom Field
+Do not show again,User messaging record,Custom Field
+Account,Classifier custom classification log,Custom Field
+Is auto converted,Classifier Auto conversion log,Custom Field
+Reason,User activity log,Custom Field
+Is de-duplicated,Classifier Auto conversion log,Custom Field
+User,User activity log,Custom Field
+Action date,User activity log,Custom Field
+Distribute after de-duplication,Classifier Auto conversion rule,Custom Field
+Error status code,Classifier Auto conversion log,Custom Field
+Activity type,User activity log,Custom Field
+In error,Classifier Auto conversion log,Custom Field
+Update all conversion objects,Classifier Auto conversion rule,Custom Field
+De-duplication datetime,Classifier Auto conversion log,Custom Field
+Overwrite leadsource,Classifier Auto conversion rule,Custom Field
+Action,User activity log,Custom Field
+Error message,Classifier Auto conversion log,Custom Field
+Send email,Classifier Auto conversion rule,Custom Field
+Auto conversion rule,Classifier Auto conversion log,Custom Field
+Merge behaviour,Classifier Auto conversion rule,Custom Field
+Auto conversion rule name,Classifier Auto conversion log,Custom Field
+Opportunity record type,Classifier Auto conversion rule,Custom Field
+Domain Type,Classifier Account Domains,Custom Field
+Lead convert status,Classifier Auto conversion rule,Custom Field
+Auto conversion datetime,Classifier Auto conversion log,Custom Field
+Match filters,Classifier Auto conversion rule,Custom Field
+User Id,User Slack Integration,Custom Field
+Account Id,Classifier Account Domains,Custom Field
+Default,Classifier Auto conversion rule,Custom Field
+Slack workspace,User Slack Integration,Custom Field
+User,User Slack Integration,Custom Field
+Mapping method,User Slack Integration,Custom Field
+Slack user ID,User Slack Integration,Custom Field
+Last user mapping sync run UUID,User Slack Integration,Custom Field
+Distribution logs by team,,Report
+Mapping error,User Slack Integration,Custom Field
+Last reminder sent at,User Slack Integration,Custom Field
+Rejected DE assignments by day,,Report
+Last reminder sent by,User Slack Integration,Custom Field
+Total Distribution Volumes,,Report
+User,User profile,Custom Field
+User Activity History,,Report
+Integration enabled,User Slack Integration,Custom Field
+Username,Distribution team member,Custom Field
+Assignment group,Out-of-band assignment,Custom Field
+Username,Out of office,Custom Field
+Distributor name,Member distributor detail,Custom Field
+Username,Member distributor detail,Custom Field
+Is sticky,Distributor rr-sa,Custom Field
+Redundant,Distributor rr-sa,Custom Field
+Sticky period minutes,Distributor,Custom Field
+Username,Distributor category team member,Custom Field
+ProcessAsyncDistributionEvent,,Flow Definition
+DE_Slack_Update_on_new_log,,Flow Definition
+DE_Email_Team_Role_Notification_on_log_update,,Flow Definition
+DE_Email_Notification_on_new_log,,Flow Definition
+DE_Slack_Update_Flow,,Flow Definition
+DE_Email_Team_Role_Notification_on_new_log,,Flow Definition
+Color,Classifier territory,Custom Field
+Last processed datetime,Classifier matching log,Custom Field
+Default zoom,Classifier territory,Custom Field
+Lead match confidence,Classifier matching log,Custom Field
+DE_Email_Notification_on_log_update,,Flow Definition
+Last error status code,Classifier matching log,Custom Field
+Selection type,Classifier stamp group,Custom Field
+In error,Classifier matching log,Custom Field
+Tag collection,Classifier stamp group,Custom Field
+Account or Contact matching rule,Classifier matching log,Custom Field
+Object,Classifier stamp group,Custom Field
+Error message,Classifier matching log,Custom Field
+Ready for deletion,Classifier stamp group,Custom Field
+Synchronize tag collection,Classifier stamp group,Custom Field
+Stamp group 0 name,Classifier custom classification log,Custom Field
+Record name,Classifier custom classification log,Custom Field
+Resolve to,Classifier field,Custom Field
+Account or Contact match confidence,Classifier matching log,Custom Field
+Stamp group 0,Classifier custom classification log,Custom Field
+DE Details stamp group field,Classifier stamp group,Custom Field
+Data type,Classifier field,Custom Field
+Opportunity,Classifier custom classification log,Custom Field
+Active,Classifier stamp group,Custom Field
+Execution order,Classifier field,Custom Field
+Record id,Classifier custom classification log,Custom Field
+Stamp filter ui config,Classifier stamp,Custom Field
+Tag Value,Classifier stamp,Custom Field
+Active,Classifier stamp,Custom Field
+Default stamp,Classifier stamp,Custom Field
+Processing filter ui config,Classifier object,Custom Field
+Stamp group 9 name,Classifier custom classification log,Custom Field
+Execution order,Classifier stamp,Custom Field
+Stamp group 9 stamps,Classifier custom classification log,Custom Field
+For territory processing,Classifier object,Custom Field
+Stamp Group 8 stamps,Classifier custom classification log,Custom Field
+Processing filter soql,Classifier object,Custom Field
+Stamp group 9,Classifier custom classification log,Custom Field
+Stamp group 8,Classifier custom classification log,Custom Field
+Stamp group 8 name,Classifier custom classification log,Custom Field
+Stamp group 7 name,Classifier custom classification log,Custom Field
+Stamp Group 7 stamps,Classifier custom classification log,Custom Field
+Stamp Group 6 stamps,Classifier custom classification log,Custom Field
+Stamp group 7,Classifier custom classification log,Custom Field
+Stamp group 6,Classifier custom classification log,Custom Field
+Stamp group 6 name,Classifier custom classification log,Custom Field
+Day,Distribution log,Custom Field
+Team,Distribution log,Custom Field
+Subteam members,Distributor,Custom Field
+Resolved Assigned owner name,Distribution log,Custom Field
+Status,Classifier territory map,Custom Field
+Tag collection,Classifier territory map,Custom Field
+Parent map,Classifier territory map,Custom Field
+For custom classification,Classifier object,Custom Field
+sObject Name,Classifier territory log,Custom Field
+For matching,Classifier object,Custom Field
+Filters json,Classifier object,Custom Field
+Record id,Classifier territory log,Custom Field
+For auto-conversion,Classifier object,Custom Field
+Record name,Classifier territory log,Custom Field
+Matched territory level,Classifier territory log,Custom Field
+Record sort multiple matches,Classifier matching object,Custom Field
+Default map,Classifier object,Custom Field
+Number of saving attempts made,Classifier territory log,Custom Field
+Last processed datetime,Classifier territory log,Custom Field
+Match filter SOQL,Classifier matching object,Custom Field
+Match filter ui config,Classifier matching object,Custom Field
+Matched territory,Classifier territory log,Custom Field
+Last error status code,Classifier territory log,Custom Field
+Record name,Classifier matching log,Custom Field
+In error,Classifier territory log,Custom Field
+sObject Name,Classifier matching log,Custom Field
+Clean zip,Classifier territory log,Custom Field
+Number of saving attempts made,Classifier matching log,Custom Field
+Error message,Classifier territory log,Custom Field
+Record id,Classifier matching log,Custom Field
+Clean country,Classifier territory log,Custom Field
+Matched Lead,Classifier matching log,Custom Field
+Clean state,Classifier territory log,Custom Field
+Matched lead name,Classifier matching log,Custom Field
+Matched Contact,Classifier matching log,Custom Field
+Shape too large?,Classifier territory,Custom Field
+Matched contact name,Classifier matching log,Custom Field
+Tag Value,Classifier territory,Custom Field
+Matched account name,Classifier matching log,Custom Field
+Number of items,Classifier territory,Custom Field
+Matched account type,Classifier matching log,Custom Field
+Shape,Classifier territory,Custom Field
+Execution order,Classifier territory,Custom Field
+Lead matching rule,Classifier matching log,Custom Field
+Items json,Classifier territory,Custom Field
+Matched Account,Classifier matching log,Custom Field
+Distribution_Engine_Community_User,,Permission Set
+Distribution_Engine_Custom_Team_Manager,,Permission Set
+Distribution_Engine_Manager,,Permission Set
+Distribution_Engine_Slack_Integration,,Permission Set
+Distribution_Engine_Team_Manager,,Permission Set
+Distribution_Engine_User,,Permission Set
+Distribution_Engine_Admin,,Permission Set
+Classifier custom classification log Layout,Classifier custom classification log,Page Layout
+Classifier field Layout,Classifier field,Page Layout
+Classifier matching log Layout,Classifier matching log,Page Layout
+Classifier stamp Layout,Classifier stamp,Page Layout
+Classifier stamp group Layout,Classifier stamp group,Page Layout
+Classifier matching object Layout,Classifier matching object,Page Layout
+Classifier object Layout,Classifier object,Page Layout
+Classifier territory map Layout,Classifier territory map,Page Layout
+Classifier territory Layout,Classifier territory,Page Layout
+Classifier territory log Layout,Classifier territory log,Page Layout
+Shift planner block Layout,Shift planner block,Page Layout
+Slack workspace Layout,Slack workspace,Page Layout
+Distribution Engine details Layout,Distribution Engine details,Page Layout
+Tag Cap Layout,Tag Cap,Page Layout
+Capping Pattern Layout,Capping Pattern,Page Layout
+Simulated distribution Layout,Simulated distribution,Page Layout
+Criteria cap stamp Layout,Criteria cap stamp,Page Layout
+Simulated distribution result Layout,Simulated distribution result,Page Layout
+Distribution last assignee Layout,Distribution last assignee,Page Layout
+Distributor Tag Value Layout,Distributor Tag Value,Page Layout
+Distribution log Layout,Distribution log,Page Layout
+Distribution tag weighting Layout,Distribution tag weighting,Page Layout
+Distribution engine profile Layout,Distribution engine profile,Page Layout
+Distributor Tag Category Layout,Distributor Tag Category,Page Layout
+Distributor Tag User Layout,Distributor Tag User,Page Layout
+Hours of Distribution Layout,Distribution hours,Page Layout
+Distribution team Layout,Distribution Team,Page Layout
+Distribution team alert Layout,Distribution team alert,Page Layout
+Distribution team alert config Layout,Distribution team alert config,Page Layout
+Team filter stamp Layout,Team filter stamp,Page Layout
+Distribution log action Layout,Distribution log action,Page Layout
+Distribution tag weighting pattern Layout,Distribution tag weighting pattern,Page Layout
+Distribution reject log Layout,Distribution reject log,Page Layout
+Targeted message Layout,Targeted message,Page Layout
+Team member runtime Layout,Team member runtime,Page Layout
+Team rejection config stamp Layout,Team rejection config stamp,Page Layout
+Distributor Tag Layout,Distributor Tag,Page Layout
+Team runtime Layout,Team runtime,Page Layout
+Team alert config stamp Layout,Team alert config stamp,Page Layout
+Team manager Layout,Team manager,Page Layout
+Distribution team member Layout,Distribution team member,Page Layout
+Distribution team rejection config Layout,Distribution team rejection config,Page Layout
+Distributor filter stamp Layout,Distributor filter stamp,Page Layout
+User messaging record Layout,User messaging record,Page Layout
+Distributor category team member Layout,Distributor category team member,Page Layout
+User permission set assignment Layout,User permission set assignment,Page Layout
+Distributor Layout,Distributor,Page Layout
+Team shift planner Layout,Team shift planner,Page Layout
+Distributor category Layout,Distributor category,Page Layout
+User activity log Layout,User activity log,Page Layout
+Classifier Account Domains Layout,Classifier Account Domains,Page Layout
+Distribution Engine Reports,,Report Folder
+Distributor runtime Layout,Distributor runtime,Page Layout
+Classifier Auto conversion log Layout,Classifier Auto conversion log,Page Layout
+Distribution Engine Dashboards,,Dashboard Folder
+Distributor schedule log Layout,Distributor schedule log,Page Layout
+Distributor notification settings Layout,Distributor notification settings,Page Layout
+User profile Layout,User profile,Page Layout
+Distributor rr-sa Layout,Distributor rr-sa,Page Layout
+User Slack Integration Layout,User Slack Integration,Page Layout
+Distribution Engine Role Notification,,Classic Email Template
+Distribution Engine Notification v2,,Classic Email Template
+Classifier Auto conversion rule Layout,Classifier Auto conversion rule,Page Layout
+History Layout,History,Page Layout
+Holiday Layout,Regional Holiday,Page Layout
+Distribution_engine,,Document Folder
+Distribution Engine Templates,,Classic Email Template Folder
+Assign_team_member_licenses,,Feature Parameter Boolean
+Holiday Region Layout,Holiday Region,Page Layout
+Member distributor detail Layout,Member distributor detail,Page Layout
+Migration Layout,Migration,Page Layout
+Distribution Engine Notification,,Classic Email Template
+Job setting Layout,Job setting,Page Layout
+Lock record Layout,Lock record,Page Layout
+Out-of-band assignment Layout,Out-of-band assignment,Page Layout
+Out of office Layout,Out of office,Page Layout
+Object sync action Layout,Object sync action,Page Layout
+Object sync log Layout,Object sync log,Page Layout
+Async assigner job Layout,Async assigner job,Page Layout
+Detail message,Distribution log,Custom Field
+Trigger distribution last attempt,Distribution Engine details,Custom Field
+DE Account Match Email Domain,Contact,Custom Field
+Distributed record value,Distribution log,Custom Field
+Trigger distribution pending key,Distribution Engine details,Custom Field
+Case,Distribution log,Custom Field
+Territory,Distribution Engine details,Custom Field
+Contact,Distribution log,Custom Field
+Trigger distribution attempt count,Distribution Engine details,Custom Field
+Auto-reassign error retry countdown,Distribution log,Custom Field
+Distribution_Engine,,App
+Stamp Group 8,Distribution Engine details,Custom Field
+Auto reassignment error date,Distribution log,Custom Field
+Stamp group 9,Distribution Engine details,Custom Field
+Number of saving attempts made,Distribution log,Custom Field
+Stamp Group 6,Distribution Engine details,Custom Field
+Assignment date,Distribution log,Custom Field
+Stamp Group 7,Distribution Engine details,Custom Field
+Assigned object id index,Distribution log,Custom Field
+Stamp Group 4,Distribution Engine details,Custom Field
+Name,Distribution log,Custom Field
+Stamp Group 5,Distribution Engine details,Custom Field
+Stamp Group 2,Distribution Engine details,Custom Field
+Stamp Group 3,Distribution Engine details,Custom Field
+Mobile logo console,,Document
+Stamp group 0,Distribution Engine details,Custom Field
+Mobile logo widget,,Document
+Stamp Group 1,Distribution Engine details,Custom Field
+Opportunity,Distribution Engine details,Custom Field
+Team_logo,,Document
+Record id,Distribution Engine details,Custom Field
+Matched Contact,Distribution Engine details,Custom Field
+Matched Lead,Distribution Engine details,Custom Field
+Matched Account,Distribution Engine details,Custom Field
+Logo,,Document
+Matched account type,Distribution Engine details,Custom Field
+Is de-duplicated,Distribution Engine details,Custom Field
+Is Personal Email,Distribution Engine details,Custom Field
+Email or Website Domain,Distribution Engine details,Custom Field
+Is auto converted,Distribution Engine details,Custom Field
+Event type,Async distribution event,Custom Field
+De-duplication datetime,Distribution Engine details,Custom Field
+Sequence number of the last record,Async distribution event,Custom Field
+Object,Async distribution event,Custom Field
+Field for Assign by Field Value,Distribution log,Custom Field
+Is pending,Distribution log,Custom Field
+Weighting-in-hand was used,Distribution log,Custom Field
+Post-assignment processing error,Distribution log,Custom Field
+Ready for distribution Status value,Distribution log,Custom Field
+Alert tip,Distribution log,Custom Field
+Is lookup,Distribution log,Custom Field
+Time to action mins,Distribution log,Custom Field
+Assigned Status value,Distribution log,Custom Field
+Object sync is enabled,Distribution log,Custom Field
+Rejection-in-hand was used,Distribution log,Custom Field
+Actions complete,Distribution log,Custom Field
+Last action complete,Distribution log,Custom Field
+Sticky match level,Distribution log,Custom Field
+Active on assignment,Distribution log,Custom Field
+Load balance increased,Distribution log,Custom Field
+Unique identifier,Distribution log,Custom Field
+Account,Distribution log,Custom Field
+Alert is enabled,Distribution log,Custom Field
+Status on assignment,Distribution log,Custom Field
+Criteria Cap count increased,Distribution log,Custom Field
+Last action date,Distribution log,Custom Field
+Sticky creator,Distribution log,Custom Field
+Error,Distribution log,Custom Field
+Object id,Distribution last assignee,Custom Field
+Salesforce team member role,Distribution log,Custom Field
+Active count increased,Distribution log,Custom Field
+Number of SF Team assignment attempts,Distribution log,Custom Field
+Previous assignees,Distribution last assignee,Custom Field
+First assignment attempt date,Distribution log,Custom Field
+Shift name,Distribution hours,Custom Field
+SLA alert,Distribution log,Custom Field
+Salesforce team member id,Distribution log,Custom Field
+Timezone,Distribution hours,Custom Field
+Last error status code,Distribution log,Custom Field
+Shift hours,Distribution hours,Custom Field
+Fields to update config,Distribution log,Custom Field
+Json,Distribution hours,Custom Field
+Disable standard email notifications,Distribution log,Custom Field
+Event type,Distribution event,Custom Field
+Last error message,Distribution log,Custom Field
+Team member id,Distribution event,Custom Field
+Assigned record id,Distribution event,Custom Field
+Distributor name,Distribution log,Custom Field
+Assigned record name,Distribution event,Custom Field
+Distributor schedule log,Distribution log,Custom Field
+Distributor,Distribution log,Custom Field
+Logo Team,,Document
+Object type,Distribution event,Custom Field
+Assigned owner,Distribution event,Custom Field
+Distributor method,Distribution log,Custom Field
+Logo team member,,Document
+Ready for deletion,Distribution engine profile,Custom Field
+Team member,Distribution log,Custom Field
+Active on assignment,Distribution event,Custom Field
+Team name,Distribution log,Custom Field
+Distribution number,Distribution log,Custom Field
+Permission set,Distribution engine profile,Custom Field
+Distribution sequence,Distribution log,Custom Field
+Profile JSON,Distribution engine profile,Custom Field
+Distribution Engine Team Role Notification,Distribution log,Workflow Rule
+Distribution date,Distribution log,Custom Field
+Distribution Engine Notification,Distribution log,Workflow Rule
+Distribution Engine details,Contact,Custom Field
+DE Classifier Status,Contact,Custom Field
+sObject Name,Distribution Engine details,Custom Field
+Distribution count,Contact,Custom Field
+Is default,Distribution engine profile,Custom Field
+Distribution Engine details,Case,Custom Field
+Is archived,Case,Custom Field
+DE Classifier Status,Case,Custom Field
+Distribution count,Case,Custom Field
+Cap type,Capping Pattern,Custom Field
+Distribution action,Case,Custom Field
+Default cap values,Capping Pattern,Custom Field
+Tag collection,Capping Pattern,Custom Field
+Auto conversion datetime,Distribution Engine details,Custom Field
+Status,Async assigner job,Custom Field
+Auto-conversion rule,Distribution Engine details,Custom Field
+Sequence number of the first record,Async distribution event,Custom Field
+Cap filter sequence,Criteria cap stamp,Custom Field
+Sequence number of the last record,Async assigner job,Custom Field
+Object,Async assigner job,Custom Field
+Assigner queueable job id,Async assigner job,Custom Field
+Date last auto reassigned,Contact,Custom Field
+Logo out of office,,Document
+Logo settings,,Document
+Time to action (mins),Contact,Custom Field
+Type of the assigner job,Async assigner job,Custom Field
+Assigner exception error code,Async assigner job,Custom Field
+Is reassigned,Contact,Custom Field
+Date last distributed to user,Contact,Custom Field
+Sequence number of the first record,Async assigner job,Custom Field
+Logo Holidays,,Document
+Assigner exception error message,Async assigner job,Custom Field
+Is distributed,Contact,Custom Field
+Logo Tags,,Document
+Logo distributor,,Document
+Logo logs,,Document
+Logo_Analytics,,Document
+Logo Classifier,,Document
+Logo Cog,,Document
+Logo Console,,Document
+Source queue,Case,Custom Field
+Time to action (mins),Case,Custom Field
+Date last distributed to user,Case,Custom Field
+Date last auto reassigned,Case,Custom Field
+Is triggered,Case,Custom Field
+Last archive date,Case,Custom Field
+Trigger enabled,Case,Custom Field
+Is distributed,Case,Custom Field
+Is auto reassigned,Case,Custom Field
+Re-assign from SLA,Distributor,Custom Field
+Ready for deletion,Distributor,Custom Field
+Slack notification on SLA,Distributor notification settings,Custom Field
+Is OOO,Distributor rr-sa,Custom Field
+Reassign fields to update config,Distributor,Custom Field
+Filter sequence,Distributor category,Custom Field
+Number of records to pull,Distributor,Custom Field
+Queue,Distributor,Custom Field
+Slack notification on assignment,Distributor notification settings,Custom Field
+Filter field,Distributor category,Custom Field
+Log type,Distributor schedule log,Custom Field
+Order field 3 (deprecated),Distributor,Custom Field
+Filter field type,Distributor category,Custom Field
+Order by 3 (deprecated),Distributor,Custom Field
+Filter comparison argument,Distributor category,Custom Field
+Order field 2 (deprecated),Distributor,Custom Field
+Run record limit,Distributor schedule log,Custom Field
+Filter comparison operator,Distributor category,Custom Field
+Order by 2 (deprecated),Distributor,Custom Field
+Shutdown distributors,Distributor schedule log,Custom Field
+Log type,Distributor schedule log,Custom Field
+Order field 1 (deprecated),Distributor,Custom Field
+Sticky unit,Distributor,Custom Field
+Order by 1 (deprecated),Distributor,Custom Field
+Records assigned,Distributor schedule log,Custom Field
+User_exclusion_field_name,Distributor,Custom Field
+Lookup unique id,Distributor,Custom Field
+Processing max heap usage (bytes),Distributor schedule log,Custom Field
+Sticky match level,Distributor,Custom Field
+Member filter type,Distributor,Custom Field
+Processing time (sec),Distributor schedule log,Custom Field
+Sticky period,Distributor,Custom Field
+Lookup unique field 2,Distributor,Custom Field
+Sticky match field,Distributor,Custom Field
+Lookup unique field 3,Distributor,Custom Field
+Sticky caps,Distributor,Custom Field
+Lookup owner,Distributor,Custom Field
+Sort orders config,Distributor,Custom Field
+Lookup Owner Tie Breakers Config,Distributor,Custom Field
+Source,Distributor,Custom Field
+Lookup match field,Distributor,Custom Field
+Team access levels,Distributor,Custom Field
+Lookup object,Distributor,Custom Field
+Team role value,Distributor,Custom Field
+Assign default Salesforce team,Distributor,Custom Field
+Lookup match field 2,Distributor,Custom Field
+Case team role id,Distributor,Custom Field
+Lookup match field 3,Distributor,Custom Field
+Lookup dynamic fields,Distributor,Custom Field
+Remove sticky from reassigned records,Distributor,Custom Field
+Lookup filters configuration,Distributor,Custom Field
+Remove sticky from rejected records,Distributor,Custom Field
+First related owner role,Distributor,Custom Field
+Round robin weighting enabled,Distributor,Custom Field
+Load balancing level,Distributor,Custom Field
+Second related owner role,Distributor,Custom Field
+First related owner object type,Distributor,Custom Field
+Disable user logout,Distributor,Custom Field
+Second related owner object type,Distributor,Custom Field
+Classifier territory,,Custom Object
+Classifier stamp group,,Custom Object
+Classifier stamp,,Custom Object
+End Date,Regional Holiday,Custom Field
+Next apex job id,Distributor schedule log,Custom Field
+Classifier object,,Custom Object
+Processing end heap usage (bytes),Distributor schedule log,Custom Field
+End hour,Regional Holiday,Custom Field
+Load balanced count,Member distributor detail,Custom Field
+Log reuse count,Distributor schedule log,Custom Field
+End min,Regional Holiday,Custom Field
+Log type,Distributor schedule log,Custom Field
+Classifier territory map,,Custom Object
+Error,Distributor schedule log,Custom Field
+Last count reset date,Member distributor detail,Custom Field
+Start Date,Regional Holiday,Custom Field
+Classifier territory log,,Custom Object
+End datetime,Regional Holiday,Custom Field
+Health checker restarted DE,Distributor schedule log,Custom Field
+Last rejection date,Member distributor detail,Custom Field
+Distributor algorithm,Member distributor detail,Custom Field
+First distribution start date,Distributor schedule log,Custom Field
+Record name,History,Custom Field
+Distributor/team member ids,Member distributor detail,Custom Field
+Has distributions in error,Distributor schedule log,Custom Field
+User id,History,Custom Field
+Distribution control count,Member distributor detail,Custom Field
+Error message,Distributor schedule log,Custom Field
+Parent object type,History,Custom Field
+Distribution sequence,Member distributor detail,Custom Field
+Failing distributors,Distributor schedule log,Custom Field
+Record name,History,Custom Field
+Distribution end date,Distributor schedule log,Custom Field
+Lock name,Lock record,Custom Field
+Old value,History,Custom Field
+Actual distribution sequence,Member distributor detail,Custom Field
+Distribution start date,Distributor schedule log,Custom Field
+Parent change id,History,Custom Field
+Apex job id,Distributor schedule log,Custom Field
+Object,History,Custom Field
+Distribution chain start date,Distributor schedule log,Custom Field
+Last accessed from,Lock record,Custom Field
+Object id,History,Custom Field
+Field,History,Custom Field
+Load balancing duration,Distributor runtime,Custom Field
+User messaging record,,Custom Object
+Additional information,Distributor schedule log,Custom Field
+New value,History,Custom Field
+User activity log,,Custom Object
+Change datetime,History,Custom Field
+Last load balance reset,Distributor runtime,Custom Field
+Change type,History,Custom Field
+Load balanced by,Distributor runtime,Custom Field
+Classifier Account Domains,,Custom Object
+Last distribution date,Distributor runtime,Custom Field
+Background change,History,Custom Field
+Last distribution is ih,Distributor runtime,Custom Field
+User Slack Integration,,Custom Object
+Unique identifier,Distributor rr-sa,Custom Field
+User profile,,Custom Object
+User,Distributor rr-sa,Custom Field
+User permission set assignment,,Custom Object
+Sticky match level,Distributor rr-sa,Custom Field
+Classifier custom classification log,,Custom Object
+Distribution team,Distributor rr-sa,Custom Field
+Classifier Auto conversion rule,,Custom Object
+Matched assignments,Distributor rr-sa,Custom Field
+Classifier Auto conversion log,,Custom Object
+Object name,Distributor rr-sa,Custom Field
+Classifier matching object,,Custom Object
+Classifier matching log,,Custom Object
+Classifier field,,Custom Object
+Re-assigned to id,Distribution log,Custom Field
+Reassign fields to update config,Distribution team alert config,Custom Field
+Re-assign from SLA,Distribution team alert config,Custom Field
+Reassignment date,Distribution log,Custom Field
+Distributor runtime,Distributor,Custom Field
+Owner user before assignment,Distribution log,Custom Field
+Re-assign to user enabled,Distribution team alert config,Custom Field
+Disable user logout on reassignment,Distribution team alert config,Custom Field
+Distributor type,Distributor,Custom Field
+Owner queue before assignment,Distribution log,Custom Field
+Distribution control cap,Distributor,Custom Field
+Execution order,Distribution team alert config,Custom Field
+Post-assignment processing stage,Distribution log,Custom Field
+Auto re-assign enabled,Distribution team alert config,Custom Field
+Member cap,Distributor,Custom Field
+Post assignment active status value,Distribution log,Custom Field
+Alert unit,Distribution team alert,Custom Field
+Assigned queue,Distribution log,Custom Field
+Distributor Description,Distributor,Custom Field
+Distribute from user,Distributor,Custom Field
+Distribution team alert config,Distribution team alert,Custom Field
+Post-assignment message,Distribution log,Custom Field
+Assigned user,Distribution log,Custom Field
+Default owner,Distributor,Custom Field
+Period,Distribution team alert,Custom Field
+Alert sequence,Distribution team alert,Custom Field
+Assigned owner name,Distribution log,Custom Field
+Default owner user,Distributor,Custom Field
+Alert condition operator,Distribution team alert,Custom Field
+Criteria-based caps ui config,Distributor,Custom Field
+Object-specific distribution sequence,Distribution log,Custom Field
+Alert datetime field,Distribution team alert,Custom Field
+Default owner queue,Distributor,Custom Field
+Opportunity,Distribution log,Custom Field
+Alert condition field name,Distribution team alert,Custom Field
+When next assignment attempt is allowed,Distribution log,Custom Field
+Alert condition field type,Distribution team alert,Custom Field
+Number of Salesforce Team Members Added,Distribution log,Custom Field
+Last alert sequence,Distribution log,Custom Field
+Team,Distribution reject log,Custom Field
+Alert condition argument,Distribution team alert,Custom Field
+Lead,Distribution log,Custom Field
+Last alert date,Distribution log,Custom Field
+Review datetime,Distribution reject log,Custom Field
+Last alert processed date,Distribution log,Custom Field
+Reviewed by,Distribution reject log,Custom Field
+Is substitute,Distribution log,Custom Field
+Request datetime,Distribution reject log,Custom Field
+Last action sequence,Distribution log,Custom Field
+Requested by,Distribution reject log,Custom Field
+Assigned object id,Distribution reject log,Custom Field
+Is Salesforce Team Processing required?,Distribution log,Custom Field
+Is sticky,Distribution log,Custom Field
+Reason,Distribution reject log,Custom Field
+Is related owner,Distribution log,Custom Field
+Time to action mins,Distribution log action,Custom Field
+Approved,Distribution reject log,Custom Field
+Is Salesforce Team Member role assigned?,Distribution log,Custom Field
+Action date,Distribution log action,Custom Field
+Re-assigned,Distribution log,Custom Field
+Time to action days,Distribution log action,Custom Field
+Assign to field,Distribution log,Custom Field
+Is status changed post assignment?,Distribution log,Custom Field
+Assigned object,Distribution log,Custom Field
+Campaign filter ids,Distributor,Custom Field
+Treat manual assignment as rejection,Distributor,Custom Field
+Criteria-based caps filter soql,Distributor,Custom Field
+Assign on OoO,Distributor,Custom Field
+Retain sticky on OoO,Distributor,Custom Field
+Second related owner object,Distributor,Custom Field
+Assign on widget logout,Distributor,Custom Field
+Retain sticky on widget logout,Distributor,Custom Field
+Field for Assign by Field Value,Distributor,Custom Field
+Round robin disabled,Distributor,Custom Field
+Second related owner field,Distributor,Custom Field
+First related owner object,Distributor,Custom Field
+Ready for distribution Status value,Distributor,Custom Field
+Salesforce team assignment enabled?,Distributor,Custom Field
+Algorithm,Distributor,Custom Field
+Reject to user,Distributor,Custom Field
+Rejection enabled,Distributor,Custom Field
+Assigned Status value,Distributor,Custom Field
+First related owner field,Distributor,Custom Field
+Respect distribution hours,Distributor,Custom Field
+Re-assign to user enabled,Distributor,Custom Field
+Reject to queue,Distributor,Custom Field
+Sequence,Distributor Tag,Custom Field
+Reject to user,Distributor,Custom Field
+Replace record on rejection option,Distributor,Custom Field
+Type,Distributor Tag,Custom Field
+Field name,Distributor Tag,Custom Field
+Filter logic enabled,Distributor,Custom Field
+Re-assign to user,Distributor,Custom Field
+Field type,Distributor Tag,Custom Field
+Member filter enabled,Distributor,Custom Field
+Reject fields to update config,Distributor,Custom Field
+Distributor Tag Category,Distributor Tag,Custom Field
+Filter enabled,Distributor,Custom Field
+Distributor Tag Value,Distributor Tag,Custom Field
+Is excluding users by field,Distributor,Custom Field
+Re-assign to queue,Distributor,Custom Field
+Classifier type,Distributor Tag,Custom Field
+Is all members,Distributor,Custom Field
+Auto re-assign enabled,Distributor,Custom Field
+Comparison operator,Distributor Tag,Custom Field
+Advanced filter mode,Distributor,Custom Field
+Replace rejected records,Distribution team rejection config,Custom Field
+SLAs enabled,Distributor,Custom Field
+Stamp names,Distribution team rejection config,Custom Field
+Ignore team-level caps,Distributor,Custom Field
+Reject to queue,Distribution team rejection config,Custom Field
+Active,Distributor,Custom Field
+Reject to user,Distribution team rejection config,Custom Field
+Filter logic,Distributor,Custom Field
+Reject to user,Distribution team rejection config,Custom Field
+Advanced filter expression,Distributor,Custom Field
+Reject fields to update config,Distribution team rejection config,Custom Field
+Fields to update config,Distributor,Custom Field
+Stamp names,Distribution team alert config,Custom Field
+Execution order,Distribution team rejection config,Custom Field
+Filter by campaign,Distributor,Custom Field
+Disable standard email notifications,Distributor,Custom Field
+Re-assign to queue,Distribution team alert config,Custom Field
+Execution order,Distributor,Custom Field
+Re-assign to user,Distribution team alert config,Custom Field
+Dynamic owner formula,Distributor,Custom Field
+Distribution reject log,Distribution log,Custom Field
+Event type field,Distribution Team,Custom Field
+Source user,Simulated distribution,Custom Field
+Slack app ID,Slack workspace,Custom Field
+Source status,Simulated distribution,Custom Field
+Slack bot token,Slack workspace,Custom Field
+Source status field name,Simulated distribution,Custom Field
+Alert type,Distribution Team,Custom Field
+Reminder job started at,Slack workspace,Custom Field
+Simulation result,Simulated distribution,Custom Field
+Assign to field,Distribution Team,Custom Field
+Reminder job started by,Slack workspace,Custom Field
+Source queue,Simulated distribution,Custom Field
+Job id,Simulated distribution,Custom Field
+Reminder job skipped connected,Slack workspace,Custom Field
+Respect distribution hours,Distribution Team,Custom Field
+Reminder job skipped recently,Slack workspace,Custom Field
+Simulated run date time,Simulated distribution,Custom Field
+Team alert stamp group,Distribution Team,Custom Field
+Is the classifier status overridden?,Simulated distribution,Custom Field
+Reminder job id,Slack workspace,Custom Field
+Tracking respects distribution hours,Distribution Team,Custom Field
+Active cap and balance by,Distribution Team,Custom Field
+Is the source overridden?,Simulated distribution,Custom Field
+Reminder job sent count,Slack workspace,Custom Field
+In Error,Simulated distribution,Custom Field
+Reminder job completed at,Slack workspace,Custom Field
+Snooze interval minutes,Targeted message,Custom Field
+Include inactive teams and distributors,Simulated distribution,Custom Field
+Message version,Targeted message,Custom Field
+Reminder job failed count,Slack workspace,Custom Field
+Connection status,Slack workspace,Custom Field
+Error status code,Simulated distribution,Custom Field
+Message type,Targeted message,Custom Field
+Ignore caps,Simulated distribution,Custom Field
+Last install announcement sent at,Slack workspace,Custom Field
+Page name,Targeted message,Custom Field
+Connection broken at,Slack workspace,Custom Field
+Current processing state,Simulated distribution,Custom Field
+Connection broken reason,Slack workspace,Custom Field
+Error message,Simulated distribution,Custom Field
+Assignable Object Type,Simulated distribution,Custom Field
+Automatic user mapping has run,Slack workspace,Custom Field
+Simulate assignment to all distributors,Simulated distribution,Custom Field
+Team shift planner,Shift planner block,Custom Field
+Assignable Object Id,Simulated distribution,Custom Field
+Start date,Shift planner block,Custom Field
+Team member,Shift planner block,Custom Field
+End date,Shift planner block,Custom Field
+Ready for deletion,Shift planner block,Custom Field
+Distribution hours,Shift planner block,Custom Field
+Daily assignment count,Team member runtime,Custom Field
+Distribution sequence,Team member runtime,Custom Field
+Triggers respect distribution hours,Distribution Team,Custom Field
+Maximum number of attempts,Targeted message,Custom Field
+Specified team managers enabled,Distribution Team,Custom Field
+Message key,Targeted message,Custom Field
+Active count,Team member runtime,Custom Field
+Is active,Targeted message,Custom Field
+Stamp based rejection,Distribution Team,Custom Field
+Is for new users only?,Targeted message,Custom Field
+Use team level round-robin,Distribution Team,Custom Field
+Content,Targeted message,Custom Field
+Use Shift Planner,Distribution Team,Custom Field
+User,Distribution team member,Custom Field
+Display criteria,Targeted message,Custom Field
+Stamp based SLAs,Distribution Team,Custom Field
+Weighting,Distribution team member,Custom Field
+Distribution logging disabled,Distribution Team,Custom Field
+Tag collection,Distribution tag weighting pattern,Custom Field
+Team member runtime,Distribution team member,Custom Field
+Audience permission sets,Targeted message,Custom Field
+Enable post-assignment object sync,Distribution Team,Custom Field
+Team member type,Distribution team member,Custom Field
+Distribute to queue,Distribution Team,Custom Field
+Queue,Distribution team member,Custom Field
+Weighting value,Distribution tag weighting,Custom Field
+Default weighting,Distribution tag weighting pattern,Custom Field
+Is dynamic team member mgmt enabled,Distribution Team,Custom Field
+Ready for deletion,Distribution team member,Custom Field
+Active,Distribution team member,Custom Field
+Auto-action on event enabled,Distribution Team,Custom Field
+Territory map collection,Distributor Tag Category,Custom Field
+Auto-action on task enabled,Distribution Team,Custom Field
+Enable member distribution hours,Distribution team member,Custom Field
+User,Distributor Tag User,Custom Field
+Active,Distribution Team,Custom Field
+Tag cap values,Tag Cap,Custom Field
+Distribution hours,Distribution team member,Custom Field
+SLAs,Distribution Team,Custom Field
+Stamp group collection,Distributor Tag Category,Custom Field
+Is Person Accounts,Distribution Team,Custom Field
+User mapping sync started at,Slack workspace,Custom Field
+Time to Action,Distribution Team,Custom Field
+User mapping sync status,Slack workspace,Custom Field
+Event types to auto-action,Distribution Team,Custom Field
+User mapping sync heartbeat at,Slack workspace,Custom Field
+Holiday Region,Distribution Team,Custom Field
+User mapping sync run UUID,Slack workspace,Custom Field
+Dynamic team member configuration,Distribution Team,Custom Field
+User mapping sync error,Slack workspace,Custom Field
+Enable assignment rejection,Distribution Team,Custom Field
+User mapping sync finished at,Slack workspace,Custom Field
+Slack workspace domain,Slack workspace,Custom Field
+Value field,Distribution Team,Custom Field
+Distribution hours,Distribution Team,Custom Field
+Slack workspace name,Slack workspace,Custom Field
+Capping pattern,Distribution Team,Custom Field
+Slack refresh token,Slack workspace,Custom Field
+Slack team ID,Slack workspace,Custom Field
+Team Description,Distribution Team,Custom Field
+Slack bot token expiry,Slack workspace,Custom Field
+Task type field,Distribution Team,Custom Field
+Auto action value,Distribution Team,Custom Field
+Slack bot user ID,Slack workspace,Custom Field
+Distributor notification settings,,Custom Object
+Team manager,,Custom Object
+Distributor category team member,,Custom Object
+Team filter stamp,,Custom Object
+Distribution Team,,Custom Object
+Distributor filter stamp,,Custom Object
+Time to action (mins),Lead,Custom Field
+Distributor category,,Custom Object
+Targeted message,,Custom Object
+Distribution object,Object sync log,Custom Field
+Last rejected,Lead,Custom Field
+Distributor schedule log,,Custom Object
+Error message,Object sync log,Custom Field
+Source queue,Lead,Custom Field
+Team runtime,,Custom Object
+Assignee,Object sync log,Custom Field
+Assignment group size,Out-of-band assignment,Custom Field
+Distributor runtime,,Custom Object
+Last distributed,Lead,Custom Field
+Team member runtime,,Custom Object
+Assignee name,Object sync log,Custom Field
+Distribution team member,,Custom Object
+Distributor rr-sa,,Custom Object
+Increased count by,Out-of-band assignment,Custom Field
+Last reassigned,Lead,Custom Field
+Assignment date,Out-of-band assignment,Custom Field
+Is triggered,Lead,Custom Field
+Related object filter soql,Object sync action,Custom Field
+Actions performed,Object sync log,Custom Field
+Index in assignment group,Out-of-band assignment,Custom Field
+Last archive date,Lead,Custom Field
+Is rejected,Lead,Custom Field
+Related object,Object sync action,Custom Field
+Time to action (mins),Opportunity,Custom Field
+Active count increased by,Out-of-band assignment,Custom Field
+Config,Object sync action,Custom Field
+Trigger enabled,Lead,Custom Field
+Active,Object sync action,Custom Field
+Date last auto reassigned,Opportunity,Custom Field
+Is distributed,Lead,Custom Field
+Is auto reassigned,Lead,Custom Field
+Last rejected,Opportunity,Custom Field
+Lookup field name,Object sync action,Custom Field
+Distribution Engine details,Lead,Custom Field
+Distribution object,Object sync action,Custom Field
+Is triggered,Opportunity,Custom Field
+Team shift planner,,Custom Object
+Date last distributed to user,Opportunity,Custom Field
+Execution order,Object sync action,Custom Field
+Is archived,Lead,Custom Field
+DE Classifier Status,Lead,Custom Field
+Distribution event,,Custom Object
+Action type,Object sync action,Custom Field
+Distribution count,Lead,Custom Field
+Distribution engine profile,,Custom Object
+Out of office,,Custom Object
+Distribution Engine details,,Custom Object
+Migration type,Migration,Custom Field
+Out-of-band assignment,,Custom Object
+Value Date Time,Job setting,Custom Field
+Distribution action,Lead,Custom Field
+Distribution log action,,Custom Object
+Object IDs,Migration,Custom Field
+Simulated distribution result,,Custom Object
+Distribution log,,Custom Object
+Parent migration,Migration,Custom Field
+Simulated distribution,,Custom Object
+Distribution last assignee,,Custom Object
+Is parent migration,Migration,Custom Field
+Shift planner block,,Custom Object
+Distribution hours,,Custom Object
+Migration parameters,Migration,Custom Field
+Data type,Migration,Custom Field
+Distributor Tag Category,,Custom Object
+Start min,Regional Holiday,Custom Field
+Team alert config stamp,,Custom Object
+Distribution team alert config,,Custom Object
+Error message,Migration,Custom Field
+Tag Cap,,Custom Object
+Timezone,Regional Holiday,Custom Field
+Distribution team alert,,Custom Object
+Slack workspace,,Custom Object
+Start datetime,Regional Holiday,Custom Field
+Weighting ih,Member distributor detail,Custom Field
+Completed date,Migration,Custom Field
+Distribution reject log,,Custom Object
+Start hour,Regional Holiday,Custom Field
+Distribution tag weighting pattern,,Custom Object
+Distributor,,Custom Object
+Rejections ih,Member distributor detail,Custom Field
+All day,Regional Holiday,Custom Field
+Distribution tag weighting,,Custom Object
+Distributor Tag,,Custom Object
+Round robin failure count,Member distributor detail,Custom Field
+Distributor Tag Value,,Custom Object
+Team rejection config stamp,,Custom Object
+Distribution team rejection config,,Custom Object
+Distributor Tag User,,Custom Object
+Async assigner job,,Custom Object
+Migration,,Custom Object
+Member distributor detail,,Custom Object
+Lock record,,Custom Object
+Job setting,,Custom Object
+Is rejected,Opportunity,Custom Field
+Capping Pattern,,Custom Object
+Trigger enabled,Opportunity,Custom Field
+Is distributed to user,Opportunity,Custom Field
+Async distribution event,,Custom Object
+Is auto reassigned,Opportunity,Custom Field
+Distribution count,Opportunity,Custom Field
+Distribution Engine details,Opportunity,Custom Field
+DE Classifier Status,Opportunity,Custom Field
+Criteria cap stamp,,Custom Object
+Simulated distribution,Simulated distribution result,Custom Field
+Timezone,Out of office,Custom Field
+Object sync log,,Custom Object
+Simulation result,Simulated distribution result,Custom Field
+User,Out of office,Custom Field
+Distributor,Simulated distribution result,Custom Field
+Object sync action,,Custom Object
+Start is all day,Out of office,Custom Field
+Order,Simulated distribution result,Custom Field
+Start min,Out of office,Custom Field
+Start datetime,Out of office,Custom Field
+Simulation Status,Simulated distribution,Custom Field
+Start hour,Out of office,Custom Field
+Queue,Out of office,Custom Field
+Start date,Out of office,Custom Field
+End is all day,Out of office,Custom Field
+Team name,Object sync log,Custom Field
+End min,Out of office,Custom Field
+End datetime,Out of office,Custom Field
+Status,Object sync log,Custom Field
+End hour,Out of office,Custom Field
+Team,Object sync log,Custom Field
+Activity id,Out of office,Custom Field
+Record id,Object sync log,Custom Field
+End date,Out of office,Custom Field
+Record name,Object sync log,Custom Field
+Load balance increased by,Out-of-band assignment,Custom Field
+Number of errors,Object sync log,Custom Field
+Number of synced records,Object sync log,Custom Field
+Was hourly tracked,Out-of-band assignment,Custom Field
+First assignment in a group,Out-of-band assignment,Custom Field
+In error,Object sync log,Custom Field
+Holiday Region,,Custom Object
+Last processed datetime,Object sync log,Custom Field
+Put to back of a queue,Out-of-band assignment,Custom Field
+Regional Holiday,,Custom Object
+History,,Custom Object
+Team member,Out-of-band assignment,Custom Field
+analyticsGuidance,,Prompt
+Distribution Analytics,,Tab
+Distribution Console,,Tab
+Distribution Sync,,Tab
+Distribution Logs,,Tab
+Distribution Tags,,Tab
+Record Classification,,Tab
+Distribution Settings,,Tab
+Distribution Availability,,Tab
+Date last distributed to user,Account,Custom Field
+Is reassigned,Account,Custom Field
+Time to action (mins),Account,Custom Field
+Date last auto reassigned,Account,Custom Field
+ArchiveLogUIDAO,,Apex Class
+Distributor filter,Distributor filter stamp,Custom Field
+Distribution Team,,Tab
+Distributor,Distributor category,Custom Field
+AppSettingsUIVO,,Apex Class
+Distributor,Distributor notification settings,Custom Field
+AppStatusUIVO,,Apex Class
+Distribution team member,Distributor category team member,Custom Field
+Distribution team rejection config,Team rejection config stamp,Custom Field
+Distribution team,Distribution team rejection config,Custom Field
+Distribution team,Distributor,Custom Field
+Distributor,Distributor Tag,Custom Field
+ArchiveLogUIVO,,Apex Class
+Distribution team,Distribution team alert,Custom Field
+ArchiveScheduler,,Apex Class
+Distribution log,Distribution log action,Custom Field
+Distribution team alert config,Team alert config stamp,Custom Field
+Distribution team,Distribution team alert config,Custom Field
+APVTeamUIVO,,Apex Class
+ArchiveUtil_Tests,,Apex Class
+APVUIVO,,Apex Class
+Archiver,,Apex Class
+APVDistributorUIVO,,Apex Class
+ArchiveScheduler_Tests,,Apex Class
+Distributor,Criteria cap stamp,Custom Field
+APVSourceUIVO,,Apex Class
+ArchiveUtil,,Apex Class
+AppAnalytics,,Apex Class
+AppAnalytics_Tests,,Apex Class
+ApiTriggerDistributionExecutor,,Apex Class
+AppSettingUtils,,Apex Class
+AppSettingUtils_Tests,,Apex Class
+AppMonitoringUIUtils,,Apex Class
+AppMonitoringUIUtils_Tests,,Apex Class
+Distribution count,Account,Custom Field
+DE Classifier Status,Account,Custom Field
+Is distributed,Account,Custom Field
+Distribution Engine details,Account,Custom Field
+Tag value,Tag Cap,Custom Field
+Distributor,Member distributor detail,Custom Field
+Classifier stamp,Team filter stamp,Custom Field
+Distributor Tag Value,Distribution tag weighting,Custom Field
+Classifier stamp,Distributor filter stamp,Custom Field
+Classifier stamp,Team rejection config stamp,Custom Field
+Distribution team member,Distributor rr-sa,Custom Field
+Distributor,Distributor category team member,Custom Field
+Classifier stamp,Team alert config stamp,Custom Field
+Classifier stamp,Criteria cap stamp,Custom Field
+Classifier object,Classifier field,Custom Field
+Distribution team,Distribution team member,Custom Field
+Territory map,Classifier territory,Custom Field
+Stamp group,Classifier stamp,Custom Field
+Tag Category,Distributor Tag Value,Custom Field
+Tag Value,Distributor Tag User,Custom Field
+Team,Team filter stamp,Custom Field
+Distribution tag weighting pattern,Distribution tag weighting,Custom Field
+Holiday Group,Regional Holiday,Custom Field
+Distributor,Distributor rr-sa,Custom Field
+Capping Pattern,Tag Cap,Custom Field
+Distribution team member,Member distributor detail,Custom Field
+TeamHistory,,Apex Class
+TeamHistory_Tests,,Apex Class
+TeamFeaturesUIVO,,Apex Class
+TeamLevelCapsUtility_Tests,,Apex Class
+TeamLevelFixedCappingProvider,,Apex Class
+TeamHolidayUIVO,,Apex Class
+TeamLevelCapsUtility,,Apex Class
+TeamMemberDAO,,Apex Class
+TeamMemberDAO_Tests,,Apex Class
+TeamLevelFixedCappingProvider_Tests,,Apex Class
+TeamManagerUIVO,,Apex Class
+TargetedMessageDAO_Tests,,Apex Class
+TargetedMessageUIVO,,Apex Class
+TargetedMessageContentUIVO,,Apex Class
+TargetedMessageDAO,,Apex Class
+TeamDAO,,Apex Class
+TeamDAO_Populate_Tests,,Apex Class
+TargetedMessageWrapperUIVO,,Apex Class
+TeamCapsUIVO,,Apex Class
+TeamDAO_Tests,,Apex Class
+TeamDistributorTagUIVO,,Apex Class
+TestToolComponentController_Tests,,Apex Class
+TerritoriesLogUIVO,,Apex Class
+TestUtils_AppSettings,,Apex Class
+TerritoryClassificationService,,Apex Class
+TestUtils_Assertions,,Apex Class
+TeamsMigrationExecutor_Tests,,Apex Class
+TestUtils_Accounts,,Apex Class
+TeamsMigrationParametersVO,,Apex Class
+TestUtils_ActionTracking,,Apex Class
+TerritoryClassificationUIDAO,,Apex Class
+TestUtils_AsyncDistribution,,Apex Class
+TerritoryClassificationUIDAO_Tests,,Apex Class
+TestUtils_AutoConversion,,Apex Class
+TerritoryClassificationService_Tests,,Apex Class
+TestUtils_AssignmentSimulation,,Apex Class
+TerritoryClassificationSettingsUIVO,,Apex Class
+TestUtils_AsyncApexJob,,Apex Class
+TerritoryFieldMatchUIVO,,Apex Class
+TestUtils_Cases,,Apex Class
+TerritoryLimitsUIVO,,Apex Class
+TestUtils_Classifier,,Apex Class
+TerritoryClassificationUIUtils,,Apex Class
+TestUtils_Campaigns,,Apex Class
+TerritoryClassificationUIUtils_Tests,,Apex Class
+TestUtils_CappingPatterns,,Apex Class
+TeamSLAUIUtils_Tests,,Apex Class
+Team_TeamPerformance_Controller_Tests,,Apex Class
+TestContext_Tests,,Apex Class
+TeamSLAsUIVO,,Apex Class
+Team_TeamSettings_Controller,,Apex Class
+TestDataUtils,,Apex Class
+TeamSLAUIDAO_Tests,,Apex Class
+Team_TeamMemberList_Controller_Tests,,Apex Class
+TeamSLAUIUtils,,Apex Class
+Team_TeamPerformance_Controller,,Apex Class
+TeamSettingsUIVO,,Apex Class
+Team_TeamSummary_Controller_Tests,,Apex Class
+TestFinalizerContext,,Apex Class
+TeamShiftPlannerUIVO,,Apex Class
+Team_TrackingAndSLAsController_Tests,,Apex Class
+TestGenericDataMigrationJob,,Apex Class
+TeamService,,Apex Class
+Team_TeamSettings_Controller_Tests,,Apex Class
+TestDistributionLogBuilder,,Apex Class
+TeamService_Tests,,Apex Class
+Team_TeamSummary_Controller,,Apex Class
+TestFailingHousekeepingTask,,Apex Class
+TeamUIDAO,,Apex Class
+Team_WeightingCapsSettings_Ctlr_Tests,,Apex Class
+TestSettings,,Apex Class
+TeamUIDAO_Tests,,Apex Class
+TeamsMigrationDAO,,Apex Class
+TestToolComponentController,,Apex Class
+TeamShiftPlannerUIVO_Tests,,Apex Class
+Team_TrackingAndSLAs_Controller,,Apex Class
+TestMethods_Tests,,Apex Class
+TeamTrackingUIVO,,Apex Class
+Team_WeightingCapsSettings_Controller,,Apex Class
+TestMigrationFailureSettings,,Apex Class
+TeamUIVO,,Apex Class
+TeamUIUtils,,Apex Class
+TeamsMigrationDAO_Tests,,Apex Class
+TeamUIUtils_Tests,,Apex Class
+TeamsMigrationExecutor,,Apex Class
+TeamMemberUtility_Tests,,Apex Class
+Team_DistributorList_Controller_Tests,,Apex Class
+TeamMemberWithTeamsUIVO,,Apex Class
+Team_DistributorSettings_Controller,,Apex Class
+Team_DistributionHours_Controller_Tests,,Apex Class
+TeamMemberUtility,,Apex Class
+Team_DistributorList_Controller,,Apex Class
+TeamPerformanceConstants,,Apex Class
+Team_PostAssignment_Controller_Tests,,Apex Class
+TeamPerformanceSettingsUIVO,,Apex Class
+Team_TeamBase_Controller,,Apex Class
+TeamMigrationVO,,Apex Class
+Team_DistributorSettings_Ctlr_Tests,,Apex Class
+TeamObjectSyncUIVO,,Apex Class
+Team_PostAssignment_Controller,,Apex Class
+TeamPerformanceUIVO,,Apex Class
+Team_TeamList_Controller_Tests,,Apex Class
+TeamSLAUIDAO,,Apex Class
+Team_TeamMemberList_Controller,,Apex Class
+TeamPerformanceUIUtils,,Apex Class
+Team_TeamBase_Controller_Tests,,Apex Class
+TeamPerformanceUIUtils_Tests,,Apex Class
+Team_TeamList_Controller,,Apex Class
+TeamMemberHistoryTransformer,,Apex Class
+TeamMemberHistory_Tests,,Apex Class
+TeamUtility,,Apex Class
+TeamMemberDTO,,Apex Class
+TeamMemberHistory,,Apex Class
+TeamMemberService_Tests,,Apex Class
+TeamVO_Tests,,Apex Class
+TeamMemberSetupUIVO,,Apex Class
+TeamWeightingUIVO,,Apex Class
+TeamMemberListUIVO,,Apex Class
+TeamUtility_Tests,,Apex Class
+TeamMemberService,,Apex Class
+TeamVO,,Apex Class
+TeamMemberUIDAO,,Apex Class
+Team_Availability_Controller,,Apex Class
+TeamMemberUIDAO_Tests,,Apex Class
+Team_Availability_Controller_Tests,,Apex Class
+TeamMemberShiftBlocksUIVO,,Apex Class
+Team_AssignmentRejection_Controller,,Apex Class
+TeamMemberStatusUIVO,,Apex Class
+Team_AssignmentRejection_Ctlr_Tests,,Apex Class
+TeamMemberUIVO,,Apex Class
+TeamMemberUIUtils,,Apex Class
+Team_DistributionHours_Controller,,Apex Class
+TeamMemberUIUtils_Tests,,Apex Class
+UserAccountTeamMemberVO_Tests,,Apex Class
+WeightingHistory_Tests,,Apex Class
+UserActivityDAO,,Apex Class
+WeightingService,,Apex Class
+WeightingHistory,,Apex Class
+UserAvailabilitySettingsUIVO_Tests,,Apex Class
+WeightingUIDAO_Tests,,Apex Class
+UserConstants,,Apex Class
+WeightingUIUtils,,Apex Class
+UserActivityDAO_Tests,,Apex Class
+WeightingService_Tests,,Apex Class
+UserAvailabilitySettingsUIVO,,Apex Class
+WeightingUIDAO,,Apex Class
+UserManagerFilterUIUtils,,Apex Class
+WidgetController_Tests,,Apex Class
+UserManagerFilterUIUtils_Tests,,Apex Class
+WidgetUIUtils,,Apex Class
+UserDAO,,Apex Class
+WeightingUIUtils_Tests,,Apex Class
+UserDAO_Tests,,Apex Class
+WidgetController,,Apex Class
+UserOpportunityTeamMemberVO_Tests,,Apex Class
+WidgetUtils_Tests,,Apex Class
+UserOrQueueWithTeamsUIVO,,Apex Class
+WorkingHoursUIUtils,,Apex Class
+UserManagerFilterUIVO,,Apex Class
+WidgetUIUtils_Tests,,Apex Class
+UserOpportunityTeamMemberVO,,Apex Class
+WidgetUtils,,Apex Class
+TestUtils_TagWeightingPatterns,,Apex Class
+TriggerEnabledObjectUIVO,,Apex Class
+UserUIDAO,,Apex Class
+TestUtils_TargetedMessages,,Apex Class
+TriggerFactory,,Apex Class
+UserUIDAO_Tests,,Apex Class
+TestUtils_ShiftPlanner,,Apex Class
+TriggerDistributorsSettingsUIUtils,,Apex Class
+UserTagAssignmentUIVO,,Apex Class
+TestUtils_Slack,,Apex Class
+TriggerDistributorsSettingsUIVO,,Apex Class
+UserToggleUIVO,,Apex Class
+TierReductionService_Tests,,Apex Class
+TriggerPendingAssignment,,Apex Class
+UserUIVO,,Apex Class
+TierReductionUIDAO,,Apex Class
+TriggerPendingAssignment_Tests,,Apex Class
+UserUtils,,Apex Class
+TestUtils_Users,,Apex Class
+TriggerFactory_Tests,,Apex Class
+UserUIUtils,,Apex Class
+TierReductionService,,Apex Class
+TriggerInterface,,Apex Class
+UserUIUtils_Tests,,Apex Class
+TimezoneUtility_Tests,,Apex Class
+UnifiedShiftPeriod_Tests,,Apex Class
+TriggerActionTracking,,Apex Class
+UserAccountTeamMemberVO,,Apex Class
+TierReductionUIVO,,Apex Class
+TriggerSettingsUtils,,Apex Class
+UserUtils_Tests,,Apex Class
+TimezoneUtility,,Apex Class
+UnifiedShiftPeriod,,Apex Class
+ValidationErrorVO,,Apex Class
+TriggerActionTracking_Tests,,Apex Class
+TriggerClsAutoConvert,,Apex Class
+TestUtils_LogicAndFilters,,Apex Class
+TriggerClsAutoConvert_Tests,,Apex Class
+TestUtils_ObjectSync,,Apex Class
+TriggerClsMatch,,Apex Class
+TestUtils_Opportunities,,Apex Class
+TriggerClsMatch_Tests,,Apex Class
+TestUtils_Migration,,Apex Class
+TriggerClsBase,,Apex Class
+TestUtils_MockData,,Apex Class
+TriggerClsCustom,,Apex Class
+TestUtils_Profile,,Apex Class
+TriggerDistributionEvent,,Apex Class
+TestUtils_Queues,,Apex Class
+TriggerDistributionEvent_Tests,,Apex Class
+TestUtils_Orders,,Apex Class
+TriggerClsTerritory,,Apex Class
+TestUtils_PersonAccounts,,Apex Class
+TriggerDeArchive,,Apex Class
+TestUtils_SequenceGenerator,,Apex Class
+TriggerDistributionExecutor_Tests,,Apex Class
+TestUtils_SequentialHttpMock,,Apex Class
+TriggerDistributorsSettingsService,,Apex Class
+TestUtils_SFTeamMembers,,Apex Class
+TriggerDistributionExecutor,,Apex Class
+TestUtils_SObjects,,Apex Class
+TriggerDistributionExecutorBase,,Apex Class
+TerritoryMapMigrationVO,,Apex Class
+TestUtils_CommonOrgUtils,,Apex Class
+TriggerAssignment_Tests,,Apex Class
+TerritoryMapSummariesUIVO,,Apex Class
+TestUtils_Contact,,Apex Class
+TriggerAutoAction,,Apex Class
+TerritoryLogUIDAO,,Apex Class
+TestUtils_CommonEventBus,,Apex Class
+TerritoryLogUIDAO_Tests,,Apex Class
+TestUtils_CommonLimitsUtils,,Apex Class
+TriggerAssignment,,Apex Class
+TerritoryMapsMigrationBatch,,Apex Class
+TestUtils_Database,,Apex Class
+TriggerAutoReassign_Tests,,Apex Class
+TerritoryMapsMigrationBatch_Tests,,Apex Class
+TestUtils_DistributionHours,,Apex Class
+TriggerCalendarIntegration,,Apex Class
+TerritoryMapSummaryUIVO,,Apex Class
+TestUtils_Conversion,,Apex Class
+TriggerAutoAction_Tests,,Apex Class
+TerritoryMapUIVO,,Apex Class
+TestUtils_DataMigrationJob,,Apex Class
+TriggerAutoReassign,,Apex Class
+TerritoryMapsMigrationExecutor,,Apex Class
+TestUtils_History,,Apex Class
+TriggerClassifier_Tests,,Apex Class
+TerritoryMapsMigrationExecutor_Tests,,Apex Class
+TestUtils_Housekeeping,,Apex Class
+TerritoryMapsMigrationDAO,,Apex Class
+TestUtils_EmailBuilder,,Apex Class
+TriggerCalendarIntegration_Tests,,Apex Class
+TerritoryMapsMigrationDAO_Tests,,Apex Class
+TestUtils_Events,,Apex Class
+TriggerClassifier,,Apex Class
+DE Default,,Home Page Layout
+TerritoryObjectUIVO,,Apex Class
+TestUtils_Leads,,Apex Class
+TestContext,,Apex Class
+UserProfileCacheWithoutSharing_Tests,,Apex Class
+UserProfileCache_Tests,,Apex Class
+UserProfileCache,,Apex Class
+WorkingHoursUIUtils_Tests,,Apex Class
+UserProfileCacheWithoutSharing,,Apex Class
+UserProfileUIVO,,Apex Class
+UserProfileUIVO_Tests,,Apex Class
+UserProfileHistoryTransformer,,Apex Class
+UserProfileHistoryTransformer_Tests,,Apex Class
+UserSlackIntegrationDAO,,Apex Class
+UserSlackIntegrationDAO_Tests,,Apex Class
+UserSettingsUtils,,Apex Class
+UserSettingsUtils_Tests,,Apex Class
+Distribution Engine Dashboard,,Dashboard
+Distribution_Engine_details,Distribution Engine details,Compact Layout
+TargetedMessageCache,,Apex Class
+TargetedMessageCache_Tests,,Apex Class
+Tags_TagValueList_Controller,,Apex Class
+Tags_TagValueList_Controller_Tests,,Apex Class
+TagWeightingDAO_Tests,,Apex Class
+TagsHistory,,Apex Class
+TagValueUIVO,,Apex Class
+TagWeightingDAO,,Apex Class
+TagsMigrationDAO_Tests,,Apex Class
+TagsMigrationExecutor,,Apex Class
+TagsHistory_Tests,,Apex Class
+TagsMigrationDAO,,Apex Class
+TagsUsageUIUtils,,Apex Class
+TagsUsageUIUtils_Tests,,Apex Class
+TagsMigrationExecutor_Tests,,Apex Class
+TagsMigrationVO,,Apex Class
+Tags_TagCollectionList_Controller,,Apex Class
+Tags_TagCollectionList_Controller_Tests,,Apex Class
+Tags_TagAssignmentList_Controller,,Apex Class
+Tags_TagAssignmentList_Controller_Tests,,Apex Class
+SortOrdersConfigVO,,Apex Class
+TagUserService,,Apex Class
+SortOrdersConfigVO_Tests,,Apex Class
+TagUserService_Tests,,Apex Class
+SlackWorkspaceTokenService_Tests,,Apex Class
+TagDAO,,Apex Class
+SortOrdersConfigCallable,,Apex Class
+TagDAO_Tests,,Apex Class
+SourceDetails,,Apex Class
+TagUserUIDAO,,Apex Class
+TagUserUIDAO_Tests,,Apex Class
+TagValueUIDAO,,Apex Class
+TagValueUIDAO_Tests,,Apex Class
+TagValueService,,Apex Class
+TagValueService_Tests,,Apex Class
+AssignmentSimulation_Results,,Visualforce Page
+Availability_Holidays,,Visualforce Page
+Analytics_Distribution,,Visualforce Page
+Cls_AutoConversionSettings,,Visualforce Page
+Cls_Backfill,,Visualforce Page
+Availability_OutOfOffice,,Visualforce Page
+Availability_Shifts,,Visualforce Page
+Cls_LeadMatchingObject,,Visualforce Page
+Settings_TriggerDistributorsSettings,,Visualforce Page
+Cls_LeadMatchingSettings,,Visualforce Page
+SupportSettings,,Visualforce Page
+Cls_CustomClassificationSettings,,Visualforce Page
+Settings_PersonaManagement,,Visualforce Page
+Cls_DelayFilters,,Visualforce Page
+Settings_TierReduction,,Visualforce Page
+Settings_AppSettings,,Visualforce Page
+Settings_CustomPermissions,,Visualforce Page
+Profile_PermissionDenied,,Visualforce Page
+Settings_AdvancedSettings,,Visualforce Page
+Settings_LicensedUsers,,Visualforce Page
+Settings_PersonaAssignment,,Visualforce Page
+Settings_ExportImport,,Visualforce Page
+Settings_Integrations,,Visualforce Page
+InlineCaseLogs,,Visualforce Page
+Team_TeamPerformance,,Visualforce Page
+InlineContactLogs,,Visualforce Page
+Team_TeamSettings,,Visualforce Page
+Console_TodaysDistributionList,,Visualforce Page
+Team_TeamList,,Visualforce Page
+InlineAccountLogs,,Visualforce Page
+Team_TeamMemberList,,Visualforce Page
+Logs_ArchiveLogList,,Visualforce Page
+Team_WeightingAndCaps,,Visualforce Page
+Logs_AutoConversionLogList,,Visualforce Page
+Widget,,Visualforce Page
+InlineLeadLogs,,Visualforce Page
+Team_TeamSummary,,Visualforce Page
+InlineOpportunityLogs,,Visualforce Page
+Team_TrackingAndSlas,,Visualforce Page
+Logs_LeadMatchingLogList,,Visualforce Page
+Logs_ObjectSyncLogList,,Visualforce Page
+Logs_CustomClassificationLogList,,Visualforce Page
+Logs_DistributionLogList,,Visualforce Page
+ObjectSync_Actions,,Visualforce Page
+ObjectSync_Settings,,Visualforce Page
+Logs_SchedulerLogList,,Visualforce Page
+Logs_TerritoriesLogList,,Visualforce Page
+Cls_TerritoryMapEdit,,Visualforce Page
+Tags_TagValueList,,Visualforce Page
+Cls_TerritoryMapList,,Visualforce Page
+Team_AssignmentRejection,,Visualforce Page
+Cls_StampGroupList,,Visualforce Page
+Tags_TagAssignmentList,,Visualforce Page
+Cls_StampList,,Visualforce Page
+Tags_TagCollectionList,,Visualforce Page
+Cls_TerritorySettings,,Visualforce Page
+Console_ApplicationMonitoring,,Visualforce Page
+Cls_TerritoryObjectEdit,,Visualforce Page
+Team_Availability,,Visualforce Page
+Cls_TerritoryObjectList,,Visualforce Page
+Team_DistributionHours,,Visualforce Page
+Console_Calendar,,Visualforce Page
+Team_DistributorSettings,,Visualforce Page
+Console_SourceList,,Visualforce Page
+Team_PostAssignment,,Visualforce Page
+Team_DistributorList,,Visualforce Page
+myAssignmentsUtils,,Lightning Web Component Bundle
+filtersTable,,Lightning Web Component Bundle
+rejectOptions,,Lightning Web Component Bundle
+basePopover,,Lightning Web Component Bundle
+baseComponent,,Lightning Web Component Bundle
+deInlineComponent,,Lightning Web Component Bundle
+deAssignedToMe,,Lightning Web Component Bundle
+deRecordHistoryComponent,,Lightning Web Component Bundle
+deManualAssignment,,Lightning Web Component Bundle
+deTestToolComponent,,Lightning Web Component Bundle
+deRejectComponent,,Lightning Web Component Bundle
+deWidget,,Lightning Web Component Bundle
+deTimerToggleComponent,,Lightning Web Component Bundle
+svgProvider,,Lightning Web Component Bundle
+teamMembers,,Lightning Web Component Bundle
+teamMemberDetail,,Lightning Web Component Bundle
+workingHoursDetail,,Lightning Web Component Bundle
+teamMembersTable,,Lightning Web Component Bundle
+Tier_reduction_date,,Feature Parameter Date
+License_expiry_date,,Feature Parameter Date
+Feature_usage_last_updated,,Feature Parameter Date
+AutoReassignErrorChecker_Tests,,Apex Class
+CappingUpgradeBatch_Tests,,Apex Class
+AutoReassignErrorsEmailBuilder,,Apex Class
+AutoConversionUIUtils_Tests,,Apex Class
+CappingService_Tests,,Apex Class
+ClassifierFailureChecker_Tests,,Apex Class
+AutoReassignErrorChecker,,Apex Class
+CappingUpgradeBatch,,Apex Class
+DE Rejected Assignments,,Custom Report Type
+CappingVO_Tests,,Apex Class
+ClassifierMatchFailureEmailBuilder,,Apex Class
+CapsHistory,,Apex Class
+ClassifierMatchFailureEmailBuilder_Tests,,Apex Class
+ClassifierFlowRequestDTO,,Apex Class
+CappingVO,,Apex Class
+ClassifierIndividualResultDTO,,Apex Class
+CapsService_Tests,,Apex Class
+ClassifierQueueable,,Apex Class
+CapsUIDAO,,Apex Class
+ClassifierQueueableAutoConversion,,Apex Class
+CapsHistory_Tests,,Apex Class
+ClassifierObjectService,,Apex Class
+CapsService,,Apex Class
+ClassifierObjectService_Tests,,Apex Class
+AutoConversionHistory,,Apex Class
+CacheUtils_Tests,,Apex Class
+AutoConversionHistory_Tests,,Apex Class
+CalendarResolver,,Apex Class
+AsyncDistributionEventProcessor,,Apex Class
+AsyncDistributionEventProcessor_Tests,,Apex Class
+CacheUtils,,Apex Class
+AutoConversionLogUIVO,,Apex Class
+CalendarUIUtils_Tests,,Apex Class
+AutoConversionRuleOverviewUIVO,,Apex Class
+CalendarUIVO,,Apex Class
+ClassifierBackfillEmailBuilder_Tests,,Apex Class
+AutoConversionLogUIDAO,,Apex Class
+CalendarResolver_Tests,,Apex Class
+AutoConversionLogUIDAO_Tests,,Apex Class
+CalendarUIUtils,,Apex Class
+AutoConversionService,,Apex Class
+CallSlackUpdatesQueueable,,Apex Class
+ClassifierBatch,,Apex Class
+AutoConversionService_Tests,,Apex Class
+CallSlackUpdatesQueueable_Tests,,Apex Class
+ClassifierBatchQueueable_Tests,,Apex Class
+AutoConversionRuleUIVO,,Apex Class
+CallSlackAction,,Apex Class
+ClassifierBackfillService,,Apex Class
+AutoConversionRuleUIVO_Tests,,Apex Class
+CallSlackAction_Tests,,Apex Class
+ClassifierBackfillService_Tests,,Apex Class
+AutoConversionUIDAO_Tests,,Apex Class
+CapTestResultVO,,Apex Class
+ClassifierErrorsVO,,Apex Class
+AutoConversionUIUtils,,Apex Class
+CappingService,,Apex Class
+ClassifierFailureChecker,,Apex Class
+AutoConversionSettingsUIVO,,Apex Class
+CampaignUIDAO,,Apex Class
+ClassifierConstants,,Apex Class
+AutoConversionUIDAO,,Apex Class
+CampaignUIDAO_Tests,,Apex Class
+ClassifierDetailsVO,,Apex Class
+ApiClassifierTerritory,,Apex Class
+AssignmentSimulationTestToolResultUIVO,,Apex Class
+ApiClassifierUtils,,Apex Class
+AssignmentSimulationUtils,,Apex Class
+ApiClassifierMatch,,Apex Class
+AssignmentSimulationTeamAndRecordUIVO,,Apex Class
+AvailableTeamsUIVO,,Apex Class
+ApiClassifierQueueable,,Apex Class
+AssignmentSimulationTeamUIVO,,Apex Class
+BackfillUIVO,,Apex Class
+ApiClassifierUtils_Tests,,Apex Class
+AssignmentSimulationUtils_Tests,,Apex Class
+Base_AssignmentSimulation_Controller,,Apex Class
+AssignmentSimulation_Results_Controller,,Apex Class
+Base_Controller,,Apex Class
+BackfillUIVO_Tests,,Apex Class
+AsyncDistributionAssignmentWorker,,Apex Class
+BatchDistributionExecutor,,Apex Class
+AsyncDistributionAssignmentWorker_Tests,,Apex Class
+BatchDistributionExecutor_Tests,,Apex Class
+AsyncApexJobUtils,,Apex Class
+Base_Controller_Tests,,Apex Class
+AsyncApexJobVO,,Apex Class
+BasicSObjectUIVO,,Apex Class
+AbstractChainedQueueableTask_Tests,,Apex Class
+AssignmentRejectionUIDAO,,Apex Class
+AbstractSupportEmailBuilder,,Apex Class
+AssignmentRejectionUIDAO_Tests,,Apex Class
+AbstractBaseClassifierSettingsUIVO,,Apex Class
+AssignmentDetailVO,,Apex Class
+AbstractChainedQueueableTask,,Apex Class
+AssignmentRejectController,,Apex Class
+AnalyticsChartsUIUtils,,Apex Class
+AssignmentSimulationConfigUIVO,,Apex Class
+AnalyticsChartsUIUtils_Tests,,Apex Class
+AssignmentSimulationDAO,,Apex Class
+AdvancedSettingsUIVO,,Apex Class
+AssignmentRejectionUIVO,,Apex Class
+AnalyticsChartsConfigUIVO,,Apex Class
+AssignmentRejectionUIVO_Tests,,Apex Class
+AnalyticsUIUtils_Tests,,Apex Class
+AssignmentSimulationQueueable,,Apex Class
+Availability_Holidays_Controller,,Apex Class
+AnalyticsUIVO,,Apex Class
+AssignmentSimulationQueueable_Tests,,Apex Class
+Availability_Holidays_Controller_Tests,,Apex Class
+AnalyticsChartsUIVO,,Apex Class
+AssignmentSimulationDAO_Tests,,Apex Class
+AutoReassignErrorsEmailBuilder_Tests,,Apex Class
+AnalyticsUIUtils,,Apex Class
+AssignmentSimulationDistResultUIVO,,Apex Class
+AutoReassignmentErrorVO,,Apex Class
+ApiClassifierAutoConversion,,Apex Class
+AssignmentSimulationService,,Apex Class
+Availability_Shifts_Controller,,Apex Class
+ApiClassifierCustomClassification,,Apex Class
+AssignmentSimulationService_Tests,,Apex Class
+Availability_Shifts_Controller_Tests,,Apex Class
+Analytics_Charts_Controller,,Apex Class
+AssignmentSimulationQuickResultUIVO,,Apex Class
+Availability_OutOfOffice_Controller,,Apex Class
+Analytics_Charts_Controller_Tests,,Apex Class
+AssignmentSimulationRecordUIVO,,Apex Class
+Availability_OutOfOffice_Ctlr_Tests,,Apex Class
+DEAccountTrigger,Account,Apex Trigger
+ClsMatchFoundDuplicate_Tests,,Apex Class
+Cls_TerritoryObjectList_Controller,,Apex Class
+DECaseTrigger,Case,Apex Trigger
+ClsMatchProcessor,,Apex Class
+DEContactTrigger,Contact,Apex Trigger
+CommonMessaging,,Apex Class
+Cls_TerritoryObjectList_Controller_Tests,,Apex Class
+CommonMessaging_Tests,,Apex Class
+CollectionTagAssignmentUIVO,,Apex Class
+CommonPermissionUtils,,Apex Class
+DETaskTrigger,Task,Apex Trigger
+CommonCollectionUtils,,Apex Class
+CommonPermissionUtils_Tests,,Apex Class
+Cls_TerritorySettings_Controller,,Apex Class
+CommonOrgUtils,,Apex Class
+Cls_TerritorySettings_Controller_Tests,,Apex Class
+CommonOrgUtils_Tests,,Apex Class
+CommonComparatorUtils_Tests,,Apex Class
+CommonSObjectUtils_Tests,,Apex Class
+DEDistributionLogTrigger,Distribution log,Apex Trigger
+CommonConstants,,Apex Class
+CommonSalesforceErrorMessages,,Apex Class
+DEEventTrigger,Event,Apex Trigger
+CommonCollectionUtils_Tests,,Apex Class
+CommonPicklistUtils,,Apex Class
+DELeadTrigger,Lead,Apex Trigger
+CommonComparatorUtils,,Apex Class
+CommonSObjectUtils,,Apex Class
+DEOpportunityTrigger,Opportunity,Apex Trigger
+ClsCleanTerritoryData_Tests,,Apex Class
+Cls_LeadMatchingObject_Controller,,Apex Class
+ClsCustomClassificationClassifier,,Apex Class
+Cls_LeadMatchingObject_Controller_Tests,,Apex Class
+rejectlogapp,,Aura Component Bundle
+ClsAutoConversionUtils_Tests,,Apex Class
+Cls_CustomClsSettings_Controller,,Apex Class
+testtoolapp,,Aura Component Bundle
+ClsCleanTerritoryData,,Apex Class
+Cls_DelayFilters_Controller,,Apex Class
+widgetWrapper,,Aura Component Bundle
+ClsCustomClassificationUtils_Tests,,Apex Class
+Cls_StampGroupList_Controller,,Apex Class
+CommonInstanceUtils_Tests,,Apex Class
+ClsDuplicateLeadProcessor,,Apex Class
+Cls_StampGroupList_Controller_Tests,,Apex Class
+CommonLimitsUtils,,Apex Class
+ClsCustomClassificationClassifier_Tests,,Apex Class
+Cls_LeadMatchingSetts_Controller,,Apex Class
+ClsCustomClassificationUtils,,Apex Class
+Cls_LeadMatchingSetts_Controller_Tests,,Apex Class
+CommonInstanceUtils,,Apex Class
+ClsJsonDictionaryUtils_Tests,,Apex Class
+Cls_TerritoryMapEdit_Controller,,Apex Class
+CommonLockUtils_Tests,,Apex Class
+ClsMatchDataPrepBatch,,Apex Class
+Cls_TerritoryMapEdit_Controller_Tests,,Apex Class
+CommonLog,,Apex Class
+ClsDuplicateLeadProcessor_Tests,,Apex Class
+Cls_StampList_Controller,,Apex Class
+CommonLimitsUtils_Tests,,Apex Class
+ClsJsonDictionaryUtils,,Apex Class
+Cls_StampList_Controller_Tests,,Apex Class
+CommonLockUtils,,Apex Class
+ClsMatchDuplicateFinder_Tests,,Apex Class
+Cls_TerritoryObjectEdit_Controller,,Apex Class
+CommonMergeFieldUtils_Tests,,Apex Class
+ClsMatchFoundDuplicate,,Apex Class
+Cls_TerritoryObjectEdit_Controller_Tests,,Apex Class
+ClsMatchDataPrepBatch_Tests,,Apex Class
+Cls_TerritoryMapList_Controller,,Apex Class
+CommonLog_Tests,,Apex Class
+ClsMatchDuplicateFinder,,Apex Class
+Cls_TerritoryMapList_Controller_Tests,,Apex Class
+CommonMergeFieldUtils,,Apex Class
+ClassifierBackfillEmailBuilder,,Apex Class
+ClassificationMode,,Apex Class
+ClassifierUtils,,Apex Class
+ClassificationType,,Apex Class
+ClassifierUtilsWithoutSharing,,Apex Class
+ClsTerritoryExecutor,,Apex Class
+CloneShiftPlannerTask_Tests,,Apex Class
+ClsTerritoryLookup_Tests,,Apex Class
+ClsAutoConversionClassifier,,Apex Class
+ClsTerritoryUtils,,Apex Class
+ClassifierUtils_Tests,,Apex Class
+ClsTerritoryExecutor_Tests,,Apex Class
+CloneShiftPlannerTask,,Apex Class
+ClsTerritoryLookup,,Apex Class
+ClsAutoConversionProcessor_Tests,,Apex Class
+Cls_Backfill_Controller,,Apex Class
+ClsAutoConversionUtils,,Apex Class
+Cls_Backfill_Controller_Tests,,Apex Class
+ClsAutoConversionClassifier_Tests,,Apex Class
+ClsTerritoryUtils_Tests,,Apex Class
+ClsAutoConversionProcessor,,Apex Class
+Cls_AutoConversionSettings_Controller,,Apex Class
+CapsUIUtils_Tests,,Apex Class
+ClassifierQueueableTerritory,,Apex Class
+CaptureMethodCallsMock,,Apex Class
+ClassifierQueueableUtils,,Apex Class
+CapsUIDAO_Tests,,Apex Class
+ClassifierQueueableCustom,,Apex Class
+CapsUIUtils,,Apex Class
+ClassifierQueueableMatch,,Apex Class
+ChainedQueueableTaskUtils_Tests,,Apex Class
+ClassifierResultDTO,,Apex Class
+ClsMatchProcessor_Tests,,Apex Class
+ChangeHistoryUIUtils,,Apex Class
+ClassifierSettingUtils,,Apex Class
+ClsMatchUtils,,Apex Class
+ChainedQueueableTask,,Apex Class
+ClassifierQueueableUtils_Tests,,Apex Class
+ChainedQueueableTaskUtils,,Apex Class
+ClassifierRequestDTO,,Apex Class
+ClassifierTieBreakerConfigCallable,,Apex Class
+ClsPostDedupDistributionCallable_Tests,,Apex Class
+ClassifierTieBreakerConfigCallable_Tests,,Apex Class
+ClsPostDedupDistributionProcessor,,Apex Class
+ChangeHistoryUIUtils_Tests,,Apex Class
+ClassifierSettingUtils_Tests,,Apex Class
+ClsMatchUtils_Tests,,Apex Class
+ChangeHistoryUIVO,,Apex Class
+ClassifierStatusUIVO,,Apex Class
+ClsPostDedupDistributionCallable,,Apex Class
+ClassificationFailuresEmailBuilder,,Apex Class
+ClassifierUIUtils,,Apex Class
+ClsSubClasses_Tests,,Apex Class
+ClassificationFailuresEmailBuilder_Tests,,Apex Class
+ClassifierUIUtils_Tests,,Apex Class
+ClsSubclasses,,Apex Class
+ClassifierTieBreakerConfigVO,,Apex Class
+ClsPostDedupDistributionProcessor_Tests,,Apex Class
+ClassifierTieBreakerConfigVO_Tests,,Apex Class
+ClsPostDedupRequestCancellationQueueable,,Apex Class
+DistributionHoursService_Tests,,Apex Class
+DistributorHelper_Tests,,Apex Class
+DistributionHoursUIDAO,,Apex Class
+DistributorHistory,,Apex Class
+DistributorHelperWithoutSharing,,Apex Class
+DistributionHoursService,,Apex Class
+DistributorHelperWithoutSharing_Tests,,Apex Class
+DistributionHoursUtility_Tests,,Apex Class
+DistributorLogsHelper_Tests,,Apex Class
+DistributionJobUtility,,Apex Class
+DistributorMemberDetailUIVO,,Apex Class
+DistributionHoursUIDAO_Tests,,Apex Class
+DistributorHistory_Tests,,Apex Class
+DistributionHoursUtility,,Apex Class
+DistributorLogsHelper,,Apex Class
+DistributionLimitsMonitor_Tests,,Apex Class
+DistributorNotificationSettingsService,,Apex Class
+DistributionLogDAO,,Apex Class
+DistributorPostAssignmentUIVO,,Apex Class
+DistributionJobUtility_Tests,,Apex Class
+DistributorMethodUIVO,,Apex Class
+DistributionLimitsMonitor,,Apex Class
+DistributorNotificationSettingsDAO,,Apex Class
+Console_SourcesList_Controller_Tests,,Apex Class
+DistributionEngineGlobal_Tests,,Apex Class
+Console_TodaysDistributions_Controller,,Apex Class
+DistributionExecutorFactory,,Apex Class
+DistributionTestUtils_Tests,,Apex Class
+Console_Calendar_Controller_Tests,,Apex Class
+DistributionConstants,,Apex Class
+Console_SourcesList_Controller,,Apex Class
+DistributionEngineGlobal,,Apex Class
+CriteriaCapCalculator_Tests,,Apex Class
+DistributionExecutorVO_Tests,,Apex Class
+DistributorCountersHelper,,Apex Class
+CriteriaCapsConfigVO,,Apex Class
+DistributionFailureEmailBuilder,,Apex Class
+DistributorCountersHelper_Tests,,Apex Class
+Console_TodaysDistributions_Ctlr_Tests,,Apex Class
+DistributionExecutorFactory_Tests,,Apex Class
+Distributor,,Apex Class
+CriteriaCapCalculator,,Apex Class
+DistributionExecutorVO,,Apex Class
+DistributorChildObjectsUIVO,,Apex Class
+CustomClassificationLogUIDAO,,Apex Class
+DistributionHoursHistory_Tests,,Apex Class
+DistributorFailureChecker,,Apex Class
+CustomClassificationLogUIDAO_Tests,,Apex Class
+DistributionHoursResolver,,Apex Class
+DistributorFailureChecker_Tests,,Apex Class
+CustomClassificationHistory,,Apex Class
+DistributionFailureEmailBuilder_Tests,,Apex Class
+DistributorDAO,,Apex Class
+CustomClassificationHistory_Tests,,Apex Class
+DistributionHoursHistory,,Apex Class
+DistributorDAO_Tests,,Apex Class
+CustomClassificationLogsUIUtils_Tests,,Apex Class
+DistributionHoursResolver_Tests,,Apex Class
+CustomClassificationService,,Apex Class
+CustomClassificationLogUIVO,,Apex Class
+DistributionHoursResolverVO,,Apex Class
+DistributorHelper,,Apex Class
+CustomClassificationLogsUIUtils,,Apex Class
+DistributionHoursResolverVO_Tests,,Apex Class
+CommonIdNameUIVO,,Apex Class
+CommonUIExceptions,,Apex Class
+DataMigrationUtilsWithoutSharing,,Apex Class
+CommonUserRecordAccessUtils,,Apex Class
+DataMigrationUtilsWithoutSharing_Tests,,Apex Class
+DataMigrationUtils,,Apex Class
+CompleteObjectSyncLogsTask,,Apex Class
+DefaultSalesforceTeamMemberVO,,Apex Class
+CompleteObjectSyncLogsTask_Tests,,Apex Class
+DisplayCriteriaVO,,Apex Class
+CommonUserRecordAccessUtils_Tests,,Apex Class
+DataMigrationUtils_Tests,,Apex Class
+CommonWrappers,,Apex Class
+DataPrepJobStatusUIVO,,Apex Class
+Console_AppMonitoring_Controller_Tests,,Apex Class
+DistributionBatchUtils_Tests,,Apex Class
+Console_Calendar_Controller,,Apex Class
+DistributionBatch_Tests,,Apex Class
+DistributionBatch,,Apex Class
+Console_AppMonitoring_Controller,,Apex Class
+DistributionBatchUtils,,Apex Class
+CommonDatabaseUpdater_Tests,,Apex Class
+CommonSharingUtils,,Apex Class
+CommonDatabase_Tests,,Apex Class
+CommonSharingUtils_Tests,,Apex Class
+CommonDatabase,,Apex Class
+CommonSecurityUtils,,Apex Class
+CommonDatabaseUpdater,,Apex Class
+CommonSecurityUtils_Tests,,Apex Class
+CommonDateFiscalHelper,,Apex Class
+CommonSortUtils,,Apex Class
+CustomClassificationUIUtils,,Apex Class
+CommonDateUtils,,Apex Class
+CommonSortUtils_Tests,,Apex Class
+CustomClassificationUIUtils_Tests,,Apex Class
+CommonDateComparisonHelper,,Apex Class
+CommonSoqlUtils,,Apex Class
+CustomClassificationService_Tests,,Apex Class
+CommonDateComparisonHelper_Tests,,Apex Class
+CommonSoqlUtils_Tests,,Apex Class
+CustomClassificationSettingsUIVO,,Apex Class
+CommonDescribeUtils_Tests,,Apex Class
+CommonSystemUtils,,Apex Class
+DataMigrationJob,,Apex Class
+CommonEventBus,,Apex Class
+CommonSystemUtils_Tests,,Apex Class
+DataMigrationJobFactory,,Apex Class
+CommonDateUtils_Tests,,Apex Class
+CommonStringUtils,,Apex Class
+DataMigrationFailureEmailBuilder,,Apex Class
+CommonDescribeUtils,,Apex Class
+CommonStringUtils_Tests,,Apex Class
+DataMigrationFailureEmailBuilder_Tests,,Apex Class
+CommonFeatureParamUtils,,Apex Class
+CommonTierUtils,,Apex Class
+CommonFeatureParamUtils_Tests,,Apex Class
+CommonTierUtils_Tests,,Apex Class
+CommonExceptionHandler,,Apex Class
+CommonTierHelper,,Apex Class
+DataMigrationJobFactory_Tests,,Apex Class
+CommonExceptions,,Apex Class
+CommonTierHelper_Tests,,Apex Class
+DataMigrationJob_Tests,,Apex Class
+HealthCheckerResponse,,Apex Class
+FeatureParameters,,Apex Class
+HealthCheckerSettingUtils,,Apex Class
+FieldsToUpdateConfigUIVO,,Apex Class
+HealthCheckerUtils,,Apex Class
+FieldsToUpdateConfigUIVO_Tests,,Apex Class
+HealthCheckerUtils_Tests,,Apex Class
+FeatureUsage,,Apex Class
+HealthCheckerSettingUtils_Tests,,Apex Class
+FieldOption,,Apex Class
+HealthCheckerStatusUIVO,,Apex Class
+FilterComparisonHelper,,Apex Class
+HealthChecker_Tests,,Apex Class
+FilterComparisonHelper_Tests,,Apex Class
+HerokuAuthUtils,,Apex Class
+FieldsToUpdateConfigVO,,Apex Class
+HealthCheckerWarningEmailBuilder,,Apex Class
+FieldsToUpdateConfigVO_Tests,,Apex Class
+HealthCheckerWarningEmailBuilder_Tests,,Apex Class
+GenericDistributionExecutor,,Apex Class
+HistoryDisplay,,Apex Class
+GenericDistributionExecutor_Tests,,Apex Class
+HistoryService,,Apex Class
+FixedCappingProvider,,Apex Class
+HistoryComponentController,,Apex Class
+FixedCappingProvider_Tests,,Apex Class
+HistoryComponentController_Tests,,Apex Class
+DomainProcessor,,Apex Class
+ErrorUtils,,Apex Class
+GlobalAPITeamMembers,,Apex Class
+DomainProcessorWithoutSharing,,Apex Class
+ErrorUtils_Tests,,Apex Class
+GlobalAPITeamMembers_Tests,,Apex Class
+Distributor_Sticky_Tests,,Apex Class
+ErrorIssue,,Apex Class
+Distributor_Tests,,Apex Class
+ErrorIssueLink,,Apex Class
+GlobalAPITags_Tests,,Apex Class
+DomainUtils,,Apex Class
+ExceptionVO,,Apex Class
+HealthChecker,,Apex Class
+DomainUtils_Tests,,Apex Class
+ExportTagsMigration,,Apex Class
+HealthCheckerChainDelayBuilder_Tests,,Apex Class
+DomainProcessorWithoutSharing_Tests,,Apex Class
+ExceptionNotificationEmailBuilder,,Apex Class
+GlobalAPITriggerDistribution,,Apex Class
+DomainProcessor_Tests,,Apex Class
+ExceptionNotificationEmailBuilder_Tests,,Apex Class
+GlobalAPITriggerDistribution_Tests,,Apex Class
+DynamicTMLicenceLimitEmailBuilder,,Apex Class
+ExportTeamsMigration_Tests,,Apex Class
+HealthCheckerDelayEmailBuilder_Tests,,Apex Class
+DynamicTMLicenceLimitEmailBuilder_Tests,,Apex Class
+ExportTerritoryMapsMigration,,Apex Class
+DurationUIVO,,Apex Class
+ExportTagsMigration_Tests,,Apex Class
+HealthCheckerChainDelayEmailBuilder,,Apex Class
+DurationUIVO_Tests,,Apex Class
+ExportTeamsMigration,,Apex Class
+HealthCheckerDelayEmailBuilder,,Apex Class
+DynamicTMMaxTMsLimitEmailBuilder_Tests,,Apex Class
+ExportTerritoryMapsMigration_Tests,,Apex Class
+DynamicTMMaxTeamMembersLimitEmailBuilder,,Apex Class
+DynamicTeamMembersErrorChecker,,Apex Class
+DistributorUIDAO,,Apex Class
+EmailBuilder,,Apex Class
+DistributorUIDAO_Tests,,Apex Class
+EmailBuilderUtils,,Apex Class
+DistributorTestToolUIUtils_Tests,,Apex Class
+DynamicTeamMembersErrorChecker_Tests,,Apex Class
+DistributorTestToolUIVO,,Apex Class
+EmailApexJobTablesUtils,,Apex Class
+DistributorUIVO,,Apex Class
+EmailResponses,,Apex Class
+DistributorUtils,,Apex Class
+EmailStylingConstants,,Apex Class
+DistributorUIUtils,,Apex Class
+EmailBuilderUtils_Tests,,Apex Class
+DistributorUIUtils_Tests,,Apex Class
+EmailNotificationController,,Apex Class
+DistributorVO_Tests,,Apex Class
+EndOfShiftToggleService_Tests,,Apex Class
+DistributorWeightingAndCapUIVO,,Apex Class
+ErrorEntry,,Apex Class
+DistributorUtils_Tests,,Apex Class
+EndMarkerTask,,Apex Class
+DistributorVO,,Apex Class
+EndOfShiftToggleService,,Apex Class
+DistributionLogUIDAO,,Apex Class
+DistributorService_Tests,,Apex Class
+DynamicTeamMemberDefaultsVO,,Apex Class
+DistributionLogUIDAO_Tests,,Apex Class
+DistributorSettingsUIVO,,Apex Class
+DynamicTeamMemberDefinitionVO,,Apex Class
+DistributionLogDAO_Tests,,Apex Class
+DistributorSLAsUIVO,,Apex Class
+DistributionLogHousekeeping,,Apex Class
+DistributorService,,Apex Class
+DistributionLogUIVO,,Apex Class
+DistributorSettingsUpgradeBatch_Tests,,Apex Class
+DynamicTeamMemberHandler_Tests,,Apex Class
+DistributionLogsAlertProcessor,,Apex Class
+DistributorSoqlVO,,Apex Class
+DynamicTeamMemberPreviewVO,,Apex Class
+DistributionLogUIUtils,,Apex Class
+DistributorSettingsUIVO_Tests,,Apex Class
+DynamicTeamMemberDefinitionsWrapperVO,,Apex Class
+DistributionLogUIUtils_Tests,,Apex Class
+DistributorSettingsUpgradeBatch,,Apex Class
+DynamicTeamMemberHandler,,Apex Class
+DistributionQueueable_Tests,,Apex Class
+DistributorSummaryExtUIVO_Tests,,Apex Class
+DynamicTeamMemberUIUtils,,Apex Class
+DistributionSequenceGenerator,,Apex Class
+DistributorSummaryUIVO,,Apex Class
+DynamicTeamMemberUIUtils_Tests,,Apex Class
+DistributionLogsAlertProcessor_Tests,,Apex Class
+DistributorSoqlVO_Tests,,Apex Class
+DynamicTeamMemberProcessingVO,,Apex Class
+DistributionQueueable,,Apex Class
+DistributorSummaryExtUIVO,,Apex Class
+DynamicTeamMemberProcessingVO_Tests,,Apex Class
+DistributionTestUtils,,Apex Class
+DistributionSequenceGenerator_Tests,,Apex Class
+DistributorSummaryUIVO_Tests,,Apex Class
+DistributionStatusUIVO,,Apex Class
+DistributorTestToolUIUtils,,Apex Class
+Distributor_2_feature_usage,,Feature Parameter Integer
+ImportTagsMigration,,Apex Class
+LeadMatchingUIUtils,,Apex Class
+Distributor_batch_size_current_setting,,Feature Parameter Integer
+ImportTagsMigration_Tests,,Apex Class
+LicenseDetailsUIVO,,Apex Class
+Contact_field_usage,,Feature Parameter Integer
+LeadMatchingService,,Apex Class
+Contact_team_usage,,Feature Parameter Integer
+IUpgradeExecutor,,Apex Class
+LeadMatchingSettingsUIVO,,Apex Class
+Classifier_lead_matching_feature_usage,,Feature Parameter Integer
+ImportTeamsMigration,,Apex Class
+LicenseRequestEmailBuilder,,Apex Class
+User_journey_analytics,,Feature Parameter Integer
+Classifier_territory_feature_usage,,Feature Parameter Integer
+ImportTeamsMigration_Tests,,Apex Class
+LicenseRequestEmailBuilder_Tests,,Apex Class
+Weighting_caps_feature_usage,,Feature Parameter Integer
+Classifier_feature_usage,,Feature Parameter Integer
+ImportTagsValidation,,Apex Class
+LicenseRemovedEmailBuilder,,Apex Class
+Use_platform_cache,,Feature Parameter Integer
+Classifier_frequency_current_setting,,Feature Parameter Integer
+ImportTagsValidation_Tests,,Apex Class
+LicenseRemovedEmailBuilder_Tests,,Apex Class
+Used_licenses,,Feature Parameter Integer
+ImportTerritoryMapsMigration,,Apex Class
+LightningWidgetController,,Apex Class
+ImportTerritoryMapsMigration_Tests,,Apex Class
+LightningWidgetController_Tests,,Apex Class
+ImportTeamsValidation,,Apex Class
+LicenseRequestUIVO,,Apex Class
+ImportTeamsValidation_Tests,,Apex Class
+LicensedUserUIVO,,Apex Class
+Distributor_record_limit_current_setting,,Feature Parameter Integer
+InAppMessageService,,Apex Class
+LogicAndFiltersHistory,,Apex Class
+ManualDistributionExecutor_Tests,,Apex Class
+InAppMessageService_Tests,,Apex Class
+LogicAndFiltersHistory_Tests,,Apex Class
+MatchLogUIDAO,,Apex Class
+Distributor_feature_usage,,Feature Parameter Integer
+ImportTerritoryMapsValidation,,Apex Class
+LightningWidgetUIVO,,Apex Class
+Distributor_record_limit,,Feature Parameter Integer
+ImportTerritoryMapsValidation_Tests,,Apex Class
+LinkedObjectFilterUIVO,,Apex Class
+HousekeepingCleanDeletedStampsTask_Tests,,Apex Class
+IHistoryRecordTransformer,,Apex Class
+JobSettingUtil,,Apex Class
+HousekeepingDeReferenceLogsTask,,Apex Class
+IManualDistributionExecutor,,Apex Class
+JobSettingUtil_Tests,,Apex Class
+HousekeepingAutoConversionDEDetailsTask,,Apex Class
+IHealthCheckerDelayEmailBuilder,,Apex Class
+IntegrationsSlackMappingUIVO,,Apex Class
+HousekeepingCleanDeletedStampsTask,,Apex Class
+IntegrationsUIVO,,Apex Class
+HousekeepingDeleteDEProfilesTask_Tests,,Apex Class
+IPullDistributionExecutor,,Apex Class
+LastAssigneeUtil_Tests,,Apex Class
+HousekeepingDeleteStampGroupsTask,,Apex Class
+ISimulatedDistributionExecutor,,Apex Class
+LeadMatchingLogUIVO,,Apex Class
+HousekeepingDeReferenceLogsTask_Tests,,Apex Class
+IMigrationOperation,,Apex Class
+JobStatusUIVO,,Apex Class
+HousekeepingDeleteDEProfilesTask,,Apex Class
+IPreventOverflowDistributionExecutor,,Apex Class
+LastAssigneeUtil,,Apex Class
+Case_field_usage,,Feature Parameter Integer
+HousekeepingDistributorScheduleLogsTask,,Apex Class
+ITriggerDistributionExecutor,,Apex Class
+Case_team_usage,,Feature Parameter Integer
+HousekeepingFeatureParameterTask_Tests,,Apex Class
+Use_experimental_distributors,,Feature Parameter Integer
+Application_2_feature_usage,,Feature Parameter Integer
+HousekeepingDeleteStampGroupsTask_Tests,,Apex Class
+ISupportEmailBuilder,,Apex Class
+LeadMatchingObjectSettingsUIVO,,Apex Class
+Application_feature_usage,,Feature Parameter Integer
+HousekeepingDistSchedLogsTask_Tests,,Apex Class
+ITeamLevelCappingProvider,,Apex Class
+Activity_field_usage,,Feature Parameter Integer
+Add_default_Salesforce_team_usage,,Feature Parameter Integer
+Account_field_usage,,Feature Parameter Integer
+Account_team_usage,,Feature Parameter Integer
+HolidayUIVO,,Apex Class
+HousekeepingStickyTask,,Apex Class
+Tier,,Feature Parameter Integer
+HolidayUtility,,Apex Class
+HousekeepingStickyTask_Tests,,Apex Class
+Tier_current_setting,,Feature Parameter Integer
+Tag_collection_usage,,Feature Parameter Integer
+HousekeepingSoftDeletedObjectsTask_Tests,,Apex Class
+Team_feature_usage,,Feature Parameter Integer
+IApiClassifier,,Apex Class
+Slack_integration_enabled,,Feature Parameter Integer
+IBatchDistributionExecutor,,Apex Class
+Stamp_group_usage,,Feature Parameter Integer
+HolidayUtility_Tests,,Apex Class
+HousekeepingTaskChainDefinition,,Apex Class
+Salesforce_feature_usage,,Feature Parameter Integer
+HtmlUtils,,Apex Class
+Salesforce_team_member_roles_team_usage,,Feature Parameter Integer
+IClassifierLimitAdjuster,,Apex Class
+HousekeepUtils,,Apex Class
+IClassifierQueueable,,Apex Class
+ICappingProvider,,Apex Class
+HousekeepTaskUtils,,Apex Class
+ICappingService,,Apex Class
+HousekeepingAssignmentSimulationTask,,Apex Class
+IDataMigrationJobCreator,,Apex Class
+Trigger_distributors_enabled,,Feature Parameter Integer
+HousekeepingAutoConversionDEDTask_Tests,,Apex Class
+IDistributionLimitsMonitor,,Apex Class
+IntegrationsMiddlewareHmacVerifier_Tests,,Apex Class
+HousekeepUtils_Tests,,Apex Class
+IClsMatchDuplicateFinder,,Apex Class
+Tier_reduction,,Feature Parameter Integer
+HousekeepingAssignmentSimTask_Tests,,Apex Class
+ICommonEventBus,,Apex Class
+Tracking_feature_usage,,Feature Parameter Integer
+GenericMigrationParametersVO,,Apex Class
+HistoryUIDAO_Tests,,Apex Class
+HousekeepingLogsTask_Tests,,Apex Class
+Max_teams_per_run_current_setting,,Feature Parameter Integer
+GenericMigrationVO,,Apex Class
+HistoryUtility,,Apex Class
+HousekeepingOutOfOfficeTask,,Apex Class
+Maximum_allowed_cpu_usage,,Feature Parameter Integer
+GenericMigrationExecutor,,Apex Class
+HistoryService_Tests,,Apex Class
+HousekeepingFeatureParametersTask,,Apex Class
+Lead_field_usage,,Feature Parameter Integer
+GenericMigrationExecutor_Tests,,Apex Class
+HistoryUIDAO,,Apex Class
+HousekeepingLogsTask,,Apex Class
+Lead_team_usage,,Feature Parameter Integer
+Dynamic_team_usage,,Feature Parameter Integer
+GlobalAPIClassifier_Tests,,Apex Class
+HolidayHistory_Tests,,Apex Class
+HousekeepingShiftPlannerTask_Tests,,Apex Class
+GlobalAPIOutOfOffice,,Apex Class
+Health_checker_frequency,,Feature Parameter Integer
+HolidayRegionUIVO,,Apex Class
+HousekeepingSlackCleanupTask,,Apex Class
+GenericValidationVO,,Apex Class
+HistoryUtility_Tests,,Apex Class
+HousekeepingOutOfOfficeTask_Tests,,Apex Class
+Distributor_usage,,Feature Parameter Integer
+GlobalAPIClassifier,,Apex Class
+HolidayHistory,,Apex Class
+HousekeepingShiftPlannerTask,,Apex Class
+GlobalAPIReject_Tests,,Apex Class
+HolidayUIDAO,,Apex Class
+Processing_mode,,Feature Parameter Integer
+GlobalAPIService,,Apex Class
+HolidayUIDAO_Tests,,Apex Class
+Processing_mode_current_setting,,Feature Parameter Integer
+GlobalAPIOutOfOffice_Tests,,Apex Class
+HolidayService,,Apex Class
+HousekeepingSlackCleanupTask_Tests,,Apex Class
+Prevent_overflow,,Feature Parameter Integer
+GlobalAPIReject,,Apex Class
+HolidayService_Tests,,Apex Class
+HousekeepingSoftDeletedObjectsTask,,Apex Class
+Processing_frequency_current_setting,,Feature Parameter Integer
+Opportunity_team_usage,,Feature Parameter Integer
+Other_team_usage,,Feature Parameter Integer
+GlobalAPITags,,Apex Class
+Not_operators_enabled,,Feature Parameter Integer
+Opportunity_field_usage,,Feature Parameter Integer
+MockDistributionJobUtility,,Apex Class
+MultiMigrationChainQueueable_Tests,,Apex Class
+MockDistributionLogsAlertProcessor,,Apex Class
+MultipleTeamLevelCapsVO,,Apex Class
+MockCommonSystemUtils,,Apex Class
+MrkdwnEscape_Tests,,Apex Class
+MockCommonTierUtils,,Apex Class
+MultiMigrationChainQueueable,,Apex Class
+MockDistributorFailureChecker,,Apex Class
+NoOpDataMigrationJob,,Apex Class
+MockDistributorHelper,,Apex Class
+ObjectSyncActionService,,Apex Class
+MockDistributor,,Apex Class
+NewDynamicTeamMemberDefinitionsVO,,Apex Class
+MockDistributorCountersHelper,,Apex Class
+NewDynamicTeamMemberDefinitionsVO_Tests,,Apex Class
+MockHealthCheckerDelayEmailBuilder,,Apex Class
+ObjectSyncActionUIDAO_Tests,,Apex Class
+MockIntegrationsMiddlewareConfigDAO,,Apex Class
+ObjectSyncActionUIVO,,Apex Class
+MockDynamicTeamMemberHandler,,Apex Class
+ObjectSyncActionService_Tests,,Apex Class
+MockGenericDistributionExecutor,,Apex Class
+ObjectSyncActionUIDAO,,Apex Class
+MockPullDistributionExecutor,,Apex Class
+ObjectSyncBatchUtils_Tests,,Apex Class
+ParallelModeHealthChecker,,Apex Class
+MockReliabilityHelper,,Apex Class
+ObjectSyncBatch_Tests,,Apex Class
+ParallelModeHealthChecker_Tests,,Apex Class
+MockPostInstallUpgradeExecutor,,Apex Class
+ObjectSyncBatch,,Apex Class
+Pair,,Apex Class
+MockPreventOverflowDistributionExecutor,,Apex Class
+ObjectSyncBatchUtils,,Apex Class
+Pair_Tests,,Apex Class
+ManualAssignmentComponentController,,Apex Class
+MockBatchDistributionExecutor,,Apex Class
+MockSupportEmailBuilder,,Apex Class
+ManualAssignmentComponentCtlr_Tests,,Apex Class
+MockClassifierFailureChecker,,Apex Class
+MockTeamDAO,,Apex Class
+MaintenanceModeUtils,,Apex Class
+MigrationUtils_Tests,,Apex Class
+MockSlackWorkspaceDirectoryService,,Apex Class
+MaintenanceModeUtils_Tests,,Apex Class
+MockAsyncApexJobUtils,,Apex Class
+MockStuckRecordsService,,Apex Class
+ManualAssignmentTeamUIVO,,Apex Class
+MockCommonEventBus,,Apex Class
+MockUserDAO,,Apex Class
+ManualAssignmentUIUtils,,Apex Class
+MockCommonLimitsUtils,,Apex Class
+ManualAssignmentSettingsUIVO,,Apex Class
+MockClsAutoConversionProcessor,,Apex Class
+MockTeamMemberUtility,,Apex Class
+ManualAssignmentTeamMemberUIVO,,Apex Class
+MockClsDuplicateLeadProcessor,,Apex Class
+MockTriggerDistributionExecutor,,Apex Class
+ManualAssignmentUIUtils_Tests,,Apex Class
+MockCommonMessaging,,Apex Class
+ManualDistributionExecutor,,Apex Class
+MockingHelper,,Apex Class
+MockCommonOrgUtils,,Apex Class
+MrkdwnEscape,,Apex Class
+Logs_DistributionLogList_Controller,,Apex Class
+MigrationReferencesHelper,,Apex Class
+Logs_DistributionLogList_Ctlr_Tests,,Apex Class
+MigrationReferencesHelper_Tests,,Apex Class
+Logs_CustomClsLogList_Controller,,Apex Class
+MigrationOperationJob_Tests,,Apex Class
+Logs_CustomClsLogList_Controller_Tests,,Apex Class
+MigrationReferenceVO,,Apex Class
+Logs_ObjectSyncLogList_Controller,,Apex Class
+MigrationService,,Apex Class
+Logs_ObjectSyncLogList_Controller_Tests,,Apex Class
+MigrationService_Tests,,Apex Class
+Logs_LeadMatchingLogList_Controller,,Apex Class
+MigrationSObjectUtils,,Apex Class
+Logs_LeadMatchingLogList_Ctlr_Tests,,Apex Class
+MigrationSObjectUtils_Tests,,Apex Class
+Logs_TerritoriesLogList_Controller,,Apex Class
+MigrationUIDAO,,Apex Class
+Logs_TerritoriesLogList_Controller_Tests,,Apex Class
+MigrationUIDAO_Tests,,Apex Class
+Logs_SchedulerLogList_Controller,,Apex Class
+MigrationSoqlUtils,,Apex Class
+Logs_SchedulerLogList_Controller_Tests,,Apex Class
+MigrationSoqlUtils_Tests,,Apex Class
+MaintenanceModeExcessiveBuilder_Tests,,Apex Class
+MigrationUIVO,,Apex Class
+MockSlackTokenEncryptionService,,Apex Class
+MaintenanceModeExcessiveEmailBuilder,,Apex Class
+MigrationUtils,,Apex Class
+MockSlackUserMappingSyncService,,Apex Class
+LookupOwnerTieBreakerConfigVO,,Apex Class
+MigrationUIUtils,,Apex Class
+LookupOwnerTieBreakerConfigVO_Tests,,Apex Class
+MigrationUIUtils_Tests,,Apex Class
+MockSlackOrgUuidGenerator,,Apex Class
+InAppMessagesUIVO,,Apex Class
+LogsQueueable,,Apex Class
+MemberDistributorDetailsUpgrBtch_Tests,,Apex Class
+InlineComponentController,,Apex Class
+LogsSortOrderFieldUIVO,,Apex Class
+MemberDistributorDetailsUpgradeBatch,,Apex Class
+InAppMessageUIUtils,,Apex Class
+LogicAndFiltersVO,,Apex Class
+MatchLogUIDAO_Tests,,Apex Class
+InAppMessageUIUtils_Tests,,Apex Class
+LogicAndFiltersVO_Tests,,Apex Class
+MatchSettingsUIVO,,Apex Class
+InlineLogsController_Tests,,Apex Class
+Logs_AutoConversionLogList_Controller,,Apex Class
+MigrationConstants,,Apex Class
+IntegrationsManageDistributorsUIVO,,Apex Class
+Logs_AutoConversionLogList_Ctlr_Tests,,Apex Class
+MigrationObjectVO,,Apex Class
+InlineComponentController_Tests,,Apex Class
+Logs_ArchiveLogList_Controller,,Apex Class
+MigrationCompleteEmailBuilder,,Apex Class
+InlineLogsController,,Apex Class
+Logs_ArchiveLogList_Controller_Tests,,Apex Class
+MigrationCompleteEmailBuilder_Tests,,Apex Class
+IntegrationsMiddlewareHmacVerifier,,Apex Class
+IntegrationsManageTeamMembersUIVO,,Apex Class
+Logs_BaseLogs_Controller,,Apex Class
+IntegrationsMiddlewareConfigurationDAO,,Apex Class
+Logs_BaseLogs_Controller_Tests,,Apex Class
+MigrationOperationJob,,Apex Class
+QueueUIVO,,Apex Class
+SchedulerLogUIDAO_Tests,,Apex Class
+RecentDistributionLogUIVO,,Apex Class
+SchedulerLogUIVO,,Apex Class
+QueueUIDAO,,Apex Class
+SchedulerDetailsVO,,Apex Class
+QueueUIDAO_Tests,,Apex Class
+SchedulerLogUIDAO,,Apex Class
+RecordDetailsComponentUIVO,,Apex Class
+Scheduler_Tests,,Apex Class
+RecordHistoryUtility,,Apex Class
+SelectOptionsUIVO,,Apex Class
+RecordCountMatcherVO,,Apex Class
+SchedulerUtils,,Apex Class
+RecordCountMatcherWrapperVO,,Apex Class
+SchedulerUtils_Tests,,Apex Class
+RecordOwnerCountCalculator_Tests,,Apex Class
+Settings_AdvancedSettings_Controller,,Apex Class
+SlackConnReminderEmailBuilder_Tests,,Apex Class
+RejectComponentController,,Apex Class
+Settings_AdvancedSettings_Ctlr_Tests,,Apex Class
+SlackConnectionPreflightService,,Apex Class
+RecordHistoryUtility_Tests,,Apex Class
+SerialisableSelectOption,,Apex Class
+RecordOwnerCountCalculator,,Apex Class
+SerialisableSelectOption_Tests,,Apex Class
+RejectSettingsUIVO,,Apex Class
+Settings_BaseSettings_Controller,,Apex Class
+SlackConnectionReminderQueueable,,Apex Class
+RejectUtility,,Apex Class
+Settings_CustomPermissions_Controller,,Apex Class
+SlackConnectionReminderQueueable_Tests,,Apex Class
+RejectComponentController_Tests,,Apex Class
+Settings_AppSettings_Controller,,Apex Class
+SlackConnectionPreflightService_Tests,,Apex Class
+RejectRequestDTO,,Apex Class
+Settings_AppSettings_Controller_Tests,,Apex Class
+SlackConnectionReminderEmailBuilder,,Apex Class
+OutOfOfficeService_Tests,,Apex Class
+ProfileUIVO,,Apex Class
+SalesforceTeamsConfigurationChecker,,Apex Class
+OutOfOfficeSyncUtils,,Apex Class
+ProfileUIVO_Tests,,Apex Class
+SalesforceTeamsConfigurationCheckr_Tests,,Apex Class
+OutOfOfficeHistory_Tests,,Apex Class
+ProfileUIUtils,,Apex Class
+SalesforceTeamMemberUtils,,Apex Class
+OutOfOfficeService,,Apex Class
+ProfileUIUtils_Tests,,Apex Class
+SalesforceTeamMemberUtils_Tests,,Apex Class
+OutOfOfficeUIDAO_Tests,,Apex Class
+PullDistributionExecutor,,Apex Class
+OutOfOfficeUIVO,,Apex Class
+OutOfOfficeSyncUtils_Tests,,Apex Class
+ProfileUsageUIVO,,Apex Class
+SalesforceTeamsDistributorVO,,Apex Class
+OutOfOfficeUIDAO,,Apex Class
+ProfileUsageUIVO_Tests,,Apex Class
+QueueDAO,,Apex Class
+ScheduledDataMigration,,Apex Class
+QueueDAO_Tests,,Apex Class
+Scheduler,,Apex Class
+SalesforceTeamsDistributorVO_Tests,,Apex Class
+PullDistributionExecutor_Tests,,Apex Class
+SalesforceTeamsWarningEmailBuilder,,Apex Class
+ObjectSyncUtils,,Apex Class
+PreventOverflowDistnExecutor_Tests,,Apex Class
+ObjectSyncUtils_Tests,,Apex Class
+PreventOverflowDistributionExecutor,,Apex Class
+ObjectSyncUIUtils,,Apex Class
+PostInstallUpgradeExecutor,,Apex Class
+ObjectSyncUIUtils_Tests,,Apex Class
+PostInstallUpgradeExecutor_Tests,,Apex Class
+ObjectSync_Settings_Controller,,Apex Class
+PreviewDistributionUIVO,,Apex Class
+ObjectSync_Settings_Controller_Tests,,Apex Class
+ProcessingFilterUIVO,,Apex Class
+ObjectSync_Actions_Controller,,Apex Class
+PreventOverflowProcessingState,,Apex Class
+ObjectSync_Actions_Controller_Tests,,Apex Class
+PreventOverflowProcessingState_Tests,,Apex Class
+OutOfBandAssignmentProcessor,,Apex Class
+ProfileHistoryConstants,,Apex Class
+OutOfBandAssignmentProcessor_Tests,,Apex Class
+ProfileHistoryUIDAO,,Apex Class
+SObjectUIUtils_Tests,,Apex Class
+OrgUIDAO,,Apex Class
+ProfileConstants,,Apex Class
+OrgUIDAO_Tests,,Apex Class
+ProfileHistory,,Apex Class
+OutOfOfficeDTO,,Apex Class
+ProfileService,,Apex Class
+SalesforceTeamMemberAssignmentHandler,,Apex Class
+OutOfOfficeHistory,,Apex Class
+ProfileService_Tests,,Apex Class
+SalesforceTeamMemberAssignmentHdlr_Tests,,Apex Class
+OutOfBandAssignmentRecorder,,Apex Class
+ProfileHistoryUIDAO_Tests,,Apex Class
+SalesforceTeamDAO,,Apex Class
+OutOfBandAssignmentRecorder_Tests,,Apex Class
+ProfileHistory_Tests,,Apex Class
+SalesforceTeamDAO_Tests,,Apex Class
+MockSalesforceTeamMemberUtils,,Apex Class
+ObjectSyncEmailBuilder_Tests,,Apex Class
+PassThroughFieldAccessMock,,Apex Class
+MockSalesforceTeamsConfigurationChecker,,Apex Class
+ObjectSyncLogUIDAO,,Apex Class
+PassThroughRecordAccessMock,,Apex Class
+MockSalesforceTeamDAO,,Apex Class
+ObjectSyncDetailsVO,,Apex Class
+ParallelModeWarningEmailBuilder,,Apex Class
+de,,Platform Cache Partition
+MockSalesforceTeamMemberAssignmentHdlr,,Apex Class
+ObjectSyncEmailBuilder,,Apex Class
+ParallelModeWarningEmailBuilder_Tests,,Apex Class
+MockSlackNotificationEnrichmentService,,Apex Class
+ObjectSyncSettingsUIVO,,Apex Class
+MockSlackNotificationFieldAccessService,,Apex Class
+ObjectSyncSettingsUtils,,Apex Class
+MockSlackIntegrationBoltCleanupService,,Apex Class
+ObjectSyncLogUIDAO_Tests,,Apex Class
+PermissionsUIVO,,Apex Class
+MockSlackNotificationEligibilityService,,Apex Class
+ObjectSyncLogUIVO,,Apex Class
+PersonaHistoryTransformer,,Apex Class
+MockSlackNotificationRecordAccessService,,Apex Class
+ObjectSyncSettingsUtils_Tests,,Apex Class
+PostInstallClass,,Apex Class
+ObjectSyncStatusUIVO,,Apex Class
+PostInstallClass_Tests,,Apex Class
+PersonaHistoryTransformer_Tests,,Apex Class
+SlackUserMappingSyncService,,Apex Class
+TagAssignmentUIUtils,,Apex Class
+SlackUserMappingSyncService_Tests,,Apex Class
+TagAssignmentUIUtils_Tests,,Apex Class
+SlackUserInfoVO,,Apex Class
+StuckRecordsService_Tests,,Apex Class
+SlackUserMappingSyncQueueable,,Apex Class
+SupportSettingsController,,Apex Class
+SlackWorkspaceAnnouncementService,,Apex Class
+TagCategoryUIDAO,,Apex Class
+SlackWorkspaceAnnouncementService_Tests,,Apex Class
+TagCategoryUIDAO_Tests,,Apex Class
+SlackWorkspaceAccessTokenService,,Apex Class
+TagCapDAO,,Apex Class
+SlackWorkspaceAccessTokenService_Tests,,Apex Class
+TagCapDAO_Tests,,Apex Class
+SlackWorkspaceDirectoryService,,Apex Class
+TagCollectionService_Tests,,Apex Class
+SlackWorkspaceService,,Apex Class
+TagCollectionUIVO,,Apex Class
+SlackWorkspaceDAO,,Apex Class
+TagCollectionDTO,,Apex Class
+SlackWorkspaceDAO_Tests,,Apex Class
+TagCollectionService,,Apex Class
+SlackWorkspaceTokenDAO_Tests,,Apex Class
+TagCombinationHelper,,Apex Class
+SlackWorkspaceTokenService,,Apex Class
+TagCombinationHelper_Tests,,Apex Class
+SlackWorkspaceService_Tests,,Apex Class
+TagCollectionUsageUIUtils,,Apex Class
+SlackWorkspaceTokenDAO,,Apex Class
+TagCollectionUsageUIUtils_Tests,,Apex Class
+SimulationContext,,Apex Class
+SlackPreflightStatusVO,,Apex Class
+StampService_Tests,,Apex Class
+SimulationContext_Tests,,Apex Class
+SlackRejectRecordEndpoint,,Apex Class
+SimulatedDistributionExecutor,,Apex Class
+SlackNotificationRecordAccessService,,Apex Class
+StampGroupUIVO,,Apex Class
+SimulatedDistributionExecutor_Tests,,Apex Class
+SlackOrgUuidGenerator,,Apex Class
+StampService,,Apex Class
+SlackBoltAuthUtils,,Apex Class
+SlackRejectRecordEndpoint_Tests,,Apex Class
+SlackBoltAuthUtils_Tests,,Apex Class
+StampUIDAO,,Apex Class
+SlackTokenEncryptionService,,Apex Class
+StampUIDAO_Tests,,Apex Class
+SlackTokenRefreshService_Tests,,Apex Class
+StampUsageUIUtils_Tests,,Apex Class
+SlackUpdateForUserVO,,Apex Class
+StuckRecordsService,,Apex Class
+SlackTokenEncryptionService_Tests,,Apex Class
+StampUIVO,,Apex Class
+SlackTokenRefreshService,,Apex Class
+StampUsageUIUtils,,Apex Class
+ShiftHoursUIVO,,Apex Class
+SlackIntegrationService_Tests,,Apex Class
+ShiftHoursUsageUIVO,,Apex Class
+SlackIntegrationSettingsService,,Apex Class
+Settings_TierReduction_Controller_Tests,,Apex Class
+SlackIntegrationReadinessService_Tests,,Apex Class
+Settings_TriggerDistrSettings_Controller,,Apex Class
+SlackIntegrationService,,Apex Class
+ShiftPlannerDAO,,Apex Class
+SlackManualUserMappingService,,Apex Class
+ShiftPlannerDAO_Tests,,Apex Class
+SlackManualUserMappingService_Tests,,Apex Class
+ShiftHoursVO,,Apex Class
+SlackIntegrationSettingsService_Tests,,Apex Class
+ShiftPlannerBlockUIVO,,Apex Class
+SlackIntegrationStatus,,Apex Class
+ShiftPlannerService,,Apex Class
+SlackNotifFieldAccessService_Tests,,Apex Class
+SourceUIDAO_Tests,,Apex Class
+ShiftPlannerService_Tests,,Apex Class
+SlackNotifRecordAccessSvc_Tests,,Apex Class
+StageProcessingResult,,Apex Class
+ShiftPlannerHistory,,Apex Class
+SlackMiddlewareEndpointAvailabilityGuard,,Apex Class
+ShiftPlannerHistory_Tests,,Apex Class
+SlackNotifEligibilitySvc_Tests,,Apex Class
+SourceUIDAO,,Apex Class
+ShiftUIVO,,Apex Class
+SlackNotificationEnrichmentService_Tests,,Apex Class
+StampGroupUIDAO,,Apex Class
+SimpleUserTagAssignmentUIVO,,Apex Class
+SlackNotificationFieldAccessService,,Apex Class
+StampGroupUIDAO_Tests,,Apex Class
+ShiftPlannerUIDAO,,Apex Class
+SlackNotificationEligibilityService,,Apex Class
+StampGroupService,,Apex Class
+ShiftPlannerUIDAO_Tests,,Apex Class
+SlackNotificationEnrichmentService,,Apex Class
+StampGroupService_Tests,,Apex Class
+ReliabilityHelper_Tests,,Apex Class
+Settings_ExportImport_Controller_Tests,,Apex Class
+SlackFlowActivationService_Tests,,Apex Class
+RollbackExecutor,,Apex Class
+Settings_Integrations_Controller,,Apex Class
+SlackInstallUrlVO,,Apex Class
+RejectUtility_Tests,,Apex Class
+Settings_CustomPermissions_Ctrl_Tests,,Apex Class
+SlackConnectionReminderService,,Apex Class
+ReliabilityHelper,,Apex Class
+Settings_ExportImport_Controller,,Apex Class
+SlackFlowActivationService,,Apex Class
+SObjectUIUtils,,Apex Class
+RollbackExecutor_Tests,,Apex Class
+Settings_Integrations_Controller_Tests,,Apex Class
+RuntimeUtility,,Apex Class
+Settings_LicensedUsers_Controller,,Apex Class
+SlackIntegrationBoltCleanupService,,Apex Class
+Settings_PersonaManagement_Controller,,Apex Class
+SlackIntegrationEndpoint_Tests,,Apex Class
+Settings_TierReduction_Controller,,Apex Class
+SlackIntegrationReadinessService,,Apex Class
+Settings_LicensedUsers_Controller_Tests,,Apex Class
+SlackIntegrationCleanupService,,Apex Class
+Settings_PersonaAssignment_Controller,,Apex Class
+SlackIntegrationEndpoint,,Apex Class
