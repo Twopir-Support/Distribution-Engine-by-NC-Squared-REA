@@ -183,20 +183,17 @@ public with sharing class DE_WidgetController {
         }
     }
 
+    /**
+     * Business refusals (limit reached, not allowed, invalid reason) come back as success = false with a message,
+     * so the Denied reject log row created by DE_RejectionService is committed. Only permission and unexpected
+     * errors throw.
+     */
     @AuraEnabled
     public static DE_RejectionService.RejectResult reject(Id recordId, String reason) {
         DE_Permissions.require(DE_Permissions.isUser(), 'reject assignments');
+        DE_PersonaService.requireLevel(DE_PersonaService.ASSIGNMENT_REJECTION, 'Edit', 'reject assignments');
         try {
-            DE_RejectionService.RejectResult r = DE_RejectionService.reject(
-                new List<Id>{ recordId },
-                reason,
-                UserInfo.getUserId(),
-                DE_Permissions.isTeamManager()
-            )[0];
-            if (!r.success) {
-                throw DE_Ui.error(r.message);
-            }
-            return r;
+            return DE_RejectionService.reject(new List<Id>{ recordId }, reason, UserInfo.getUserId(), DE_Permissions.isTeamManager())[0];
         } catch (Exception e) {
             throw DE_Ui.error(e);
         }

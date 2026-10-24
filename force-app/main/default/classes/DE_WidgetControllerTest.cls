@@ -132,12 +132,12 @@ private class DE_WidgetControllerTest {
         DE_TestFactory.settings();
         Lead l = DE_TestFactory.insertLeads(1, UserInfo.getUserId())[0];
         DE_TestFactory.grant(new Set<String>{ 'DE_User' });
-        try {
-            DE_WidgetController.reject(l.Id, 'Duplicate');
-            Assert.fail('Records not assigned by the engine cannot be rejected.');
-        } catch (AuraHandledException e) {
-            Assert.isTrue(e.getMessage().contains('not assigned by Distribution Engine'), e.getMessage());
-        }
+        DE_RejectionService.RejectResult r = DE_WidgetController.reject(l.Id, 'Duplicate');
+        Assert.isFalse(r.success, 'Records not assigned by the engine cannot be rejected.');
+        Assert.isTrue(r.message.contains('not assigned by Distribution Engine'), r.message);
+        DE_Reject_Request__c req = [SELECT Status__c, Message__c, Requested_By__c FROM DE_Reject_Request__c WHERE Record_Id__c = :String.valueOf(l.Id)];
+        Assert.areEqual('Denied', req.Status__c, 'The refused request is kept as a Denied reject log.');
+        Assert.areEqual(UserInfo.getUserId(), req.Requested_By__c, 'Requester recorded.');
     }
 
     @IsTest
