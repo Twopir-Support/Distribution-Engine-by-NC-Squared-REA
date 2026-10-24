@@ -1,0 +1,555 @@
+<title>DE Rebuild UI Preview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: Lightning-style app shell (header, tab bar, page body, utility bar) rebuilt from the repo's LWC templates. */
+:root {
+  --bg: #eef1f6;
+  --surface: #ffffff;
+  --surface-2: #f6f8fb;
+  --line: #d9dee8;
+  --fg: #1a2233;
+  --muted: #5b6577;
+  --accent: #1b5fbf;
+  --accent-soft: #e4eefb;
+  --brand-bar: #0f3a75;
+  --brand-fg: #ffffff;
+  --ok: #1d7a46; --ok-soft: #e1f3e8;
+  --warn: #8a5a00; --warn-soft: #fdf1d6;
+  --bad: #b3261e; --bad-soft: #fbe5e3;
+  --info: #3b4a8f; --info-soft: #e8eafa;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --other: #8a8986;
+  --font-ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1218; --surface: #16181d; --surface-2: #1c2028; --line: #2c3240; --fg: #e6e9f0; --muted: #9aa3b5;
+    --accent: #6ea4ef; --accent-soft: #1d2a40; --brand-bar: #0b1f3d; --brand-fg: #e6e9f0;
+    --ok: #5fcf8e; --ok-soft: #13291d; --warn: #f0c060; --warn-soft: #2e2512; --bad: #f08a80; --bad-soft: #321a18; --info: #a9b4f0; --info-soft: #1f2340;
+    --s1: #3f8ae0; --s2: #e2652f; --s3: #18a575; --other: #8f8e8b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1218; --surface: #16181d; --surface-2: #1c2028; --line: #2c3240; --fg: #e6e9f0; --muted: #9aa3b5;
+  --accent: #6ea4ef; --accent-soft: #1d2a40; --brand-bar: #0b1f3d; --brand-fg: #e6e9f0;
+  --ok: #5fcf8e; --ok-soft: #13291d; --warn: #f0c060; --warn-soft: #2e2512; --bad: #f08a80; --bad-soft: #321a18; --info: #a9b4f0; --info-soft: #1f2340;
+  --s1: #3f8ae0; --s2: #e2652f; --s3: #18a575; --other: #8f8e8b;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 14px; line-height: 1.45; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.notice { background: var(--info-soft); color: var(--info); font-size: 12.5px; padding-block: 8px; border-bottom: 1px solid var(--line); }
+.notice b { font-weight: 600; }
+.app-head { background: var(--brand-bar); color: var(--brand-fg); padding-block: 10px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.app-head .grid-icon { width: 22px; height: 22px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+.app-head .grid-icon i { background: currentColor; opacity: .8; border-radius: 1px; }
+.app-name { font-weight: 600; font-size: 15px; letter-spacing: .01em; }
+.app-head .spacer { flex: 1; }
+.app-head .who { font-size: 12.5px; opacity: .85; }
+.tabbar { background: var(--surface); border-bottom: 1px solid var(--line); display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; }
+.tabbar a { padding: 12px 14px 10px; color: var(--fg); text-decoration: none; white-space: nowrap; border-bottom: 3px solid transparent; font-weight: 500; font-size: 13.5px; }
+.tabbar a:hover { background: var(--surface-2); }
+.tabbar a[aria-current="page"] { border-bottom-color: var(--accent); color: var(--accent); }
+.tabbar .sep { width: 1px; background: var(--line); margin-block: 8px; }
+
+main { padding-block: 18px 110px; display: grid; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.card-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.card-head h1, .card-head h2 { font-size: 16px; margin: 0; font-weight: 600; text-wrap: balance; }
+.card-head .ico { width: 28px; height: 28px; border-radius: 5px; background: var(--accent); color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+.card-head .actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.card-body { padding: 14px 16px; display: grid; gap: 14px; min-width: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+.eyebrow { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--accent); }
+.btn:hover { background: var(--surface-2); }
+.btn.brand { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.danger { color: var(--bad); }
+.btn.small { padding: 3px 8px; font-size: 12px; }
+
+.subtabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.subtabs button { border: 0; background: none; padding: 9px 12px; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.subtabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; font-weight: 600; font-size: 12px; color: var(--muted); background: var(--surface-2); padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-data); font-size: 12.5px; }
+.mono { font-family: var(--font-data); font-size: 12.5px; }
+a.link { color: var(--accent); text-decoration: none; }
+a.link:hover { text-decoration: underline; }
+
+.pill { display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.ok { color: var(--ok); background: var(--ok-soft); }
+.pill.warn { color: var(--warn); background: var(--warn-soft); }
+.pill.bad { color: var(--bad); background: var(--bad-soft); }
+.pill.info { color: var(--info); background: var(--info-soft); }
+.pill.neutral { color: var(--muted); background: var(--surface-2); }
+.tag { display: inline-block; border: 1px solid var(--line); background: var(--surface-2); border-radius: 4px; padding: 0 6px; font-size: 11.5px; margin: 1px 3px 1px 0; white-space: nowrap; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.stat { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; background: var(--surface-2); display: grid; gap: 4px; }
+.stat .v { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 16px; }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label { font-size: 12px; color: var(--muted); font-weight: 500; }
+.field .ctl { border: 1px solid var(--line); background: var(--surface); border-radius: 4px; padding: 6px 9px; min-height: 32px; font-size: 13px; }
+.field .ctl.area { min-height: 56px; white-space: pre-wrap; font-family: var(--font-data); font-size: 12px; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; }
+.check .box { width: 16px; height: 16px; border: 1px solid var(--line); border-radius: 3px; flex: none; margin-top: 2px; display: grid; place-items: center; font-size: 11px; background: var(--surface); }
+.check .box.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.toggle { width: 34px; height: 20px; border-radius: 999px; background: var(--line); position: relative; flex: none; }
+.toggle::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
+.toggle.on { background: var(--ok); }
+.toggle.on::after { left: 16px; }
+fieldset { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 14px 14px; margin: 0; display: grid; gap: 12px; min-width: 0; }
+legend { font-weight: 600; font-size: 13.5px; padding: 0 6px; }
+
+.split { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px; align-items: start; }
+.sidenav { display: grid; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px; }
+.sidenav button { text-align: left; border: 0; background: none; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; color: var(--fg); }
+.sidenav button[aria-selected="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+@media (max-width: 760px) { .split { grid-template-columns: minmax(0, 1fr); } .sidenav { grid-auto-flow: column; overflow-x: auto; } .sidenav button { white-space: nowrap; } }
+
+.flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.flow .col { display: grid; gap: 8px; }
+.flow .node { border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px; background: var(--surface-2); font-size: 12.5px; }
+.flow .node b { display: block; font-size: 13px; }
+@media (max-width: 640px) { .flow { grid-template-columns: minmax(0, 1fr); } }
+
+.planner td, .planner th { text-align: center; }
+.planner td:first-child, .planner th:first-child { text-align: left; }
+.cell { display: inline-block; min-width: 72px; padding: 3px 6px; border-radius: 4px; font-size: 11.5px; border: 1px dashed var(--line); color: var(--muted); }
+.cell.chg { border-style: solid; color: var(--fg); background: var(--accent-soft); border-color: var(--accent); font-weight: 600; }
+.cell.past { opacity: .55; }
+.week-now { background: var(--warn-soft); }
+
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal .dow { font-size: 11px; color: var(--muted); text-align: center; font-weight: 600; }
+.cal .day { border: 1px solid var(--line); border-radius: 4px; padding: 5px; min-height: 58px; font-size: 11px; background: var(--surface); display: grid; align-content: start; gap: 2px; }
+.cal .day b { font-size: 12px; }
+.cal .day.hol { background: var(--bad-soft); border-color: var(--bad); }
+.cal .day.blank { visibility: hidden; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; list-style: none; margin: 0; padding: 0; }
+.legend .sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+.chart { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--muted); font-family: var(--font-data); font-size: 10px; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .mark { cursor: default; }
+.chart-tip { position: fixed; pointer-events: none; background: var(--fg); color: var(--bg); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: var(--font-data); z-index: 30; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.charts > section { min-width: 0; display: grid; gap: 8px; }
+.charts h3 { margin: 0; font-size: 14px; }
+
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.timeline li { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 10px; padding-bottom: 12px; position: relative; }
+.timeline li::before { content: ""; position: absolute; left: 6px; top: 14px; bottom: 0; width: 2px; background: var(--line); }
+.timeline li:last-child::before { display: none; }
+.timeline .dot { width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--surface); background: var(--accent); margin-top: 2px; position: relative; z-index: 1; box-shadow: 0 0 0 1px var(--line); }
+.timeline .dot.bad { background: var(--bad); } .timeline .dot.warn { background: var(--warn); } .timeline .dot.ok { background: var(--ok); }
+
+.record-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; align-items: start; }
+@media (max-width: 900px) { .record-grid { grid-template-columns: minmax(0, 1fr); } }
+.highlights { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px 16px; }
+
+/* utility bar + widget */
+.ubar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding-block: 6px calc(6px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; gap: 8px; z-index: 20; }
+.ubar button { border: 1px solid var(--line); background: var(--surface-2); border-radius: 4px; padding: 5px 12px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; }
+.ubar .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+.widget { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(46px + env(safe-area-inset-bottom, 0px)); width: min(360px, calc(100vw - 32px)); max-height: min(560px, calc(100vh - 140px)); overflow-y: auto; z-index: 25; box-shadow: 0 8px 28px rgba(0,0,0,.18); }
+.widget .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.assigned { list-style: none; margin: 0; padding: 0; display: grid; }
+.assigned li { padding: 9px 0; border-bottom: 1px solid var(--line); display: grid; gap: 2px; }
+.assigned li:last-child { border-bottom: 0; }
+.sla-ok { color: var(--muted); } .sla-due { color: var(--bad); font-weight: 600; }
+.view[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { .toggle::after { transition: none; } }
+</style>
+
+<div class="notice wrap">
+  <b>UI preview for analysis.</b> Static mock-ups of the Lightning web components in this repository (force-app/main/default/lwc), drawn from their templates with <b>example data</b>. These are not screenshots of a running Salesforce org. This is an independent rebuild, not affiliated with NC Squared.
+</div>
+
+<header class="app-head wrap">
+  <span class="grid-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+  <span class="app-name">Distribution Engine by NC Squared</span>
+  <span class="spacer"></span>
+  <span class="who">Example user: Morgan Reyes · DE Admin</span>
+</header>
+
+<nav class="tabbar wrap" aria-label="App tabs">
+  <a href="#console" data-view="console">Distribution Console</a>
+  <a href="#teams" data-view="teams">Distribution Team</a>
+  <a href="#workspace" data-view="workspace">Team: Inbound Sales</a>
+  <a href="#distributor" data-view="distributor">Distributor editor</a>
+  <a href="#availability" data-view="availability">Distribution Availability</a>
+  <a href="#tags" data-view="tags">Distribution Tags</a>
+  <a href="#classifier" data-view="classifier">Record Classification</a>
+  <a href="#sync" data-view="sync">Distribution Sync</a>
+  <a href="#logs" data-view="logs">Distribution Logs</a>
+  <a href="#analytics" data-view="analytics">Distribution Analytics</a>
+  <a href="#settings" data-view="settings">Distribution Settings</a>
+  <span class="sep" aria-hidden="true"></span>
+  <a href="#record" data-view="record">Lead record page</a>
+</nav>
+
+<main class="wrap" id="main"></main>
+
+<div class="ubar">
+  <button type="button" id="widgetBtn" aria-expanded="false" aria-controls="widget"><span class="dot" aria-hidden="true"></span>Distribution</button>
+</div>
+<section class="card widget" id="widget" hidden aria-label="Distribution widget"></section>
+<div class="chart-tip" id="tip" hidden></div>
+
+<script>
+(function () {
+  // ------------------------------------------------------------------ example data (fictional)
+  const PEOPLE = [
+    { n: 'Priya Shah', on: true, now: 'Available', today: 14, w: 1, hours: 'Team hours', tags: ['Language:English', 'Language:Hindi', 'Tier:Senior'] },
+    { n: 'Tom Becker', on: true, now: 'Available', today: 12, w: 1, hours: 'Team hours', tags: ['Language:German', 'Language:English', 'Tier:Mid'] },
+    { n: 'Lucía Ortega', on: false, now: 'Offline: Lunch (back in 22 min)', today: 9, w: 1, hours: 'Early shift', tags: ['Language:Spanish', 'Tier:Mid'] },
+    { n: 'Kenji Watanabe', on: true, now: 'Outside hours', today: 6, w: 0.5, hours: 'Late shift', tags: ['Language:Japanese', 'Tier:Junior'] },
+    { n: 'Amara Okafor', on: true, now: 'Out of office until Fri', today: 0, w: 2, hours: 'Team hours', tags: ['Language:English', 'Language:French', 'Tier:Senior'] },
+    { n: 'Sam Lindqvist', on: true, now: 'Available', today: 11, w: 1, hours: 'Shift planner', tags: ['Language:Swedish', 'Language:English', 'Tier:Junior'] }
+  ];
+  const TEAMS = [
+    { o: 10, n: 'Inbound Sales', obj: 'Lead', type: 'Standard', m: 6, d: 4, on: true, today: 52, sla: 3, re: 2, rej: 1, err: 0, av: '4 / 6' },
+    { o: 20, n: 'Enterprise Accounts', obj: 'Lead', type: 'Standard', m: 4, d: 2, on: true, today: 17, sla: 0, re: 0, rej: 0, err: 0, av: '3 / 4' },
+    { o: 30, n: 'Tier 1 Support', obj: 'Case', type: 'Standard', m: 9, d: 3, on: true, today: 88, sla: 6, re: 4, rej: 2, err: 1, av: '7 / 9' },
+    { o: 40, n: 'Escalations Q2Q', obj: 'Case', type: 'Queue to Queue', m: 3, d: 1, on: true, today: 9, sla: 0, re: 0, rej: 0, err: 0, av: '3 / 3' },
+    { o: 50, n: 'Renewals', obj: 'Opportunity', type: 'Standard', m: 5, d: 2, on: false, today: 0, sla: 0, re: 0, rej: 0, err: 0, av: '—' }
+  ];
+  const DISTS = [
+    { o: 10, n: 'Hot inbound (sticky by domain)', t: 'Standard', m: 'Round Robin', src: 'Queue: Web Leads', f: 'Rating = Hot', on: true, wait: 3 },
+    { o: 20, n: 'Spanish speakers', t: 'Standard', m: 'Round Robin', src: 'Queue: Web Leads', f: 'Country in Spain; Mexico · Member: Tag:Language includes Spanish', on: true, wait: 0 },
+    { o: 30, n: 'Existing customer owner', t: 'Standard', m: 'Related Owner', src: 'Queue: Web Leads', f: 'DE.MatchedAccount.Type = Customer', on: true, wait: 1 },
+    { o: 40, n: 'Backlog (get next)', t: 'Pull', m: 'Round Robin', src: 'Queue: Lead Backlog', f: '—', on: true, wait: 37 }
+  ];
+  const LOGS = [
+    ['09:42', 'DL-000004381', 'Jordan Ellis', 'Lead', 'Inbound Sales', 'Hot inbound', 'Round Robin', 'Priya Shah', 'Assigned', 'ok'],
+    ['09:41', 'DL-000004380', '00001877', 'Case', 'Tier 1 Support', 'Billing', 'Load Balancing', 'Chen Wu', 'SLA Alert', 'warn'],
+    ['09:39', 'DL-000004379', 'Avery Holt', 'Lead', 'Inbound Sales', 'Existing customer owner', 'Related Owner', 'Tom Becker', 'Assigned', 'ok'],
+    ['09:36', 'DL-000004378', '00001874', 'Case', 'Tier 1 Support', 'Billing', 'Load Balancing', 'Ines Duarte', 'Reassigned', 'info'],
+    ['09:30', 'DL-000004377', 'Rae Kowalski', 'Lead', 'Inbound Sales', 'Hot inbound', 'Round Robin (sticky)', 'Priya Shah', 'Rejected', 'bad'],
+    ['09:22', 'DL-000004376', 'Noor Haddad', 'Lead', 'Enterprise Accounts', 'Named accounts', 'Lookup Owner', 'Felix Moreau', 'Assigned', 'ok'],
+    ['09:15', 'DL-000004375', '00001869', 'Case', 'Tier 1 Support', 'Technical', 'Round Robin', '—', 'On Hold', 'neutral'],
+    ['09:02', 'DL-000004374', 'Dana Cruz', 'Lead', 'Inbound Sales', 'Backlog (get next)', 'Pull', 'Sam Lindqvist', 'Assigned', 'ok']
+  ];
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pill = (txt, k) => `<span class="pill ${k}">${esc(txt)}</span>`;
+  const box = (on, label, hint) => `<div class="check"><span class="box ${on ? 'on' : ''}" aria-hidden="true">${on ? '✓' : ''}</span><span>${esc(label)}${hint ? `<br><span class="muted small">${esc(hint)}</span>` : ''}</span></div>`;
+  const fld = (label, value, area) => `<div class="field"><label>${esc(label)}</label><div class="ctl ${area ? 'area' : ''}">${esc(value)}</div></div>`;
+  const card = (ico, title, body, actions = '') => `<section class="card"><div class="card-head"><span class="ico" aria-hidden="true">${ico}</span><h1>${esc(title)}</h1><div class="actions">${actions}</div></div><div class="card-body">${body}</div></section>`;
+  const table = (head, rows, numCols = []) => `<div class="tbl-wrap"><table><thead><tr>${head.map((h, i) => `<th class="${numCols.includes(i) ? 'num' : ''}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c, i) => `<td class="${numCols.includes(i) ? 'num' : ''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  function subtabs(id, names, render) {
+    return `<div class="subtabs" role="tablist" data-tabs="${id}">${names.map((n, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-i="${i}">${esc(n)}</button>`).join('')}</div>` +
+      names.map((n, i) => `<div data-panel="${id}" data-i="${i}" ${i ? 'hidden' : ''}>${render(i)}</div>`).join('');
+  }
+
+  // ------------------------------------------------------------------ views
+  const V = {};
+  V.console = () => card('C', 'Distribution Console', subtabs('con', ['Application Monitoring', "Today's Distributions", 'Sources', 'Simulator', 'Archive'], (i) => {
+    if (i === 0) return `<div class="stats">
+        <div class="stat"><span class="eyebrow">Scheduler</span><span class="v">${pill('Running', 'ok')}</span><span class="muted small">Runs every 1 min · last noteworthy run 09:42 · 7 assigned in 1.2 s</span></div>
+        <div class="stat"><span class="eyebrow">Health checker</span><span class="v">${pill('Scheduled', 'ok')}</span><span class="muted small">Hourly at :07 · 0 restarts in the last day</span></div>
+        <div class="stat"><span class="eyebrow">Errors, last 24 h</span><span class="v">1</span><span class="muted small">Tier 1 Support · Technical</span></div>
+        <div class="stat"><span class="eyebrow">Pending SLAs</span><span class="v">23</span><span class="muted small">Next check 09:45</span></div>
+        <div class="stat"><span class="eyebrow">On hold</span><span class="v">2</span><span class="muted small">Retried automatically after 60 min</span></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn">Start</button><button class="btn danger">Stop</button><button class="btn">Run now</button></div>
+      ${table(['Started', 'Process', 'Status', 'Records', 'Assigned', 'Errors', 'Duration', 'Heap'], [
+        ['09:42:03', 'Scheduler', pill('Success', 'ok'), 9, 7, 0, '1,214 ms', '4.1 MB'],
+        ['09:41:02', 'Classifier', pill('Success', 'ok'), 12, 0, 0, '842 ms', '3.3 MB'],
+        ['09:15:01', 'Scheduler', pill('Warning', 'warn'), 31, 28, 1, '2,904 ms', '6.0 MB'],
+        ['08:07:00', 'Health Checker', pill('Success', 'ok'), 0, 0, 0, '120 ms', '1.2 MB']], [3, 4, 5, 6, 7])}`;
+    if (i === 1) return table(['Team', 'Object', 'Distributions', 'SLA alerts', 'Reassignments', 'Rejections', 'Errors', 'Available'],
+      TEAMS.map((t) => [`<a class="link" href="#workspace">${esc(t.n)}</a>`, t.obj, t.today, t.sla, t.re, t.rej, t.err ? `<span class="pill bad">${t.err}</span>` : 0, t.av]), [2, 3, 4, 5, 7]);
+    if (i === 2) return table(['Source', 'Object', 'Waiting', 'Oldest', 'Used by'], [
+      ['Queue: Web Leads', 'Lead', 4, '6 min', 'Inbound Sales (3 distributors)'],
+      ['Queue: Lead Backlog', 'Lead', 37, '2 d', 'Inbound Sales · Backlog (get next)'],
+      ['Queue: Support Inbox', 'Case', 11, '14 min', 'Tier 1 Support (3 distributors)'],
+      ['Field: Lead.Routing_Status__c = Ready', 'Lead', 0, '—', 'Enterprise Accounts']], [2]);
+    if (i === 3) return `<div class="form">${fld('Record Id', '00Q5g00000Jordan')}${fld('Simulate at (optional)', 'Today 18:30')}</div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap">${box(false, 'Ignore caps')}${box(false, 'Include inactive teams and distributors')}${box(true, 'Stop on first assignment')}</div>
+      <div><button class="btn brand">Run simulation</button></div>
+      ${table(['Team', 'Distributor', 'Result', 'Why'], [
+        ['Inbound Sales', 'Hot inbound', pill('Would assign', 'ok'), 'Priya Shah: next in rotation (sequence 1,204); Tom Becker skipped: daily cap 15 reached'],
+        ['Inbound Sales', 'Spanish speakers', pill('Filtered out', 'neutral'), 'Country = United Kingdom does not match Spain; Mexico']])}`;
+    return `<div class="form">${fld('Object', 'Lead')}</div>${table(['Record', 'Archived', 'Source queue'], [
+      ['Hollis Grant', '2026-07-12', 'Web Leads'], ['Bea Montero', '2026-07-09', 'Web Leads']])}<div><button class="btn">Restore selected</button></div>`;
+  }));
+
+  V.teams = () => card('T', 'Distribution Teams',
+    table(['Order', 'Team', 'Object', 'Type', 'Members', 'Distributors', 'Status', 'Today'],
+      TEAMS.map((t) => [t.o, `<a class="link" href="#workspace">${esc(t.n)}</a>`, t.obj, t.type, t.m, t.d, t.on ? pill('Active', 'ok') : pill('Inactive', 'neutral'), t.today]), [0, 4, 5, 7]) +
+    `<div class="eyebrow">Distribution Viewer: sources → teams → distributors</div>
+     <div class="flow">
+       <div class="col"><div class="node"><b>Queue: Web Leads</b>4 waiting</div><div class="node"><b>Queue: Lead Backlog</b>37 waiting</div><div class="node"><b>Queue: Support Inbox</b>11 waiting</div></div>
+       <div class="col"><div class="node"><b>10 · Inbound Sales</b>Lead · 6 members</div><div class="node"><b>20 · Enterprise Accounts</b>Lead · 4 members</div><div class="node"><b>30 · Tier 1 Support</b>Case · 9 members</div></div>
+       <div class="col"><div class="node"><b>Hot inbound</b>Round Robin · sticky</div><div class="node"><b>Spanish speakers</b>Round Robin · tag filter</div><div class="node"><b>Existing customer owner</b>Related Owner</div><div class="node"><b>Backlog (get next)</b>Pull · 1 per click</div></div>
+     </div>`,
+    '<button class="btn brand">New Team</button><button class="btn">New Queue to Queue Team</button><button class="btn">Distribution Viewer</button>');
+
+  const WS = ['Summary', 'Team Members', 'Distributors', 'Weighting and Caps', 'Distribution Hours', 'Tracking and SLAs', 'Assignment Rejection', 'Post Assignment', 'Team Settings', 'History'];
+  function wsSection(i) {
+    switch (i) {
+      case 0: return `<div class="stats"><div class="stat"><span class="eyebrow">Object</span><span class="v">Lead</span></div><div class="stat"><span class="eyebrow">Assigned today</span><span class="v">52</span></div><div class="stat"><span class="eyebrow">Available now</span><span class="v">4 / 6</span></div><div class="stat"><span class="eyebrow">Avg time to action</span><span class="v">18 min</span></div></div>
+        <div class="form">${fld('Execution order', '10')}${fld('Assignment field', 'OwnerId')}${fld('Holiday region', 'United Kingdom')}${fld('Team managers', 'Morgan Reyes, Ola Nilsen')}</div>`;
+      case 1: return `<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn brand">Add team members</button><button class="btn">Save members</button></div>` +
+        table(['Member', 'Active', 'Weight', 'Member hours', 'Online', 'Availability now', 'Today', 'Tags'], PEOPLE.map((p) => [
+          `<a class="link" href="#workspace">${esc(p.n)}</a>`, '✓', p.w, esc(p.hours), `<span class="toggle ${p.on ? 'on' : ''}" role="img" aria-label="${p.on ? 'Online' : 'Offline'}"></span>`,
+          /Available/.test(p.now) ? pill(p.now, 'ok') : pill(p.now, 'warn'), p.today, p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')]), [2, 6]);
+      case 2: return `<div><button class="btn brand">New distributor</button></div>` + table(['Order', 'Distributor', 'Type', 'Method', 'Source', 'Filters', 'Status', 'Waiting'],
+        DISTS.map((d) => [d.o, `<a class="link" href="#distributor">${esc(d.n)}</a>`, d.t, d.m, esc(d.src), `<span class="small">${esc(d.f)}</span>`, pill('Active', 'ok'), d.wait]), [0, 7]);
+      case 3: return `<fieldset><legend>Weighting</legend><div class="form">${fld('Weighting mode', 'Tag')}${fld('Default weight for members without a weighted tag', '1')}${fld('Tag weights (one per line: Collection:Tag=Weight)', 'Tier:Senior=2\nTier:Mid=1\nTier:Junior=0.5', true)}</div></fieldset>
+        <fieldset><legend>Team-level caps</legend>${table(['Period', 'Default cap', 'Caps by tag', 'Criteria'], [['Daily', 15, 'Tier:Junior=8', '—'], ['Hourly', 4, '—', '—'], ['Active', 40, '—', 'Status in Open; Working']], [1])}<div><button class="btn">Add cap period</button> <button class="btn brand">Save team caps</button></div></fieldset>`;
+      case 4: return `<div class="form">${fld('Team hours (shift)', 'UK Office (Europe/London)')}${fld('Holiday region', 'United Kingdom')}</div>${box(false, 'Respect distribution hours for trigger distributors')}
+        <fieldset><legend>Shift planner</legend>${box(true, 'Use the shift planner for this team', 'Member hours come from planned weekly changes; each change applies until the next.')}${planner()}<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn">Discard</button><button class="btn brand">Save shift planner</button></div></fieldset>`;
+      case 5: return `<fieldset><legend>Action tracking</legend>${box(true, 'Track time to action')}<div class="form">${fld('Action field', 'Distribution Action (DE_Action__c)')}${fld('Actions to track (separated by ;)', 'Contacted;Qualified')}${fld('Respect distribution hours', 'Team and Member')}${fld('Auto action activity types', 'Call;Email')}</div>${box(false, 'Track action from any user')}</fieldset>
+        <fieldset><legend>SLA checkpoints</legend>${table(['Checkpoint', 'Alert type', 'After', 'Conditions', 'Notify'], [[1, 'Time Checkpoint', '15 min', 'Rating = Hot', 'Assignee'], [2, 'Time Checkpoint', '60 min', '—', 'Assignee, manager'], [3, 'Continuous Field Monitoring', 'up to 1 day', 'DE_Action__c is blank', 'Assignee']], [0])}${box(true, 'Apply Active Status to SLAs (stop when the record leaves Active Status Values)')}</fieldset>`;
+      case 6: return `<div class="form">${fld('Daily assignment rejection limit', 'Limited')}${fld('Rejections per user per day', '3')}</div><p class="muted small">Every request is recorded in the Distribution Reject Log (approved or denied, with reason and reviewer).</p>` +
+        table(['Requested', 'Record', 'Requested by', 'Reason', 'Status', 'Reviewed by'], [['09:30', 'Rae Kowalski', 'Priya Shah', 'Not my territory', pill('Approved', 'ok'), '—'], ['Yesterday 16:12', 'Lee Park', 'Kenji Watanabe', 'Duplicate', pill('Denied', 'bad'), 'Limit reached (3)']]);
+      case 7: return `${box(true, 'Send standard email notifications', 'Sent by the record-triggered flow "DE Email Notification on new log".')}${box(true, 'Enable post-assignment object sync')}<div class="form">${fld('Field updates on assignment', 'Status=Working\nDE_Action__c=', true)}</div>`;
+      case 8: return `<div class="form">${fld('Team filter', '1 AND (2 OR 3)')}${fld('Active status field', 'Status')}${fld('Active status values', 'Open; Working')}</div>${box(false, 'Show only active records in widget')}${box(false, 'Disable distribution logging', 'Not allowed while action tracking or object sync is on.')}`;
+      default: return table(['When', 'User', 'Record', 'Field', 'Old value', 'New value'], [
+        ['Today 08:55', 'Morgan Reyes', 'Hot inbound', 'Sticky Days', '30', '90'],
+        ['Today 08:54', 'Morgan Reyes', 'Amara Okafor', 'Weight', '1', '2'],
+        ['Yesterday 17:20', 'Ola Nilsen', 'Inbound Sales', 'Holiday Region', 'Ireland', 'United Kingdom'],
+        ['Yesterday 06:00', 'Engine (background)', 'Sam Lindqvist', 'Tags', 'Language:Swedish', 'Language:Swedish;Language:English']]);
+    }
+  }
+  function planner() {
+    const weeks = ['Oct 12', 'Oct 19', 'Oct 26', 'Nov 2', 'Nov 9', 'Nov 16'];
+    const rows = [
+      ['Sam Lindqvist', ['Early', '', 'Late', '', '', 'Early']],
+      ['Kenji Watanabe', ['Late', '', '', '', 'Team hours', '']],
+      ['Lucía Ortega', ['Early', '', '', 'Late', '', '']]
+    ];
+    return `<div class="tbl-wrap"><table class="planner"><thead><tr><th>Member</th>${weeks.map((w, i) => `<th class="${i === 1 ? 'week-now' : ''}">Week of ${w}</th>`).join('')}</tr></thead><tbody>${
+      rows.map(([n, cells]) => `<tr><td>${esc(n)}</td>${cells.map((c, i) => `<td class="${i === 1 ? 'week-now' : ''}"><span class="cell ${c ? 'chg' : ''} ${i === 0 ? 'past' : ''}">${c || 'continues'}</span></td>`).join('')}</tr>`).join('')
+    }</tbody></table></div><p class="muted small">Highlighted column is this week. Up to 12 weeks ahead and 4 weeks back are shown in the app.</p>`;
+  }
+  V.workspace = () => `<section class="card"><div class="card-head"><span class="ico" aria-hidden="true">T</span><h1>Inbound Sales</h1>${pill('Active', 'ok')}<span class="muted small">Lead · Standard team</span><div class="actions"><button class="btn">Clone</button><button class="btn">Deactivate</button></div></div>
+    <div class="card-body"><div class="split"><div class="sidenav" role="tablist" data-tabs="ws">${WS.map((n, i) => `<button type="button" role="tab" aria-selected="${i === 1}" data-i="${i}">${esc(n)}</button>`).join('')}</div>
+    <div>${WS.map((n, i) => `<div data-panel="ws" data-i="${i}" ${i === 1 ? '' : 'hidden'}><div class="card-body" style="padding:0">${wsSection(i)}</div></div>`).join('')}</div></div></div></section>`;
+
+  V.distributor = () => card('D', 'Hot inbound (sticky by domain)', `
+    <fieldset><legend>Details</legend><div class="form">${fld('Distributor name', 'Hot inbound (sticky by domain)')}${fld('Type', 'Standard')}${fld('Order', '10')}${fld('Description', 'Hot web leads, same company domain goes to the same rep')}</div></fieldset>
+    <fieldset><legend>Method (how)</legend><div class="form">${fld('Method', 'Round Robin')}${fld('Default owner (when nobody can be assigned)', 'Queue: Lead Backlog')}</div>
+      ${box(true, 'Sticky assignment (same match value goes to the same member)')}<div class="form">${fld('Sticky match field', 'DE.Domain')}${fld('Sticky period (days)', '90')}${fld('Sticky match level', 'Team')}${fld('Sticky and caps', 'Respect Caps - Assign to Next Member')}</div>
+      ${box(true, 'Retain sticky when user is unavailable')}${box(false, 'Disable round robin (only assign sticky matches)')}</fieldset>
+    <fieldset><legend>Source (which records)</legend><div class="form">${fld('Source', 'Queue')}${fld('Source queue or holding user', 'Web Leads')}${fld('Custom sort order', 'Rating DESC, CreatedDate ASC')}${fld('Filter by campaign (Campaign Ids, one per line)', '')}</div>
+      ${table(['#', 'Field', 'Operator', 'Value'], [[1, 'Rating', 'equals', 'Hot'], [2, 'CreatedDate', 'less than', '5 minutes ago'], [3, 'DE.PersonalEmail', 'equals', 'false']], [0])}<div class="form">${fld('Filter logic', '1 AND (2 OR 3)')}</div></fieldset>
+    <fieldset><legend>Team member filter (who)</legend><div class="form">${fld('Assign to', 'All Team Members')}${fld('Exclude members field', '')}</div>${table(['#', 'Member filter', 'Operator', 'Value'], [[1, 'DynamicTag:Language', 'includes', 'Lead.Preferred_Language__c']], [0])}</fieldset>
+    <fieldset><legend>Availability, weighting and caps</legend>${box(false, 'Assign if user is unavailable (ignores out of office, hours and toggle; holidays still apply)')}${box(false, 'Assign if user is offline in the widget')}${box(true, 'Use team weighting')}${box(true, 'Respect team-level caps')}</fieldset>
+    <fieldset><legend>Role assignment</legend>${box(false, 'Role assignment (add to the Account/Opportunity/Case team instead of changing the owner)', 'Requires a Field Value source. Rejection and SLAs do not apply.')}</fieldset>
+    <fieldset><legend>SLAs, auto reassign and rejection</legend>${box(true, 'SLAs enabled')}${box(true, 'Auto reassign')}<div class="form">${fld('Reassign from SLA', '2')}${fld('Reassign to', 'Queue: Web Leads')}${fld('Remove sticky from reassigned records', 'New Sticky Only')}</div>
+      ${box(true, 'Enable assignment rejection')}<div class="form">${fld('Reject to', 'Queue: Web Leads')}${fld('Replace rejected records', 'Replace on Usual Assignment')}${fld('Remove sticky from rejected records', 'New Sticky Only')}</div></fieldset>`,
+    '<button class="btn">Cancel</button><button class="btn brand">Save</button>');
+
+  V.availability = () => card('A', 'Distribution Availability', subtabs('av', ['Out of Office', 'Regional Holidays', 'Regions', 'Shifts', 'Team Roster and Calendar'], (i) => {
+    if (i === 0) return `<div><button class="btn brand">New out of office</button></div>` + table(['User or queue', 'Start', 'End', 'Reason', 'Source'], [
+      ['Amara Okafor', 'Mon 20 Oct, all day', 'Fri 24 Oct, all day', 'Annual leave', pill('Calendar', 'info')], ['Tom Becker', 'Thu 30 Oct 13:00', 'Thu 30 Oct 17:00', 'Training', pill('Manual', 'neutral')], ['Queue: Escalations', 'Sat 25 Oct 00:00', 'Sun 26 Oct 23:59', 'Weekend cover', pill('API', 'neutral')]]);
+    if (i === 1) return `<div class="form">${fld('Region', 'All regions')}${fld('Search holidays', '')}</div>` + table(['Holiday', 'Region', 'Starts', 'Ends', 'All day'], [
+      ['Christmas Day', 'United Kingdom', '25 Dec 2026', '25 Dec 2026', '✓'], ['Boxing Day', 'United Kingdom', '28 Dec 2026', '28 Dec 2026', '✓'], ['Thanksgiving', 'US East', '26 Nov 2026', '27 Nov 2026', '✓'], ['Office move', 'US East', '14 Nov 2026 09:00', '14 Nov 2026 13:00', '']]);
+    if (i === 2) return `<div><button class="btn brand">New region</button></div>` + table(['Region', 'Teams', 'Holidays'], [['United Kingdom', 'Inbound Sales, Tier 1 Support', 8], ['US East', 'Enterprise Accounts', 11], ['Ireland', '—', 9]], [2]) + '<p class="muted small">A region can be deleted only when no team or holiday uses it.</p>';
+    if (i === 3) {
+      const days = [['Monday', '08:00–12:30', '13:15–17:00'], ['Tuesday', '08:00–12:30', '13:15–17:00'], ['Wednesday', '08:00–12:30', '13:15–17:00'], ['Thursday', '08:00–12:30', '13:15–17:00'], ['Friday', '08:00–14:00', ''], ['Saturday', '', ''], ['Sunday', '', '']];
+      return `<div class="form">${fld('Shift name', 'Early shift')}${fld('Timezone', 'Europe/London')}</div>` + table(['Day', 'Block 1', 'Block 2', 'Block 3'], days.map(([d, a, b]) => [d, a || '<span class="muted">off</span>', b || '—', '—'])) + '<div><button class="btn">Add shift</button> <button class="btn brand">Save shift</button></div>';
+    }
+    return `<div class="form">${fld('Team', 'Inbound Sales')}${fld('Calendar month (any day in it)', 'December 2026')}</div>` +
+      table(['Member', 'Online', 'Availability now', 'Toggle reason'], PEOPLE.map((p) => [esc(p.n), `<span class="toggle ${p.on ? 'on' : ''}" role="img" aria-label="${p.on ? 'Online' : 'Offline'}"></span>`, /Available/.test(p.now) ? pill(p.now, 'ok') : pill(p.now, 'warn'), p.on ? '—' : 'Lunch'])) +
+      `<div class="eyebrow">Availability calendar · December 2026</div>${calendar()}`;
+  }));
+  function calendar() {
+    const out = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => `<div class="dow">${d}</div>`);
+    out.push('<div class="day blank"></div>');
+    for (let d = 1; d <= 31; d++) {
+      const dow = (d + 0) % 7; // Dec 1 2026 is a Tuesday
+      const hol = d === 25 ? 'Christmas Day' : d === 28 ? 'Boxing Day' : '';
+      const weekend = dow === 5 || dow === 6;
+      out.push(`<div class="day ${hol ? 'hol' : ''}"><b>${d}</b>${hol ? `<span>${hol}</span>` : weekend ? '<span class="muted">0 working</span>' : `<span>${d % 9 === 0 ? 4 : 6} working</span>${d % 9 === 0 ? '<span class="muted">2 OOO</span>' : ''}`}</div>`);
+    }
+    return `<div class="cal">${out.join('')}</div>`;
+  }
+
+  V.tags = () => card('#', 'Distribution Tags', `<p class="muted small">Tags are written as Collection:Tag and apply in every team. Use them in member filters, tag weighting and caps by tag.</p>` +
+    subtabs('tg', ['Tag Assignment', 'Tag Collections', 'Clone Tags'], (i) => {
+      if (i === 0) return table(['User', 'Tags'], PEOPLE.map((p) => [`<a class="link" href="#tags">${esc(p.n)}</a>`, p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')]));
+      if (i === 1) return table(['Collection', 'Tags in use', 'Users'], [['Language', 'English, French, German, Hindi, Japanese, Spanish, Swedish', 6], ['Tier', 'Junior, Mid, Senior', 6]], [2]);
+      return `<div class="form">${fld('Copy tags from', 'Priya Shah')}${fld('To users', 'Sam Lindqvist, Kenji Watanabe')}</div><div><button class="btn brand">Clone tags</button></div>`;
+    }));
+
+  V.classifier = () => card('R', 'Record Classification', `<div class="form">${fld('Object', 'Lead')}</div>` + subtabs('cl', ['Territories', 'Lead Matching', 'Auto Conversion', 'Custom Classification', 'Backfill'], (i) => {
+    const sw = (c) => `<span class="sw" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${c};margin-right:6px;vertical-align:-1px"></span>`;
+    if (i === 0) return `<div><button class="btn brand">New territory</button></div>` + table(['Order', 'Territory', 'Map', 'Status', 'Countries', 'States', 'Postal codes'], [
+      [10, sw('var(--s1)') + 'UK North', 'Sales', pill('Active', 'ok'), 'United Kingdom', '—', 'M*; L*; LS*; NE*'],
+      [20, sw('var(--s2)') + 'UK South', 'Sales', pill('Active', 'ok'), 'United Kingdom', '—', 'SW*; SE*; BN1..BN45'],
+      [30, sw('var(--s3)') + 'DACH', 'Sales', pill('Active', 'ok'), 'Germany; Austria; Switzerland', '—', '—'],
+      [40, sw('var(--other)') + 'US East', 'Sales', pill('Draft', 'neutral'), 'United States', 'NY; NJ; MA; PA', '—']], [0]);
+    if (i === 1) return `<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn brand">New matching rule</button><button class="btn">Rebuild domain index</button></div>` + table(['Rule', 'Type', 'Matches on', 'Active'], [
+      ['Domain to account', 'Lead to Account', 'Email domain (contacts and website), personal domains never match', '✓'], ['Fuzzy company', 'Lead to Account', 'Company name ≥ 88 %', '✓'], ['Duplicate lead', 'Lead to Lead', 'Email address', '✓']]);
+    if (i === 2) return table(['Order', 'Rule', 'Match', 'Action', 'Create opportunity', 'Owner'], [[10, 'Existing customer', 'Account', 'Convert', 'Never', 'Matched Record Owner'], [20, 'Duplicate lead', 'Lead', 'De-duplicate', '—', 'Retain Lead Owner'], [99, 'Default (runs last)', '—', 'Do Not Convert', '—', '—']], [0]);
+    if (i === 3) return table(['Stamp group', 'Type', 'Stamps (in order)', 'Active'], [['Priority', 'Single', 'P1 (Rating = Hot) · P2 (Employees > 500) · P3 (default)', '✓'], ['Product interest', 'Multiple', 'Analytics · Payments · Platform', '✓']]);
+    return `<div class="form">${fld('Classify', 'Territory, Lead Matching')}${fld('Created since', '2026-01-01')}</div><div><button class="btn brand">Start backfill</button></div><p class="muted small">Runs as a batch; progress and the result are written to Engine Runs.</p>`;
+  }));
+
+  V.sync = () => card('S', 'Distribution Sync', `<div><button class="btn brand">New sync action</button></div>` + table(['Order', 'Action', 'Type', 'Distribution object', 'Related object', 'Lookup', 'Status'], [
+    [10, 'Open tasks follow lead', 'Change Owner', 'Lead', 'Task', 'WhoId', pill('Active', 'ok')], [20, 'Open cases follow account', 'Change Owner', 'Account', 'Case', 'AccountId', pill('Active', 'ok')], [30, 'Contacts follow account', 'Change Owner', 'Account', 'Contact', 'AccountId', pill('Inactive', 'neutral')]], [0]));
+
+  V.logs = () => card('L', 'Distribution Logs', subtabs('lg', ['Distribution Logs', 'Classifier and Sync Logs', 'Change History', 'Engine Runs'], (i) => {
+    if (i === 0) return `<div class="form">${fld('From', '2026-10-24')}${fld('To', '2026-10-24')}${fld('Status', 'All')}${fld('Object', 'All')}${fld('Quick filter', '')}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn">Search</button><button class="btn">Retry selected</button><button class="btn">Retry all errors and holds (7 days)</button></div>` +
+      table(['Time', 'Log', 'Name', 'Object', 'Team', 'Distributor', 'Method', 'Assignee', 'Status'], LOGS.map((l) => [l[0], `<span class="mono">${l[1]}</span>`, `<a class="link" href="#record">${esc(l[2])}</a>`, l[3], l[4], l[5], l[6], l[7], pill(l[8], l[9])]));
+    if (i === 1) return `<div class="form">${fld('Log', 'Territory')}${fld('Object', 'Lead')}${fld('Quick filter', '')}</div>` + table(['Date', 'Name', 'Status', 'Object', 'Territory', 'Match level', 'Attempts'], [
+      ['09:41', 'Jordan Ellis', pill('Success', 'ok'), 'Lead', 'Sales.UK North', 'Postal Code', 1], ['09:38', 'Avery Holt', pill('Success', 'ok'), 'Lead', 'Sales.DACH', 'Country', 1], ['09:20', 'Kai Brandt', pill('Error', 'bad'), 'Lead', '—', 'None', 3]], [6]) + '<div><button class="btn">Classify selected again</button></div>';
+    if (i === 2) return table(['When', 'User', 'Object', 'Record', 'Change', 'Field', 'Old', 'New'], [
+      ['08:55', 'Morgan Reyes', 'Distributor', 'Hot inbound', 'Updated', 'Sticky Days', '30', '90'], ['08:40', 'Morgan Reyes', 'Holiday', 'Boxing Day', 'Created', '—', '—', '—'], ['06:00', 'Engine (background)', 'User Availability', 'Sam Lindqvist', 'Updated', 'Tags', 'Language:Swedish', '+ Language:English']]);
+    return table(['Started', 'Process', 'Status', 'Records', 'Assigned', 'Errors', 'Duration'], [['09:42:03', 'Scheduler', pill('Success', 'ok'), 9, 7, 0, '1,214 ms'], ['03:00:00', 'Maintenance', pill('Success', 'ok'), 1840, 0, 0, '18,302 ms']], [3, 4, 5]);
+  }));
+
+  // ------------------------------------------------------------------ analytics (charts drawn to scale)
+  const DAYS = ['10-11', '10-12', '10-13', '10-14', '10-15', '10-16', '10-17', '10-18', '10-19', '10-20', '10-21', '10-22', '10-23', '10-24'];
+  const SERIES = [
+    { name: 'Enterprise Accounts', c: 'var(--s1)', v: [12, 3, 2, 14, 16, 15, 17, 13, 2, 1, 15, 18, 16, 17] },
+    { name: 'Inbound Sales', c: 'var(--s2)', v: [44, 9, 7, 48, 51, 47, 53, 46, 8, 6, 50, 55, 49, 52] },
+    { name: 'Tier 1 Support', c: 'var(--s3)', v: [81, 30, 28, 86, 90, 84, 88, 83, 32, 27, 85, 91, 87, 88] }
+  ];
+  function stacked() {
+    const W = 640, H = 240, P = { l: 36, r: 8, t: 10, b: 26 };
+    const tot = DAYS.map((_, i) => SERIES.reduce((a, s) => a + s.v[i], 0));
+    const max = Math.ceil(Math.max(...tot) / 50) * 50;
+    const pw = W - P.l - P.r, ph = H - P.t - P.b, slot = pw / DAYS.length, bw = Math.min(26, slot * 0.66);
+    const y = (v) => P.t + ph - (v / max) * ph;
+    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Distributions per day by team, last 14 days">`;
+    for (let k = 0; k <= 4; k++) { const v = (max / 4) * k; s += `<line class="grid" x1="${P.l}" x2="${W - P.r}" y1="${y(v)}" y2="${y(v)}"/><text x="${P.l - 6}" y="${y(v) + 3}" text-anchor="end">${v}</text>`; }
+    DAYS.forEach((d, i) => {
+      const x = P.l + i * slot + (slot - bw) / 2; let base = 0;
+      SERIES.forEach((se, j) => {
+        const v = se.v[i]; const top = y(base + v), bot = y(base); const gap = j < SERIES.length - 1 ? 0 : 0;
+        const h = Math.max(0, bot - top - (j > 0 ? 2 : 0));
+        const r = j === SERIES.length - 1 ? 3 : 0;
+        s += `<path class="mark" fill="${se.c}" data-tip="${d} · ${se.name}: ${v}" d="M${x},${top + h + (j > 0 ? 0 : 0)} L${x},${top + r} Q${x},${top} ${x + r},${top} L${x + bw - r},${top} Q${x + bw},${top} ${x + bw},${top + r} L${x + bw},${top + h} Z"/>`;
+        base += v; void gap;
+      });
+      if (i % 2 === 0) s += `<text x="${x + bw / 2}" y="${H - 8}" text-anchor="middle">${d}</text>`;
+    });
+    return s + '</svg>';
+  }
+  function bars(rows, unit, label) {
+    const W = 640, rowH = 26, P = { l: 128, r: 46, t: 6 }, H = P.t + rows.length * rowH + 6;
+    const max = Math.max(...rows.map((r) => r[1])); const pw = W - P.l - P.r;
+    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">`;
+    rows.forEach(([n, v], i) => {
+      const yy = P.t + i * rowH; const w = Math.max(2, (v / max) * pw);
+      s += `<text x="${P.l - 8}" y="${yy + 15}" text-anchor="end">${esc(n)}</text><path class="mark" fill="var(--s1)" data-tip="${esc(n)}: ${v} ${unit}" d="M${P.l},${yy + 4} L${P.l + w - 3},${yy + 4} Q${P.l + w},${yy + 4} ${P.l + w},${yy + 7} L${P.l + w},${yy + 17} Q${P.l + w},${yy + 20} ${P.l + w - 3},${yy + 20} L${P.l},${yy + 20} Z"/><text x="${P.l + w + 6}" y="${yy + 15}">${v}</text>`;
+    });
+    return s + '</svg>';
+  }
+  V.analytics = () => card('A', 'Distribution Analytics', `<div class="form">${fld('From', '2026-10-11')}${fld('To', '2026-10-24')}${fld('Team', 'All teams')}${fld('Split by', 'Team')}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn brand">Apply</button><button class="btn" id="tblToggle" aria-pressed="false">Table view</button></div>
+    <div class="charts">
+      <section style="grid-column:1/-1"><h3>Distributions over time</h3><ul class="legend">${SERIES.map((s) => `<li><span class="sw" style="background:${s.c}"></span>${esc(s.name)}</li>`).join('')}</ul>${stacked()}
+        <div id="tblView" hidden>${table(['Day', ...SERIES.map((s) => s.name), 'Total'], DAYS.map((d, i) => [d, ...SERIES.map((s) => s.v[i]), SERIES.reduce((a, s) => a + s.v[i], 0)]), [1, 2, 3, 4])}</div></section>
+      <section><h3>Average time to action (minutes)</h3>${bars([['Priya Shah', 11], ['Tom Becker', 14], ['Sam Lindqvist', 19], ['Lucía Ortega', 23], ['Kenji Watanabe', 31]], 'min', 'Average time to action per user')}</section>
+      <section><h3>User activity: times toggled offline</h3>${bars([['Lucía Ortega', 9], ['Kenji Watanabe', 6], ['Tom Becker', 4], ['Priya Shah', 2], ['Sam Lindqvist', 1]], 'times', 'Times toggled offline per user')}</section>
+    </div>
+    <div class="eyebrow">Team performance · Inbound Sales</div>` +
+    table(['Member', 'Assigned', 'Avg time to action', 'Reassigned', 'SLAs missed', 'Rejected', 'Actioned', 'Converted'], [
+      ['Priya Shah', 118, '11 min', 2, 1, 1, '96 %', '21 %'], ['Tom Becker', 104, '14 min', 3, 2, 0, '93 %', '18 %'], ['Sam Lindqvist', 77, '19 min', 4, 3, 2, '88 %', '12 %'], ['Lucía Ortega', 69, '23 min', 5, 4, 1, '84 %', '15 %']], [1, 2, 3, 4, 5, 6, 7]),
+    '<button class="btn">Download CSV</button>');
+
+  V.settings = () => card('⚙', 'Distribution Settings', subtabs('st', ['Settings', 'Export and Import'], (i) => {
+    if (i === 1) return `<p class="muted small">Exports teams, distributors, conditions, caps, SLAs, members (by username), managers, regions and holidays, tags and territories as JSON.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn brand">Export configuration</button><button class="btn">Import configuration</button></div>`;
+    return `<fieldset><legend>Engine</legend>${box(true, 'Engine enabled')}<div class="form">${fld('Scheduler interval (minutes)', '1')}${fld('Records per run', '500')}${fld('Number of previous assignees tracked', '3')}${fld('Put on hold after failed attempts', '10')}${fld('Hold duration (minutes)', '60')}${fld('Log retention (days)', '30')}${fld('Week starts on (weekly caps)', 'Monday')}</div>${box(true, 'Record decision trace on logs')}${box(true, 'Publish platform events on assignment')}</fieldset>
+      <fieldset><legend>Availability toggle</legend>${box(false, 'Require a reason to go offline')}<div class="form">${fld('Toggle off reasons (comma separated)', 'Meeting, Break, Lunch, Training, End of shift')}${fld('Timer durations in minutes (comma separated)', '15, 30, 60, 120')}${fld('Toggle status at start of day', 'No Change')}${fld('Toggle status at end of day', 'Always Off')}</div></fieldset>
+      <fieldset><legend>Rejection</legend><div class="form">${fld('Reject reasons (comma separated)', 'Not my territory, Duplicate, Insufficient information, Workload')}</div>${box(true, 'Allow an Other reason')}</fieldset>
+      <fieldset><legend>Monitoring and alerts</legend><div class="form">${fld('Maintain change history logs (days)', '90')}${fld('Classifier and object sync log retention (days)', '30')}${fld('Admin alert emails (comma separated)', 'routing-admins@example.com')}${fld('Failure alert threshold', '5')}</div>${box(true, 'Use platform cache (partition DE)')}</fieldset>
+      <div><button class="btn brand">Save settings</button></div>`;
+  }));
+
+  V.record = () => `<section class="card"><div class="card-head"><span class="ico" aria-hidden="true" style="background:var(--s2)">L</span><div><div class="eyebrow">Lead</div><h1>Jordan Ellis</h1></div><div class="actions"><button class="btn">Edit</button><button class="btn">Convert</button></div></div>
+    <div class="card-body"><div class="highlights">${fld('Company', 'Northwind Analytics')}${fld('Lead status', 'Working')}${fld('Owner', 'Priya Shah')}${fld('DE Territory', 'UK North')}${fld('Is Distributed', 'Yes · 1 time')}${fld('Time to Action (Minutes)', '—')}</div></div></section>
+    <div class="record-grid">
+      <section class="card"><div class="card-head"><h2>Details</h2></div><div class="card-body"><div class="form">${fld('Email', 'jordan.ellis@northwind-analytics.example')}${fld('Rating', 'Hot')}${fld('Lead source', 'Web')}${fld('Country', 'United Kingdom')}${fld('Postal code', 'M4 2AF')}${fld('Distribution Action', '')}</div></div></section>
+      <section class="card"><div class="card-head"><span class="ico" aria-hidden="true">DE</span><h2>Distribution Engine</h2></div><div class="card-body">
+        <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small">Distribute now</button><button class="btn small">Assign</button><button class="btn small danger">Reject</button><button class="btn small">Simulate</button></div>
+        <div class="eyebrow">History</div>
+        <ul class="timeline">
+          <li><span class="dot ok"></span><div><b>Assigned to Priya Shah</b><div class="muted small">Today 09:42 · Inbound Sales · Hot inbound · Round Robin · speed to assign 38 s</div><div class="small">SLA 1 due 09:57 (in 12 min)</div></div></li>
+          <li><span class="dot"></span><div><b>Classified</b><div class="muted small">Today 09:41 · Territory UK North (postal code M4) · matched account Northwind Analytics (Prospect)</div></div></li>
+          <li><span class="dot warn"></span><div><b>Waiting at source</b><div class="muted small">Today 09:41 · Queue: Web Leads</div></div></li>
+        </ul>
+        <div class="eyebrow">Assign (manual distributor)</div>
+        ${table(['Member', 'Availability', 'Today', 'Caps'], [['Priya Shah', pill('Available', 'ok'), 14, '14 / 15 daily'], ['Tom Becker', pill('Available', 'ok'), 12, '12 / 15 daily'], ['Lucía Ortega', pill('Offline', 'warn'), 9, '9 / 15 daily']], [2])}
+      </div></section>
+    </div>`;
+
+  function widget() {
+    return `<div class="card-head"><h2>Distribution</h2><div class="actions"><span class="pill ok">Online</span></div></div><div class="card-body">
+      <div class="row"><span>Available for assignments</span><span class="toggle on" role="img" aria-label="Online"></span></div>
+      <button class="btn" style="justify-self:start">Out of office…</button>
+      <div class="eyebrow">Get next</div><button class="btn brand" style="justify-self:start">Get next: Backlog (get next) (37 waiting)</button>
+      <div class="row"><span class="eyebrow">Assigned to me</span><button class="btn small danger" type="button">2 missed SLAs</button></div>
+      <ul class="assigned">
+        <li><a class="link" href="#record">Jordan Ellis</a><span class="muted small">Lead · Inbound Sales</span><span class="small sla-ok">SLA in 12 min</span></li>
+        <li><a class="link" href="#record">Rae Kowalski</a><span class="muted small">Lead · Inbound Sales</span><span class="small sla-due">SLA due</span></li>
+        <li><a class="link" href="#record">Avery Holt</a><span class="muted small">Lead · Inbound Sales</span><span class="small sla-ok">SLA in 41 min</span></li>
+      </ul></div>`;
+  }
+
+  // ------------------------------------------------------------------ routing and interactions
+  const views = Object.keys(V);
+  function show(name) {
+    if (!views.includes(name)) name = 'console';
+    $('#main').innerHTML = V[name]();
+    document.querySelectorAll('.tabbar a').forEach((a) => a.toggleAttribute('aria-current', false) || (a.dataset.view === name && a.setAttribute('aria-current', 'page')));
+    document.querySelectorAll('.tabbar a').forEach((a) => { if (a.dataset.view === name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    try { localStorage.setItem('de-preview-view', name); } catch (e) { /* storage unavailable */ }
+  }
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-tabs] [data-i]');
+    if (t) {
+      const id = t.parentElement.dataset.tabs;
+      t.parentElement.querySelectorAll('[data-i]').forEach((b) => b.setAttribute('aria-selected', String(b === t)));
+      document.querySelectorAll(`[data-panel="${id}"]`).forEach((p) => { p.hidden = p.dataset.i !== t.dataset.i; });
+      return;
+    }
+    if (e.target.id === 'tblToggle') {
+      const v = $('#tblView'); v.hidden = !v.hidden; e.target.setAttribute('aria-pressed', String(!v.hidden));
+      return;
+    }
+    const a = e.target.closest('a[href^="#"]');
+    if (a) { e.preventDefault(); const n = a.getAttribute('href').slice(1); show(n); window.scrollTo(0, 0); }
+  });
+  const wbtn = $('#widgetBtn'), w = $('#widget');
+  wbtn.addEventListener('click', () => { w.innerHTML = widget(); w.hidden = !w.hidden; wbtn.setAttribute('aria-expanded', String(!w.hidden)); });
+  const tip = $('#tip');
+  document.addEventListener('mousemove', (e) => {
+    const m = e.target.closest && e.target.closest('[data-tip]');
+    if (!m) { tip.hidden = true; return; }
+    tip.textContent = m.dataset.tip; tip.hidden = false;
+    tip.style.left = Math.min(e.clientX + 12, window.innerWidth - 220) + 'px'; tip.style.top = (e.clientY - 30) + 'px';
+  });
+  let start = (location.hash || '').slice(1);
+  if (!start) { try { start = localStorage.getItem('de-preview-view') || 'console'; } catch (e) { start = 'console'; } }
+  show(start);
+})();
+</script>
