@@ -191,7 +191,6 @@ public with sharing class DE_WidgetController {
     @AuraEnabled
     public static DE_RejectionService.RejectResult reject(Id recordId, String reason) {
         DE_Permissions.require(DE_Permissions.isUser(), 'reject assignments');
-        DE_PersonaService.requireLevel(DE_PersonaService.ASSIGNMENT_REJECTION, 'Edit', 'reject assignments');
         try {
             return DE_RejectionService.reject(new List<Id>{ recordId }, reason, UserInfo.getUserId(), DE_Permissions.isTeamManager())[0];
         } catch (Exception e) {

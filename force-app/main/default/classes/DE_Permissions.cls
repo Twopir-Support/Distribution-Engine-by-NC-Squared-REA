@@ -1,6 +1,8 @@
 /**
- * Role checks backed by custom permissions (granted through the four permission sets).
- * Admin > System Manager > Team Manager > User.
+ * Role checks backed by custom permissions (granted through the permission sets).
+ * Admin > System Manager > Team Manager (standard or custom) > User.
+ * Custom team managers (DE_Custom_Team_Manager) manage the teams they are listed on, with access to each
+ * page and feature set by their persona (DE_PersonaService); standard roles are not affected by personas.
  */
 public with sharing class DE_Permissions {
     public class AccessException extends Exception {
@@ -25,7 +27,33 @@ public with sharing class DE_Permissions {
     }
 
     public static Boolean isTeamManager() {
-        return isSystemManager() || has('DE_Team_Manager');
+        return isSystemManager() || has('DE_Team_Manager') || has('DE_Custom_Team_Manager');
+    }
+
+    /** A custom team manager whose access is governed by a persona (no standard manager role on top). */
+    public static Boolean isCustomTeamManager() {
+        return has('DE_Custom_Team_Manager') && !has('DE_Team_Manager') && !isSystemManager();
+    }
+
+    /** Persona gate: always true for standard roles, the persona level for custom team managers. */
+    public static Boolean allows(String capability, String minimumLevel) {
+        return !isCustomTeamManager() || DE_PersonaService.currentAtLeast(capability, minimumLevel);
+    }
+
+    /**
+     * System managers always; custom team managers when they manage the team and their persona grants the level.
+     * Used for actions that standard team managers cannot perform but a persona can grant.
+     */
+    public static Boolean systemManagerOrPersona(Id teamId, String capability, String minimumLevel) {
+        if (isSystemManager()) {
+            return true;
+        }
+        return isCustomTeamManager() && teamId != null && canManageTeam(teamId) && DE_PersonaService.currentAtLeast(capability, minimumLevel);
+    }
+
+    /** Org-level (not team-scoped) variant: system managers, or custom team managers whose persona grants the level. */
+    public static Boolean systemManagerOrPersona(String capability, String minimumLevel) {
+        return isSystemManager() || (isCustomTeamManager() && DE_PersonaService.currentAtLeast(capability, minimumLevel));
     }
 
     public static Boolean isUser() {
